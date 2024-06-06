@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 import {
   Carousel,
   CarouselContent,
@@ -8,45 +8,27 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
-// Mock data for the carousel items
-const carouselData = [
-  {
-    id: 1,
-    title: "Item 1",
-    content: "Content for Item 1",
-  },
-  {
-    id: 2,
-    title: "Item 2",
-    content: "Content for Item 2",
-  },
-  {
-    id: 3,
-    title: "Item 3",
-    content: "Content for Item 3",
-  },
-  {
-    id: 4,
-    title: "Item 4",
-    content: "Content for Item 4",
-  },
-  
-]
+interface GigSlideshowProps {
+  portfolioMedia: {
+    id: string
+    src: string
+    //type: string
+  }[]
+}
 
-export function GigSlideshow() {
+export function GigSlideshow({ portfolioMedia }: GigSlideshowProps) {
   return (
     <div className="w-full group">
       <Carousel className="w-full">
         <CarouselContent>
-          {carouselData.map((item) => (
+          {portfolioMedia.map((item) => (
             <CarouselItem key={item.id}>
               <div className="p-1">
-                <Card>
-                  <CardContent className="flex flex-col items-center justify-center aspect-[16/9] p-4 md:p-6">
-                    <h3 className="text-2xl font-semibold md:text-4xl">{item.title}</h3>
-                    <p className="text-center">{item.content}</p>
-                  </CardContent>
-                </Card>
+                <AspectRatio ratio={16 / 9} className="bg-none">
+                  
+                    <img className="w-full h-full object-cover" src={item.src} alt={`Portfolio Item ${item.id}`} />
+                 
+                </AspectRatio>
               </div>
             </CarouselItem>
           ))}

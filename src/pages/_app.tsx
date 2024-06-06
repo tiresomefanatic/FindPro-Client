@@ -14,6 +14,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 //import { CookiesProvider } from "react-cookie";
 
 import { EdgeStoreProvider } from '../lib/edgeStore';
+import { Toaster } from "@/components/ui/sonner"
+
 
 
 
@@ -30,17 +32,21 @@ export default function App({ Component, pageProps:  { ...pageProps }  }: AppPro
         <PersistGate loading={null} persistor={persistor}>
           <QueryClientProvider client={queryClient}>
           <EdgeStoreProvider>
+          <Toaster richColors />
        
-
+  <ReactQueryDevtools/>
             <Header />
             <Component {...pageProps} />
-            <ReactQueryDevtools initialIsOpen={true} />
+          
             
             </EdgeStoreProvider>
 
 
           </QueryClientProvider>
           </PersistGate>
+        
+
+        
         </Provider>
     
       </div>

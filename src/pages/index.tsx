@@ -10,57 +10,87 @@ import PersonGrid from "@/components/gigsGrid";
 import { MainSearch } from "@/components/MainSearch";
 import { SwBanners } from "@/components/swBanners";
 import { CategoryBanners } from "@/components/categoryBanner";
+import HeroMarquee from "@/components/heroMarquee";
 
-import { cn } from "@/lib/utils";
-import GigsGrid from "@/components/gigsGrid";
+import { motion } from "framer-motion";
+import { HeroHighlight, Highlight } from "../components/ui/hero-highlight";
+
+
 
 import GigsGridInf from "@/components/gigsGridInfinite";
-//import { Icons } from "@/components/icons"
+
 import FiltersBars from "../components/filterBar";
+import FilterDrawer from "../components/filtersDrawer";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 
-import { useMutation, useIsMutating  } from '@tanstack/react-query';
-import axios from 'axios';
-import { setBookmarkedGigs } from "@/redux/bookmarkedGigsSlice";
-import { useDispatch } from "react-redux";
+import { useMutation, useIsMutating } from "@tanstack/react-query";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  MultiFileDropzone,
-  type FileState,
-} from '@/components/uploadFile';
-import { useEdgeStore } from '../lib/edgeStore';
-import { useState } from 'react';
 
-// import { Cookies } from 'react-cookie';
+import { useEdgeStore } from "../lib/edgeStore";
+import { useState } from "react";
 
-// const cookies = new Cookies();
+import { useMediaQuery } from "@uidotdev/usehooks";
+import { RootState } from "@/redux/store";
+import GigsGrid from "@/components/gigsGrid";
 
-//  const accessToken = cookies.get('accessToken');
-
-//   console.log('token in frontend', accessToken)
-
-console.log('env', process.env)
-
-const fetchBookmarkedGigs = async (userId: string) => {
-  const response = await fetch(`/api/gigs/getBookmarkedGigs`);
-  const data = await response.json();
-
-  console.log('bookmarked gigs', data)
-
-  return data.bookmarkedGigs;
-};
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL
 
 
 const createNewGig = async () => {
-  const response = await axios.post('/api/gigs/createGig');
+  const response = await axios.post(`${baseURL}/gigs/createGig`,null, {
+    baseURL: "http://localhost:8080",
+    withCredentials: true,
+  });
+  
   return response.data;
 };
 
+const fetchBookmarkedGigs = async () => {
+  // const response = await axios.get(`http://localhost:8080/gigs/getBookmarkedGigs`, null, {
+  //   baseURL: baseURL, // Set your API base URL, does not work without it
+  //   withCredentials: true, // To let axios send cookies in header
+
+  // });
+  // return response.data;
+  
+};
+
+
 export default function Home() {
   const router = useRouter();
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
+  const isMediumDevice = useMediaQuery(
+    "only screen and (min-width : 769px) and (max-width : 992px)"
+  );
+  const isLargeDevice = useMediaQuery(
+    "only screen and (min-width : 993px) and (max-width : 1200px)"
+  );
+  const isExtraLargeDevice = useMediaQuery(
+    "only screen and (min-width : 1201px)"
+  );
 
-  const { mutate: createGigMutation, isError, error } = useMutation({
+  const getMarqueeWidth = () => {
+    if (isSmallDevice) {
+      return "w-80";
+    } else if (isMediumDevice) {
+      return "w-full";
+    } else if (isLargeDevice) {
+      return "w-full";
+    } else if (isExtraLargeDevice) {
+      return "w-full";
+    } else {
+      return "w-full";
+    }
+  };
+
+  const {
+    mutate: createGigMutation,
+    isError,
+    error,
+  } = useMutation({
     mutationFn: createNewGig,
     onSuccess: (data) => {
       router.push(`/createNewGig?gigId=${data._id}`);
@@ -75,60 +105,80 @@ export default function Home() {
 
   const dispatch = useDispatch();
 
-React.useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const userId = '65efa449e361348ac66842d0'; // Replace with the actual user ID
-      const bookmarkedGigs = await fetchBookmarkedGigs(userId);
-      dispatch(setBookmarkedGigs(bookmarkedGigs));
-    } catch (error) {
-      console.error("Error fetching bookmarked gigs:", error);
-    }
-  };
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const userId = '65efa449e361348ac66842d0'; // Replace with the actual user ID
+  //       const bookmarkedGigs = await fetchBookmarkedGigs(userId);
+  //       dispatch(setBookmarkedGigs(bookmarkedGigs));
+  //     } catch (error) {
+  //       console.error("Error fetching bookmarked gigs:", error);
+  //     }
+  //   };
 
-  fetchData();
-}, [dispatch]);
+  //   fetchData();
+  // }, [dispatch]);
 
-const [fileStates, setFileStates] = useState<FileState[]>([]);
-  const { edgestore } = useEdgeStore();
-  function updateFileProgress(key: string, progress: FileState['progress']) {
-    setFileStates((fileStates) => {
-      const newFileStates = structuredClone(fileStates);
-      const fileState = newFileStates.find(
-        (fileState) => fileState.key === key,
-      );
-      if (fileState) {
-        fileState.progress = progress;
-      }
-      return newFileStates;
-    });
-  }
+  const filterBarRef = useRef<HTMLDivElement>(null);
+  const filterDrawerRef = useRef<HTMLDivElement>(null);
 
+  const selectedCategory = useSelector(
+    (state: RootState) => state.filters.selectedCategory
+  );
+  const selectedSubcategory = useSelector(
+    (state: RootState) => state.filters.selectedSubcategory
+  );
+
+  // useEffect(() => {
+  //   if (selectedCategory || selectedSubcategory) {
+  //     //if (isLargeDevice || isExtraLargeDevice) {
+  //     //  filterBarRef.current?.scrollIntoView({ behavior: "smooth" });
+  //    // } else {
+  //       filterDrawerRef.current?.scrollIntoView({ behavior: "smooth" });
+  //    // }
+  //   }
+  // }, [selectedCategory, selectedSubcategory]);
+
+  console.log("state", selectedCategory, selectedSubcategory);
 
   return (
     <div className="min-h-screen">
-      
       {/* Hero Section */}
-      <section className=" min-h-[70vh] flex items-center bg-red-500">
-        <div className="max-w-screen-xl px-4 py-8 mx-auto lg:py-16 w-full">
-          <div className="grid grid-cols-12">
-            <h1 className="col-start-2 col-end-12 text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-8 text-center">
-              Find and book{" "}
-              <span className="text-blue-600 dark:text-blue-400">
-                Flexible Talent
-              </span>{" "}
-              in multimedia
-              <br />
-              <span className="text-5xl">all in one place</span>
-            </h1>
-            <div className="col-start-2 col-end-12">
-              <MainSearch />
-            </div>
-          </div>
-        </div>
-      </section>
 
-        {/* {Create Gig Button} */}
+      {/* <HeroHighlight> */}
+      <div className="px-4 sm:px-20">
+  <section className="min-h-[70vh] grid grid-cols-1 sm:grid-cols-2">
+    <div className='flex items-center justify-center sm:justify-start gap-16'>
+      <div className="container mx-auto px-4 gap-y-16">
+        <div className="flex flex-col text-center sm:text-start gap-y-12">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: [20, -5, 0] }}
+            transition={{ duration: 1.5, ease: [0.4, 0.0, 0.2, 1] }}
+            className="text-4xl font-bold text-neutral-700 dark:text-white max-w-4xl mx-auto leading-relaxed lg:leading-snug"
+          >
+            <Highlight className="text-black dark:text-white">Discover & book</Highlight>{" "}
+            <span>talent in multimedia all in one place</span>
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: [20, -5, 0] }}
+            transition={{ duration: 1.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.3 }}
+            className={`mx-auto ${getMarqueeWidth()}`}
+          >
+          <MainSearch shouldRoute={true} />
+          </motion.div>
+        </div>
+      </div>
+    </div>
+    <div className="hidden md:flex items-center justify-center">
+      <Image src="/heroImage.png" width={2000} height={2000} alt='' />
+    </div>
+  </section>
+</div>
+      {/* </HeroHighlight> */}
+
+      {/* {Create Gig Button} */}
       <section className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Button onClick={handleCreateGig} disabled={isMutating > 0}>
@@ -137,75 +187,69 @@ const [fileStates, setFileStates] = useState<FileState[]>([]);
           {isError && <p className="text-red-500 mt-2">{error.message}</p>}
         </div>
       </section>
-
-      {/* Upload */}
-      <section className="mx-40 my-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <MultiFileDropzone
-        value={fileStates}
-        onChange={(files) => {
-          setFileStates(files);
-        }}
-        onFilesAdded={async (addedFiles) => {
-          setFileStates([...fileStates, ...addedFiles]);
-          await Promise.all(
-            addedFiles.map(async (addedFileState) => {
-              try {
-                const res = await edgestore.publicFiles.upload({
-                  file: addedFileState.file,
-                  onProgressChange: async (progress) => {
-                    updateFileProgress(addedFileState.key, progress);
-                    if (progress === 100) {
-                      // wait 1 second to set it to complete
-                      // so that the user can see the progress bar at 100%
-                      await new Promise((resolve) => setTimeout(resolve, 1000));
-                      updateFileProgress(addedFileState.key, 'COMPLETE');
-                    }
-                  },
-                });
-                console.log(res);
-              } catch (err) {
-                updateFileProgress(addedFileState.key, 'ERROR');
-              }
-            }),
-          );
-        }}
-      />
-        </div>
-      </section>
-
-
-       
-
+ 
+ 
+ 
+ 
+     
+     
       {/* SwBanners Section */}
-      <section className="mx-40 my-12 bg-lime-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className=" py-12 ">
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: [20, -5, 0],
+          }}
+          transition={{
+            duration: 1.5,
+            ease: [0.4, 0.0, 0.2, 1],
+            delay: 0.3,
+          }}
+          className="container mx-auto px-4"
+        >
           <SwBanners />
-        </div>
+        </motion.div>
       </section>
 
       {/* CategoryBanners Section */}
-      <section className="mx-40 mt-16 bg-orange-200">
-      <h3 className="text-sm font-semibold text-center mb-4">Trending In</h3>
+      {(isLargeDevice || isExtraLargeDevice) && (
+        <section className="py-12">
+          
+          <div className="container mx-auto px-4">
+            <CategoryBanners />
+          </div>
+        </section>
+      )}
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <CategoryBanners />
-        </div>
-      </section>
+      {/* Filter Bars Section
+      {(isLargeDevice || isExtraLargeDevice) && (
+        <section className="mx-40 bg-red-900 " ref={filterBarRef}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <FiltersBars />
+          </div>
+        </section>
+      )} */}
 
-      {/* Filter Bars Section */}
-      <section className="mx-40 my-16 bg-red-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FiltersBars />
-        </div>
-      </section>
+      {/* Filter Drawer Section
+    
+        <section className="sticky top-0 z-50 my-16 " ref={filterDrawerRef}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
+            <FilterDrawer />
+          </div>
+        </section> */}
+      
 
       {/* PersonGrid Section */}
-      <section className="mx-40 my-16 bg-black">
-        <div className="max-w-7xl container mx-auto px-4 sm:px-6 lg:px-8">
-          <GigsGridInf />
+      <section className="my-16 ">
+        <div className="container mx-auto px-4">
+          <GigsGrid/>
         </div>
       </section>
     </div>
+   
   );
 }

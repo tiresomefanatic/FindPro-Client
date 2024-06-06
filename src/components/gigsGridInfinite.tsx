@@ -13,6 +13,42 @@ import GigCard from "./gigCard";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
 
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+
+interface Gig {
+  _id: string;
+  title: string;
+  category: string;
+  subCategory: string;
+  skills: string[];
+  portfolioMedia: string[];
+  packages: Package[];
+  owner: Owner;
+}
+
+interface Package {
+  per: string
+  price: string;
+  description: string
+
+  // Add other properties of a package if any
+}
+
+interface Owner {
+  name: string;
+  _id: string;
+  skills: string[]
+  // Add other properties of an owner if any
+}
+
+
+
+
+
+
+
+
 const fetchGigs = async ({
   pageParam = 1,
   queryKey,
@@ -21,19 +57,19 @@ const fetchGigs = async ({
   queryKey: string[];
 }) => {
   const [_key, selectedCategory, selectedSubCategory, searchTerm] = queryKey;
-  const response = await axios.get(
-    `/api/gigs/getGigs`,
-    {
-      params: {
-        category: selectedCategory,
-        subCategory: selectedSubCategory,
-        page: pageParam,
-        limit: 10,
-        searchTerm: searchTerm,
-      },
-    }
-  );
+  const response = await axios.get(`${baseURL}/gigs`, {
+    params: {
+      category: selectedCategory,
+      subCategory: selectedSubCategory,
+      page: pageParam,
+      limit: 10,
+      searchTerm: searchTerm,
+    },
+    baseURL: baseURL, // Set your API base URL, does not work without it
+    withCredentials: true, // To let axios send cookies in header
+  });
   const data = response.data;
+  console.log('gigs', data)
   return data;
 };
 
@@ -47,9 +83,8 @@ const GigsGridInf: React.FC = () => {
     (state: RootState) => state.filters.selectedSubcategory
   );
 
-  const searchTerm = useSelector(
-    (state: RootState) => state.search.searchTerm
-    );
+  const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
+
 
   const {
     data,
@@ -63,20 +98,20 @@ const GigsGridInf: React.FC = () => {
     queryKey: ["gigs", selectedCategory, selectedSubcategory, searchTerm],
     queryFn: fetchGigs,
     getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.gigs.length === 0) {
-          return undefined;
-        }
-        return allPages.length + 1;
-      },
-      getPreviousPageParam: (firstPage, allPages) => {
-        if (allPages.length <= 1) {
-          return undefined;
-        }
-        return allPages.length - 1;
-      },
-     
-      initialPageParam: 1, 
-    });
+      if (lastPage.gigs.length === 0) {
+        return undefined;
+      }
+      return allPages.length + 1;
+    },
+    getPreviousPageParam: (firstPage, allPages) => {
+      if (allPages.length <= 1) {
+        return undefined;
+      }
+      return allPages.length - 1;
+    },
+
+    initialPageParam: 1,
+  });
 
   const loadMoreRef = React.useRef(null);
 
@@ -115,24 +150,28 @@ const GigsGridInf: React.FC = () => {
   if (status === "error") {
     return <div>Error: {error.message}</div>;
   }
-  
+
   if (data && data.pages[0].gigs.length === 0) {
     return <div>No gigs found.</div>;
   }
-  
+
   return (
-    <div className="">
-      <div className="grid gap-x-2 gap-y-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+    <div className="flex flex-col jusify-center items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
         {data.pages.map((page, pageIndex) => (
           <React.Fragment key={pageIndex}>
             {page.gigs.map((gig: any) => (
               <div key={gig._id} className="flex justify-center">
                 <GigCard
                   id={gig._id}
-                  name={gig.owner.firstName}
+                  profilePic={gig.owner.profilePic}
+                  name={gig.owner.name}
                   price={gig.packages[0].price}
                   title={gig.title}
                   skills={gig.skills}
+                  portfolioMedia={gig.portfolioMedia}
+                  category={gig.category}
+                  subCategory={gig.subCategory}
                 />
               </div>
             ))}

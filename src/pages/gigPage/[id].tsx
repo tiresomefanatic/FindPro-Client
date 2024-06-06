@@ -1,9 +1,8 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
-
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 import { PriceTabs } from "@/components/PriceTabs";
 import { GigSlideshow } from "@/components/GigSlideshow";
@@ -20,22 +19,39 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useEffect } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
-import { setLoggingInFromRoute } from "@/redux/authFlowSlice";
-import axios from "axios";
 
-const fetchGig = async (id: string) => {
-  try {
-    const response = await axios.get(`/api/gigs/${id}`);
-    const data = response.data;
-    console.log('single gig', data)
-    return data;
-  } catch (error) {
-    throw error;
-  }
-};
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setLoggingInFromRoute,
+  setTryingToBookmarkId,
+} from "@/redux/authFlowSlice";
+import axios from "axios";
+import { Bookmark, Languages, MapPin } from "lucide-react";
+import {
+  useBookmarkGig,
+  useBookmarkedGigs,
+} from "../api/gigs/useBookmarksGigs";
+import { RootState } from "@/redux/store";
+import { addBookmarkedGig, removeBookmarkedGig } from "@/redux/authSlice";
+import { toast } from "sonner";
+import useAuth from "@/lib/useAuth";
+import { Separator } from "@radix-ui/react-select";
+
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
 const skills = [
   "React",
   "JavaScript",
@@ -96,40 +112,121 @@ const mockAccordionData = [
   },
 ];
 
-
-
 export default function GigPage() {
-
   const [showAllReviews, setShowAllReviews] = React.useState(false);
   const router = useRouter();
   const { id } = router.query;
-  //console.log('ID from router.query:', id);
+  const { isAuthenticated, checkAuth } = useAuth();
+
+
   const dispatch = useDispatch();
 
-  
+
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const BookmarkedGigs = useSelector(
+    (state: RootState) => state.auth.user?.bookmarkedGigs
+  );
+
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    setIsBookmarked(BookmarkedGigs?.includes(id));
+  }, [BookmarkedGigs, id]);
+
   const handleGoogleLogin = () => {
-    dispatch(setLoggingInFromRoute(router.asPath))
+    dispatch(setLoggingInFromRoute(router.asPath));
 
-     router.push(`http://localhost:8080/auth/google-login`)
-    
+    router.push(`http://localhost:8080/auth/google-login`);
+  };
+
+  const fetchGig = async (id: string) => {
+    try {
+      const response = await axios.get(`${baseURL}/gigs/getGigById/${id}`, {
+        baseURL: baseURL, // Set your API base URL, does not work without it
+        withCredentials: true, // To let axios send cookies in header
+      });
+      const data = response.data;
+      return data;
+    } catch (error) {
+      throw error;
     }
-    
+  };
 
-
-  const { data: gig, isLoading, isError } = useQuery({
-    queryKey: ['gig', id],
+  const {
+    data: gig,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["gig", id],
     queryFn: () => fetchGig(id as string),
   });
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+
+      <div className="min-h-screen bg-white dark:bg-background">
+      <section className="bg-white dark:bg-background py-8 lg:py-16">
+        <div className="max-w-screen-xl mx-auto px-4">
+            <div className="lg:col-span-8  rounded-xl p-6">
+
+    <div className="flex justify-center items-center "> 
+    <div className="h-10 w-10  animate-spin rounded-full border-4 border-gray-200 border-t-black" />
+    </div>
+
+    </div>
+          </div>
+      </section>
+    </div>
+
+
+
+
+    )
   }
 
   if (isError) {
     return <div>Error fetching gig.</div>;
   }
 
-  //console.log("from gigPage", gig.package)
+  const handleBookmarkClick = async (gigId: string) => {
+    if (!isAuthenticated) {
+      setIsAlertOpen(true);
+    } else {
+      try {
+        const toastPromise = toast.promise(
+          axios.post(`http://localhost:8080/gigs/bookmarkGig/${gigId}`, null, {
+            baseURL: baseURL,
+            withCredentials: true,
+          }),
+          {
+            duration: 1500,
+            loading: "",
+            success: (response) => {
+              const data = response.data;
+              const toastTitle =
+                data.message === "Gig Added" ? "Gig Bookmarked" : "Gig Removed";
 
+              if (data.message === "Gig Added") {
+                dispatch(addBookmarkedGig(data.id));
+                return "Gig bookmarked successfully";
+              } else {
+                dispatch(removeBookmarkedGig(data.id));
+                return "Gig removed successfully";
+              }
+            },
+            error: "Failed to bookmark gig",
+          }
+        );
+
+        await toastPromise;
+      } catch (error) {
+        console.error("Failed to bookmark gig:", error);
+      }
+    }
+  };
+
+  //console.log("from gigPage", gig);
 
   const toggleShowAll = () => {
     setShowAllReviews(!showAllReviews);
@@ -139,53 +236,51 @@ export default function GigPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
-      <section className="bg-white dark:bg-background  py-8 lg:py-16">
+      <section className="bg-white dark:bg-background py-8 lg:py-16">
         <div className="max-w-screen-xl mx-auto px-4">
-          <div className="grid grid-cols-1 xl:grid-cols-12 lg:gap-8">
-            <div className="xl:col-span-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
+            <div className="lg:col-span-8 shadow-md rounded-xl p-6">
               {/* Gig details */}
-              <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-4xl">
+              <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-3xl">
                 {gig.title}
               </h1>
               {/* Seller info */}
-              <div className="flex items-center mb-6">
-                <Image
-                  src="/avatars/simran.jpg"
+              <div className="flex flex-col md:flex-row md:items-center mb-6">
+                <img
+                  src={gig.owner.profilePic}
                   alt="Simran"
                   width={50}
                   height={50}
-                  className="rounded-full mr-4"
+                  className="rounded-full mr-4 mb-2 md:mb-0"
                 />
-                <div>
-                  <h3 className="text-lg font-medium">Simran</h3>
-                  <p className="text-gray-500">
-                    Pakistan | I speak English | 107 orders completed
-                  </p>
+                <div className="flex flex-col">
+                  <h3 className="text-lg font-medium">{gig.owner.name}</h3>
+                  <div className="flex flex-col md:flex-row md:items-center">
+                    <div className="flex items-center mb-1 md:mb-0 md:mr-4">
+                      <MapPin className="mr-1" />
+                      <p className="text-gray-500">{gig.owner.location}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <Languages className="mr-1" />
+                      <div className="flex flex-wrap">
+                        {gig.owner.languages?.map((lang: string) => (
+                          <p key={lang} className="text-gray-500 mr-1">
+                            {lang}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               {/* Slideshow */}
               <div className="mb-8 relative z-0">
-                <GigSlideshow />
+                <GigSlideshow portfolioMedia={gig.portfolioMedia} />
               </div>
-              {/* Gig description */}
-              <div className="mb-8">
-                <p className="text-gray-600 dark:text-gray-400">
-                  Your Satisfaction is everything
-                  <br />
-                  <br />
-                  Hi, Greetings :) I am a full-stack developer with 6+ years of
-                  experience with modern technologies like React, React Native,
-                  Next js, Node js, Express js, Firebase, Mysql, MongoDB, and so
-                  on. I build responsive websites on react js and node js and
-                  mobile apps.
-                </p>
-                <Link href="#" className="text-blue-600 hover:underline">
-                  Read More
-                </Link>
-              </div>
+  
               {/* Skills */}
-              <h3 className="text-2xl font-bold mb-4">Skills</h3>
-              <div className="flex flex-wrap gap-4 mb-8">
+              <h3 className="text-xl font-bold mb-2.5">Skills</h3>
+              <div className="flex flex-wrap gap-4 mb-5">
                 {skills.map((skill) => (
                   <p
                     key={skill}
@@ -195,78 +290,59 @@ export default function GigPage() {
                   </p>
                 ))}
               </div>
-              <div className="mb-8">
-                <Accordion type="single" collapsible className="w-full">
-                  {mockAccordionData.map((item) => (
-                    <AccordionItem key={item.id} value={`item-${item.id}`}>
-                      <AccordionTrigger>{item.question}</AccordionTrigger>
-                      <AccordionContent>{item.answer}</AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+  
+              {/* Gig description */}
+              <h3 className="text-xl font-bold mb-3">About this gig</h3>
+              <div className="mb-8 overflow-hidden">
+                <p className="text-md text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">
+                  {gig.description}
+                </p>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-                <div className="grid grid-cols-1 gap-4">
-                  {visibleReviews.map((review) => (
-                    <Card
-                      key={review.id}
-                      className="border border-gray-200 p-3 bg-white dark:bg-card shadow-md"
-                    >
-                      <CardContent>
-                        <CardTitle className="flex flex-grow text-md font-semibold text-gray-900 dark:text-white py-2">
-                          {review.author}
-                        </CardTitle>
-                        <CardDescription className="flex flex-grow text-gray-900 dark:text-white mt-2 overflow-hidden">
-                          {review.review}
-                        </CardDescription>
-                      </CardContent>
-                    </Card>
-                  ))}
+  
+              {gig.faqs && gig.faqs.length > 0 && (
+                <div className="mb-8">
+                  <Accordion type="single" collapsible className="w-full">
+                    {gig.portfolioMedia.map((item: any) => (
+                      <AccordionItem key={item.id} value={`item-${item.id}`}>
+                        <AccordionTrigger>{item.question}</AccordionTrigger>
+                        <AccordionContent>{item.answer}</AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
                 </div>
-                {mockReviews.length > 3 && (
-                  <button
-                    onClick={toggleShowAll}
-                    className="mt-4 text-blue-500 hover:underline"
-                  >
-                    {showAllReviews ? "See Less" : "See More"}
-                  </button>
-                )}
-              </div>
-                     {/*edit gig button*/}
-                     <div className="mt-8">
-    <Link href={`/editGigPage?gigId=${gig._id}`}>
-      <button className="bg-blue-500 text-white px-4 py-2 rounded">
-        Edit Gig
-      </button>
-    </Link>
-    {/* {login button} */}
-    <section className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link href={`http://localhost:8080/auth/google-login`}> 
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-4"
-            onClick={handleGoogleLogin}
-          > 
-           
-            Login with Google
-          </Button>
-       </Link>
-       
-        </div>
-      </section>
-
-  </div>
-
-       
+              )}
             </div>
             {/* PriceTabs */}
-            <div className="xl:col-span-4">
+            <div className="lg:col-span-4">
               <div className="sticky top-24">
+                <div className="flex justify-center items-center mb-4">
+                  <Button
+                    variant="outline"
+                    className="mr-4 p-4 rounded-full"
+                    onClick={() => handleBookmarkClick(id as string)}
+                  >
+                    <Bookmark
+                      size={24}
+                      fill={isBookmarked ? "currentColor" : "none"}
+                      color={isBookmarked ? "blue" : "gray"}
+                    />
+                  </Button>
+                  <LoginAlertDialog
+                    open={isAlertOpen}
+                    onOpenChange={setIsAlertOpen}
+                    id={id as string}
+                  />
+                </div>
                 <PriceTabs packages={gig.packages} />
               </div>
+            </div>
+            {/* Edit gig button */}
+            <div className="mt-8 lg:col-span-8">
+              <Link href={`/editGigPage?gigId=${gig._id}`}>
+                <Button className="bg-blue-500 text-white px-4 py-2 rounded">
+                  Edit Gig
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -274,3 +350,45 @@ export default function GigPage() {
     </div>
   );
 }
+
+interface LoginAlertDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  id: string;
+}
+
+const LoginAlertDialog: React.FC<LoginAlertDialogProps> = ({
+  open,
+  onOpenChange,
+  id,
+}) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleGoogleLogin = () => {
+    dispatch(setLoggingInFromRoute(`/gigPage/${id}`));
+    dispatch(setTryingToBookmarkId(JSON.stringify(id)));
+    router.push(`http://localhost:8080/auth/google-login`);
+  };
+
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Login Required</AlertDialogTitle>
+          <AlertDialogDescription>
+            Please log in to bookmark this gig.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction asChild>
+            <Button variant="outline" onClick={handleGoogleLogin}>
+              Login with Google
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};

@@ -1,9 +1,23 @@
 import { useRouter } from "next/router";
 import GigForm from '../components/GigForm';
+import useAuth from "@/lib/useAuth";
+import { useEffect } from "react";
 
 export default function EditGigPage() {
   const router = useRouter();
   const { gigId } = router.query;
+  const { isAuthenticated, checkAuth } = useAuth();
+
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  if (!isAuthenticated) {
+    return null; // Render nothing if not authenticated
+  }
+
+
 
   return (
     <div>

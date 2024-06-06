@@ -1,31 +1,32 @@
-// authSlice.ts
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, } from '@reduxjs/toolkit';
 
-interface AuthState {
+interface AuthFlowState {
   loggingInFromRoute: string;
+  tryingToBookmarkId: string;
 }
 
-const initialState: AuthState = {
+const initialState: AuthFlowState = {
   loggingInFromRoute: '',
+  tryingToBookmarkId: '',
+
 };
 
-const authSlice = createSlice({
-  name: 'auth',
+const authFlowSlice = createSlice({
+  name: 'authFlow',
   initialState,
   reducers: {
     setLoggingInFromRoute: (state, action: PayloadAction<string>) => {
       state.loggingInFromRoute = action.payload;
     },
+    setTryingToBookmarkId: (state, action: PayloadAction<string>) => {
+      state.tryingToBookmarkId = action.payload;
+    },
+
   },
 });
 
-export const { setLoggingInFromRoute } = authSlice.actions;
+export const { setLoggingInFromRoute, setTryingToBookmarkId } = authFlowSlice.actions;
 
-export const setLoggingInFromRouteAsync = createAsyncThunk(
-  'auth/setLoggingInFromRouteAsync',
-  async (route: string, { dispatch }) => {
-    dispatch(setLoggingInFromRoute(route));
-  }
-);
 
-export default authSlice.reducer; 
+
+export default authFlowSlice.reducer; 

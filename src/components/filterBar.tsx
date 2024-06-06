@@ -1,55 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
 import { setSelectedCategory, setSelectedSubcategory } from '../redux/filtersSlice';
 import { setSearchTerm } from '@/redux/searchSlice';
+import { RootState } from '@/redux/store';
+import { categories } from "../lib/categories";
+import { motion } from 'framer-motion';
+import { Button } from './ui/button';
 
-const categories = [
-  {
-    name: 'Video Production',
-    subcategories: ['Wedding Films', 'Social Media Videos', 'Music Videos', 'Influencer Collabs'],
-  },
-  {
-    name: 'Video Editing',
-    subcategories: ['Color Collection', 'Instagram Videos', 'Wedding Video Editors', 'Music Videos', 'Youtube Videos', 'Commercials'],
-  },
-  {
-    name: 'Sound',
-    subcategories: ['Sync Sound', 'Dubbing Artist', 'SFX Editing', 'Mixing and Mastering', 'Music Direction'],
-  },
-  {
-    name: 'Writers',
-    subcategories: ['Content Writers', 'Script Writers'],
-  },
-  {
-    name: 'Photographers',
-    subcategories: ['Fashion Photographers', 'Event Photographers'],
-  },
-  {
-    name: 'Visual Graphics',
-    subcategories: ['Social Media Animations', 'Logo and Subtitles', 'Illustrators', 'Intros and Outros', 'VFX and Motion Graphics'],
-  },
-];
 
-const FiltersBar = () => {
+const FiltersBar = React.memo( () => {
   const dispatch = useDispatch();
   const selectedCategory = useSelector((state: RootState) => state.filters.selectedCategory);
   const selectedSubcategory = useSelector((state: RootState) => state.filters.selectedSubcategory);
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
 
   const handleCategoryChange = (value: string) => {
-    dispatch(setSelectedCategory(value));
-    dispatch(setSelectedSubcategory(''));
+    if (selectedCategory === value) {
+      dispatch(setSelectedCategory(''));
+      dispatch(setSelectedSubcategory(''));
+    } else {
+      dispatch(setSelectedCategory(value));
+      dispatch(setSelectedSubcategory(''));
+    }
     dispatch(setSearchTerm(''));
-    
   };
 
   const handleSubcategoryChange = (value: string) => {
-    dispatch(setSelectedSubcategory(value));
+    if (selectedSubcategory === value) {
+      dispatch(setSelectedSubcategory(''));
+    } else {
+      dispatch(setSelectedSubcategory(value));
+    }
     dispatch(setSearchTerm(''));
   };
 
-  const updateSelectedFilters = () => {
+  const handleClearAll = () => {
+    dispatch(setSelectedCategory(''));
+    dispatch(setSelectedSubcategory(''));
+    dispatch(setSearchTerm(''));
+  };
+
+ 
+  const updateSelectedFilters = useCallback(() => {
     if (searchTerm) {
       const searchRegex = new RegExp(searchTerm, 'i');
 
@@ -76,54 +68,105 @@ const FiltersBar = () => {
       }
     } else {
       // bugs the giginfinit page when coming back from gigpage
-    //  dispatch(setSelectedCategory(''));
-     // dispatch(setSelectedSubcategory(''));
+      // dispatch(setSelectedCategory(''));
+      // dispatch(setSelectedSubcategory(''));
     }
-  };
+  }, [searchTerm, dispatch]);
+
+  console.log('search state category:', selectedCategory, 'Subcateogry:', selectedCategory, 'searchterm:', searchTerm)
+
+
 
   useEffect(() => {
     updateSelectedFilters();
-  }, [searchTerm]);
+  }, [updateSelectedFilters]);
 
   return (
-    <div className="bg-lime-200 flex p-20 justify-center items-center">
-      <div className="bg-lime-700 flex flex-col space-y-4 mb-20 justify-ccenter">
-        {/* Category Buttons */}
-        <div className="flex flex-row space-x-4">
+    <motion.div
+      className="flex p-4 pt-10 justify-start items-start"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex flex-col space-y-4 mb-20">
+        <motion.h2
+          className="text-xl font-bold"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          Filters
+        </motion.h2>
+        <motion.p
+          className="text-gray-600 text-sm"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          Apply filters to your search
+        </motion.p>
+
+        {/* Category Tree */}
+        <motion.div
+          className="flex flex-col space-y-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
           {categories.map((category) => (
-            <div key={category.name} className="relative">
-              <button
-                className={`flex flex-grow p-2 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                  selectedCategory === category.name ? 'bg-primary text-white' : ''
+            <motion.div
+              key={category.name}
+              className="relative"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Button
+              variant='link'
+                className={`flex flex-grow p-2 text- rounded-md text-black dark:text-white ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  selectedCategory === category.name ? 'opacity-100' : 'opacity-70'
                 }`}
                 onClick={() => handleCategoryChange(category.name)}
+               // whileHover={{ scale: 1.05 }}
+               // whileTap={{ scale: 0.95 }}
               >
                 {category.name}
-              </button>
+              </Button>
               {selectedCategory === category.name && (
-                <div className="bg-red-700 absolute top-full mt-4 left-1/2 transform -translate-x-1/2">
+                <motion.div
+                  className="mt-2"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {/* Subcategory Buttons */}
-                  <div className="flex space-x-2 space-y-2">
+                  <div className="flex flex-col gap-y-3">
                     {category.subcategories.map((subcategory) => (
                       <button
+                     
                         key={subcategory}
-                        className={`flex flex-grow p-2 rounded-md border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                          selectedSubcategory === subcategory ? 'bg-primary text-white' : ''
+                        className={`p-2 text-xs text-start justify-items-start rounded-md whitespace-nowrap text-gray-700 ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                        selectedSubcategory === subcategory ? 'font-bold' : ''
                         }`}
                         onClick={() => handleSubcategoryChange(subcategory)}
+                      //  whileHover={{ scale: 1.05 }}
+                      //  whileTap={{ scale: 0.95 }}
                       >
                         {subcategory}
                       </button>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
+
   );
-};
+});
+
+FiltersBar.displayName = 'FiltersBar'
 
 export default FiltersBar;
