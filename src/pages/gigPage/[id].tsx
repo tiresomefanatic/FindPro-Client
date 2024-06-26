@@ -40,10 +40,6 @@ import {
 } from "@/redux/authFlowSlice";
 import axios from "axios";
 import { Bookmark, Languages, MapPin } from "lucide-react";
-import {
-  useBookmarkGig,
-  useBookmarkedGigs,
-} from "../api/gigs/useBookmarksGigs";
 import { RootState } from "@/redux/store";
 import { addBookmarkedGig, removeBookmarkedGig } from "@/redux/authSlice";
 import { toast } from "sonner";
@@ -63,54 +59,6 @@ const skills = [
   "HTML5",
 ];
 
-const mockReviews = [
-  {
-    id: 1,
-    author: "John Doe",
-    review: "Excellent service! Highly recommended.",
-  },
-  {
-    id: 2,
-    author: "Jane Smith",
-    review: "The quality is outstanding.",
-  },
-  {
-    id: 3,
-    author: "Michael Johnson",
-    review: "Fantastic work! I will definitely use this service again.",
-  },
-  {
-    id: 4,
-    author: "Emily Davis",
-    review: "The attention to detail is remarkable. Well done!",
-  },
-  {
-    id: 5,
-    author: "David Wilson",
-    review: "I am completely satisfied with the results. Great job!",
-  },
-];
-
-const mockAccordionData = [
-  {
-    id: 1,
-    question: "What services do you offer?",
-    answer:
-      "I offer web development services using React, Node.js, Next.js, and Tailwind CSS.",
-  },
-  {
-    id: 2,
-    question: "What is your turnaround time?",
-    answer:
-      "The turnaround time depends on the project scope and complexity. Typically, I can deliver within 1-2 weeks.",
-  },
-  {
-    id: 3,
-    question: "How do you communicate with clients?",
-    answer:
-      "I prefer to communicate via email or chat platforms like Slack or Discord. I'm also open to voice or video calls when necessary.",
-  },
-];
 
 export default function GigPage() {
   const [showAllReviews, setShowAllReviews] = React.useState(false);
@@ -138,7 +86,7 @@ export default function GigPage() {
   const handleGoogleLogin = () => {
     dispatch(setLoggingInFromRoute(router.asPath));
 
-    router.push(`http://localhost:8080/auth/google-login`);
+    router.push(`${baseURL}/auth/google-login`);
   };
 
   const fetchGig = async (id: string) => {
@@ -195,7 +143,7 @@ export default function GigPage() {
     } else {
       try {
         const toastPromise = toast.promise(
-          axios.post(`http://localhost:8080/gigs/bookmarkGig/${gigId}`, null, {
+          axios.post(`${baseURL}/gigs/bookmarkGig/${gigId}`, null, {
             baseURL: baseURL,
             withCredentials: true,
           }),
@@ -226,13 +174,12 @@ export default function GigPage() {
     }
   };
 
-  //console.log("from gigPage", gig);
+  console.log("from gigPage", gig);
 
   const toggleShowAll = () => {
     setShowAllReviews(!showAllReviews);
   };
 
-  const visibleReviews = showAllReviews ? mockReviews : mockReviews.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -302,7 +249,7 @@ export default function GigPage() {
               {gig.faqs && gig.faqs.length > 0 && (
                 <div className="mb-8">
                   <Accordion type="single" collapsible className="w-full">
-                    {gig.portfolioMedia.map((item: any) => (
+                    {gig.faqs.map((item: any) => (
                       <AccordionItem key={item.id} value={`item-${item.id}`}>
                         <AccordionTrigger>{item.question}</AccordionTrigger>
                         <AccordionContent>{item.answer}</AccordionContent>
@@ -336,14 +283,6 @@ export default function GigPage() {
                 <PriceTabs packages={gig.packages} />
               </div>
             </div>
-            {/* Edit gig button */}
-            <div className="mt-8 lg:col-span-8">
-              <Link href={`/editGigPage?gigId=${gig._id}`}>
-                <Button className="bg-blue-500 text-white px-4 py-2 rounded">
-                  Edit Gig
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -368,7 +307,7 @@ const LoginAlertDialog: React.FC<LoginAlertDialogProps> = ({
   const handleGoogleLogin = () => {
     dispatch(setLoggingInFromRoute(`/gigPage/${id}`));
     dispatch(setTryingToBookmarkId(JSON.stringify(id)));
-    router.push(`http://localhost:8080/auth/google-login`);
+    router.push(`${baseURL}/auth/google-login`);
   };
 
   return (

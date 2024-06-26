@@ -12,9 +12,9 @@ import GigCard from "./gigCard";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
+import { Ellipsis } from "lucide-react";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-
 
 interface Gig {
   _id: string;
@@ -28,9 +28,9 @@ interface Gig {
 }
 
 interface Package {
-  per: string
+  per: string;
   price: string;
-  description: string
+  description: string;
 
   // Add other properties of a package if any
 }
@@ -38,16 +38,9 @@ interface Package {
 interface Owner {
   name: string;
   _id: string;
-  skills: string[]
+  skills: string[];
   // Add other properties of an owner if any
 }
-
-
-
-
-
-
-
 
 const fetchGigs = async ({
   pageParam = 1,
@@ -69,7 +62,7 @@ const fetchGigs = async ({
     withCredentials: true, // To let axios send cookies in header
   });
   const data = response.data;
-  console.log('gigs', data)
+  console.log("gigs", data);
   return data;
 };
 
@@ -84,7 +77,6 @@ const GigsGridInf: React.FC = () => {
   );
 
   const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
-
 
   const {
     data,
@@ -148,11 +140,19 @@ const GigsGridInf: React.FC = () => {
   }
 
   if (status === "error") {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className="flex h-screen justify-center mt-20">
+        <p className="text-2xl"> Error: {error.message} </p>
+      </div>
+    );
   }
 
   if (data && data.pages[0].gigs.length === 0) {
-    return <div>No gigs found.</div>;
+    return (
+      <div className="flex h-screen justify-center mt-20">
+       <p className="text-2xl"> No gigs found.  </p>
+        </div>
+    );
   }
 
   return (
@@ -179,11 +179,13 @@ const GigsGridInf: React.FC = () => {
         ))}
       </div>
       <div ref={loadMoreRef} className="text-center mt-4">
-        {isFetchingNextPage
-          ? "Loading more..."
-          : hasNextPage
-          ? "Load More"
-          : "Nothing more to load"}
+        {isFetchingNextPage ? (
+          <Ellipsis />
+        ) : hasNextPage ? (
+          "Load More"
+        ) : (
+          "All caught up"
+        )}
       </div>
       <div className="text-center mt-4">
         {isFetching && !isFetchingNextPage ? "Fetching..." : null}

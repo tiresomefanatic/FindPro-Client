@@ -1,29 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
-  File,
-  Home,
-  LineChart,
-  ListFilter,
-  MoreVertical,
-  Package,
-  Package2,
-  PanelLeft,
-  Search,
-  Settings,
-  ShoppingCart,
-  Truck,
-  Users2,
-} from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,23 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination";
-import { Progress } from "@/components/ui/progress";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
   Table,
   TableBody,
   TableCell,
@@ -60,11 +21,15 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import ShinyButton from "@/components/ui/ShinyButton";
+import router from "next/router";
+import customAxios from "@/lib/customAxios";
+import { toast } from "sonner";
+
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const fetchGigs = async () => {
-  const response = await axios.get(
-    "http://localhost:8080/gigs/userGigs/66574ed781466aa2ea03c021"
+  const response = await customAxios.get(
+    `${baseURL}/gigs/myGigs`
   );
   return response.data.gigs;
 };
@@ -74,8 +39,9 @@ export default function MyGigs() {
     data: gigs,
     isLoading,
     isError,
+    refetch,
   } = useQuery({
-    queryKey: ["gigs"],
+    queryKey: ["myGigs"],
     queryFn: fetchGigs,
   });
 
@@ -83,6 +49,18 @@ export default function MyGigs() {
 
   const handleSearch = (event: any) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleDeleteGig = async (gigId: string) => {
+    try {
+      await customAxios.delete(`${baseURL}/gigs/${gigId}`, {
+      });
+      // Refresh the gigs data after successful deletion
+      await refetch();
+    } catch (error) {
+      console.error("Error deleting gig:", error);
+      toast.error('Error deleting gig')
+    }
   };
 
   const renderGigs = (status: any) => {
@@ -133,9 +111,16 @@ export default function MyGigs() {
               <TableCell className="sm:w-1/4 md:w-1/6">
                 <Link href={`/editGigPage?gigId=${gig._id}`}>
                   <Button variant="outline" className="whitespace-nowrap">
-                    Edit Gig
+                    Edit
                   </Button>
                 </Link>
+                <Button
+                  variant="outline"
+                  className="whitespace-nowrap ml-2"
+                  onClick={() => handleDeleteGig(gig._id)}
+                >
+                  Delete
+                </Button>
               </TableCell>
             </TableRow>
           ))
@@ -144,13 +129,32 @@ export default function MyGigs() {
     );
   };
 
+  const createNewGig = async () => {
+    const response = await customAxios.post(`${baseURL}/gigs/createGig`, null, {
+    
+    });
+
+    return response.data;
+  };
+
+  const {
+    mutate: createGigMutation,
+    //isError,
+    error,
+  } = useMutation({
+    mutationFn: createNewGig,
+    onSuccess: (data) => {
+      router.push(`/createNewGig?gigId=${data._id}`);
+    },
+  });
+
+  const handleCreateGig = () => {
+    createGigMutation();
+  };
+
   return (
-    <div className="flex min-h-screen w-full flex-col px-4 sm:px-20 gap-y-3 mt-20">
-      <div className="flex flex-col gap-4 py-4">
-        <div className="flex items-center justify-between">
-          <ShinyButton text="Create a New Gig" />
-        </div>
-      </div>
+    <div className="flex min-h-screen w-full flex-col px-4 sm:px-20 gap-y-3">
+      <div className="flex flex-col gap-4 py-4"></div>
 
       <Tabs defaultValue="all">
         <div className="flex items-center justify-between">
@@ -165,7 +169,8 @@ export default function MyGigs() {
               Draft
             </TabsTrigger>
           </TabsList>
-          <div className="relative sm:w-64 md:w-80">
+          {/* <div className="relative sm:w-64 md:w-80">
+            
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -174,6 +179,18 @@ export default function MyGigs() {
               value={searchTerm}
               onChange={handleSearch}
             />
+       
+          </div> */}
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handleCreateGig}
+              className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md"
+            >
+              <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+              <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-white">
+                Create New Gig
+              </span>
+            </button>{" "}
           </div>
         </div>
         <TabsContent value="all">

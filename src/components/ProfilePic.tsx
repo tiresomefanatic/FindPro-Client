@@ -13,7 +13,7 @@ export default function ProfilePicture() {
     <Avatar className="h-12 w-12 rounded-full bg-gray-300">
       <AvatarImage src={userProfilePic} alt="Profile Picture" />
       <AvatarFallback>
-        <User className="w-9 h-9 border rounded-full bg-gray-100" />
+        <User className="w-9 h-9 rounded-full bg-gray-100" />
       </AvatarFallback>
     </Avatar>
   );

@@ -6,12 +6,15 @@ import store from '../redux/store';
 import Router from 'next/router';
 import { toast } from 'sonner';
 
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+
 interface CustomRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
 const customAxios: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8080', // Set your API base URL
+  baseURL: `${baseURL}`, // Set your API base URL
   withCredentials: true,
 });
 
@@ -22,6 +25,8 @@ const clearAuthAndRedirect = () => {
   store.dispatch(clearAuthState());
  // Router.push('/');
 };
+
+
 
 customAxios.interceptors.response.use(
   (response) => response,
@@ -44,7 +49,7 @@ customAxios.interceptors.response.use(
         retryMap.set(requestUrl, retryCount + 1); // Increment the retry count
 
         try {
-          const response = await axios.post('http://localhost:8080/auth/refresh-token', {}, {
+          const response = await axios.post(`${baseURL}/auth/refresh-token`, {}, {
             withCredentials: true,
           });
 

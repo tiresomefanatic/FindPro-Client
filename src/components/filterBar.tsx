@@ -95,16 +95,9 @@ const FiltersBar = React.memo( () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          Filters
+          Categories
         </motion.h2>
-        <motion.p
-          className="text-gray-600 text-sm"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          Apply filters to your search
-        </motion.p>
+       
 
         {/* Category Tree */}
         <motion.div
@@ -123,7 +116,7 @@ const FiltersBar = React.memo( () => {
             >
               <Button
               variant='link'
-                className={`flex flex-grow p-2 text- rounded-md text-black dark:text-white ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                className={`flex flex-grow p-2 text-lg rounded-md text-black dark:text-white ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
                   selectedCategory === category.name ? 'opacity-100' : 'opacity-70'
                 }`}
                 onClick={() => handleCategoryChange(category.name)}
@@ -140,12 +133,12 @@ const FiltersBar = React.memo( () => {
                   transition={{ duration: 0.3 }}
                 >
                   {/* Subcategory Buttons */}
-                  <div className="flex flex-col gap-y-3">
+                  <div className="flex flex-col gap-y-3 ml-5">
                     {category.subcategories.map((subcategory) => (
                       <button
                      
                         key={subcategory}
-                        className={`p-2 text-xs text-start justify-items-start rounded-md whitespace-nowrap text-gray-700 ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                        className={`p-2 text-md text-start rounded-md text-gray-700 ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
                         selectedSubcategory === subcategory ? 'font-bold' : ''
                         }`}
                         onClick={() => handleSubcategoryChange(subcategory)}

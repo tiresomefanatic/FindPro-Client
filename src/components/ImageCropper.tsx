@@ -117,7 +117,7 @@ const FixedCropper: React.FC<FixedCropperProps> = ({ isGigImage, onCrop }) => {
     <div >
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant='link'>
+          <Button variant='outline'>
             {!isGigImage ? "Edit Profile Pic" : "Upload an Image"}
           </Button>
         </DialogTrigger>

@@ -13,6 +13,8 @@ const buttonVariants = cva(
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          searchIcon:
+          "bg-background hover:bg-accent hover:text-accent-foreground",
           bookmark:
           "border border-input bg-background",
         secondary:

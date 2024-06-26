@@ -17,6 +17,9 @@ import ShinyButton from "./ui/ShinyButton";
 import customAxios from "@/lib/customAxios";
 import { clearAuthState } from "@/redux/authSlice";
 
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+
 interface ProfileButtonProps {
   isAuthenticated: boolean;
 }
@@ -40,12 +43,12 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
 
   const handleGoogleLogin = () => {
     dispatch(setLoggingInFromRoute(router.asPath));
-    router.push(`http://localhost:8080/auth/google-login`);
+    router.push(`${baseURL}/auth/google-login`);
   };
 
   const handleLogout = async () => {
     try {
-      const response = await customAxios.post("http://localhost:8080/auth/logout", null, {
+      const response = await customAxios.post(`${baseURL}/auth/logout`, null, {
         withCredentials: true,
       });
 
@@ -59,8 +62,6 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
   };
 
   const handleBecomeSellerClick = () => {
-    // Add logic to handle becoming a seller
-    // For example, navigate to a page where the user can set up their seller profile
     router.push(`/editProfile?id=${user._id}`);
   };
 
@@ -70,7 +71,7 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
         <ProfilePic />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {user?.isSeller ? (
+        {user?.isSeller && (
           <>
             <DropdownMenuItem
               className="cursor-pointer"
@@ -83,16 +84,6 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
               onClick={handleMyGigsClick}
             >
               My Gigs
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </>
-        ) : (
-          <>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={handleBecomeSellerClick}
-            >
-              <ShinyButton text="Become a Seller" />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>

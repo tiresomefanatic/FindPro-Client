@@ -15,8 +15,6 @@ import HeroMarquee from "@/components/heroMarquee";
 import { motion } from "framer-motion";
 import { HeroHighlight, Highlight } from "../components/ui/hero-highlight";
 
-
-
 import GigsGridInf from "@/components/gigsGridInfinite";
 
 import FiltersBars from "../components/filterBar";
@@ -28,35 +26,15 @@ import { useMutation, useIsMutating } from "@tanstack/react-query";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 
-
 import { useEdgeStore } from "../lib/edgeStore";
 import { useState } from "react";
 
 import { useMediaQuery } from "@uidotdev/usehooks";
 import { RootState } from "@/redux/store";
 import GigsGrid from "@/components/gigsGrid";
+import SparklesText from "@/components/ui/sparkleText";
+import { FlipWords } from "@/components/ui/flip-words";
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL
-
-
-const createNewGig = async () => {
-  const response = await axios.post(`${baseURL}/gigs/createGig`,null, {
-    baseURL: "http://localhost:8080",
-    withCredentials: true,
-  });
-  
-  return response.data;
-};
-
-const fetchBookmarkedGigs = async () => {
-  // const response = await axios.get(`http://localhost:8080/gigs/getBookmarkedGigs`, null, {
-  //   baseURL: baseURL, // Set your API base URL, does not work without it
-  //   withCredentials: true, // To let axios send cookies in header
-
-  // });
-  // return response.data;
-  
-};
 
 
 export default function Home() {
@@ -86,38 +64,9 @@ export default function Home() {
     }
   };
 
-  const {
-    mutate: createGigMutation,
-    isError,
-    error,
-  } = useMutation({
-    mutationFn: createNewGig,
-    onSuccess: (data) => {
-      router.push(`/createNewGig?gigId=${data._id}`);
-    },
-  });
 
-  const isMutating = useIsMutating();
-
-  const handleCreateGig = () => {
-    createGigMutation();
-  };
 
   const dispatch = useDispatch();
-
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const userId = '65efa449e361348ac66842d0'; // Replace with the actual user ID
-  //       const bookmarkedGigs = await fetchBookmarkedGigs(userId);
-  //       dispatch(setBookmarkedGigs(bookmarkedGigs));
-  //     } catch (error) {
-  //       console.error("Error fetching bookmarked gigs:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [dispatch]);
 
   const filterBarRef = useRef<HTMLDivElement>(null);
   const filterDrawerRef = useRef<HTMLDivElement>(null);
@@ -140,59 +89,68 @@ export default function Home() {
   // }, [selectedCategory, selectedSubcategory]);
 
   console.log("state", selectedCategory, selectedSubcategory);
+  const words = ["Photographers", "Video Editors", "Writers"];
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
 
-      {/* <HeroHighlight> */}
-      <div className="px-4 sm:px-20">
-  <section className="min-h-[70vh] grid grid-cols-1 sm:grid-cols-2">
-    <div className='flex items-center justify-center sm:justify-start gap-16'>
-      <div className="container mx-auto px-4 gap-y-16">
-        <div className="flex flex-col text-center sm:text-start gap-y-12">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: [20, -5, 0] }}
-            transition={{ duration: 1.5, ease: [0.4, 0.0, 0.2, 1] }}
-            className="text-4xl font-bold text-neutral-700 dark:text-white max-w-4xl mx-auto leading-relaxed lg:leading-snug"
-          >
-            <Highlight className="text-black dark:text-white">Discover & book</Highlight>{" "}
-            <span>talent in multimedia all in one place</span>
-          </motion.h1>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: [20, -5, 0] }}
-            transition={{ duration: 1.5, ease: [0.4, 0.0, 0.2, 1], delay: 0.3 }}
-            className={`mx-auto ${getMarqueeWidth()}`}
-          >
-          <MainSearch shouldRoute={true} />
-          </motion.div>
-        </div>
-      </div>
-    </div>
-    <div className="hidden md:flex items-center justify-center">
-      <Image src="/heroImage.png" width={2000} height={2000} alt='' />
-    </div>
-  </section>
-</div>
-      {/* </HeroHighlight> */}
+      <HeroHighlight>
+        <div className="px-4 sm:px-20">
+          <section className="min-h-[70vh] grid grid-cols-1 sm:grid-cols-2">
+            <div className="flex items-center justify-start gap-16">
+              <div className="container mx-auto px-4">
+                <div className="flex flex-col justify-start sm:text-start gap-y-8">
+                  <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: [20, -5, 0] }}
+                    transition={{ duration: 1.5, ease: [0.4, 0.0, 0.2, 1] }}
+                    className="text-5xl font-bold text-left dark:text-white max-w-4xl "
+                  >
+                    <div className="grid grid-col gap-y-0">
+                      <div>
+                        <span className="">Discover & book</span>
+                      </div>
 
-      {/* {Create Gig Button} */}
+                      {isLargeDevice || isExtraLargeDevice ? (
+                        <FlipWords className="text-4xl" words={words} />
+                      ) : (
+                        <span className="">talent in multimedia</span>
+                      )}
+                    </div>
+                  </motion.h1>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: [20, -5, 0] }}
+                    transition={{
+                      duration: 1.5,
+                      ease: [0.4, 0.0, 0.2, 1],
+                      delay: 0.3,
+                    }}
+                    className={`mx-auto ${getMarqueeWidth()}`}
+                  >
+                    <MainSearch shouldRoute={true} />
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+            <div className="hidden md:flex items-center justify-center">
+              <Image src="/heroImage.png" width={2000} height={2000} alt="" />
+            </div>
+          </section>
+        </div>
+      </HeroHighlight>
+
+      {/* {Create Gig Button}
       <section className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Button onClick={handleCreateGig} disabled={isMutating > 0}>
-            {isMutating > 0 ? 'Creating Gig...' : 'Create New Gig'}
+            {isMutating > 0 ? "Creating Gig..." : "Create New Gig"}
           </Button>
           {isError && <p className="text-red-500 mt-2">{error.message}</p>}
         </div>
-      </section>
- 
- 
- 
- 
-     
-     
+      </section> */}
+
       {/* SwBanners Section */}
       <section className=" py-12 ">
         <motion.div
@@ -218,7 +176,6 @@ export default function Home() {
       {/* CategoryBanners Section */}
       {(isLargeDevice || isExtraLargeDevice) && (
         <section className="py-12">
-          
           <div className="container mx-auto px-4">
             <CategoryBanners />
           </div>
@@ -241,15 +198,13 @@ export default function Home() {
             <FilterDrawer />
           </div>
         </section> */}
-      
 
       {/* PersonGrid Section */}
       <section className="my-16 ">
         <div className="container mx-auto px-4">
-          <GigsGrid/>
+          <GigsGrid />
         </div>
       </section>
     </div>
-   
   );
 }

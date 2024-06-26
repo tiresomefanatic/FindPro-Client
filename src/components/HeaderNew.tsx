@@ -33,6 +33,9 @@ import ProfilePic from "./ProfilePic";
 import { clearAuthState } from "@/redux/authSlice";
 import customAxios from "@/lib/customAxios";
 
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -43,21 +46,23 @@ const Header = () => {
 
   const user = useSelector((state: RootState) => state.auth.user);
 
-
-
   const router = useRouter();
   const dispatch = useDispatch();
 
   const handleGoogleLogin = () => {
     dispatch(setLoggingInFromRoute(router.asPath));
-    router.push(`http://localhost:8080/auth/google-login`);
+    router.push(`${baseURL}/auth/google-login`);
   };
 
   const handleLogout = async () => {
     try {
-      const response = await customAxios.post("http://localhost:8080/auth/logout", null, {
-        withCredentials: true,
-      });
+      const response = await customAxios.post(
+        `${baseURL}/auth/logout`,
+        null,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.data.message === "Logout successful") {
         dispatch(clearAuthState());
@@ -69,12 +74,21 @@ const Header = () => {
     }
   };
 
+  const handleBecomeSellerClick = () => {
+    router.push(`/editProfile?id=${user._id}`);
+  };
+
   const toggleMobileMenu = () => {
     setIsSheetOpen(!isSheetOpen);
   };
 
+
+
+  
+
+
   return (
-    <header className="sm:flex sm:justify-between py-3 px-4 shadow-2xl backdrop-blur z-50">
+    <header className="sm:flex sm:justify-between py-3 px-4 shadow-lg backdrop-blur z-50">
       <div className="relative flex h-16 items-center justify-between w-full">
         <div className="flex items-center">
           <Sheet>
@@ -97,24 +111,38 @@ const Header = () => {
         </div>
 
         <div className="flex flex-row justify-center items-center pr-20 max-md:hidden">
-        {!isAuthenticated ? (
-                  <div>
-                   
-                  <Link href={`http://localhost:8080/auth/google-login`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-4"
-                      onClick={handleGoogleLogin}
-                    >
-                      Login with Google
-                    </Button>
-                  </Link>
-                  </div>
-                ) : (
-         
-          <ProfileButton isAuthenticated={isAuthenticated} />
+          {!isAuthenticated ? (
+            <div>
+              <Link href={`${baseURL}/auth/google-login`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-4"
+                  onClick={handleGoogleLogin}
+                >
+                  Login with Google
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex flex-row gap-x-7 justify-center items-center">
+              <div className="flex justify-center items-center">
+               {!user?.isSeller && (
+               <button onClick={handleBecomeSellerClick} className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md">
+                  <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+                  <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-white">
+                    Become a Seller
+                  </span>
+                </button>
                 )}
+                
+              </div>
+
+              <div className="flex">
+                <ProfileButton isAuthenticated={isAuthenticated} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -123,49 +151,44 @@ const Header = () => {
           <SheetHeader>
             <SheetTitle>Menu</SheetTitle>
             <SheetDescription>
-          
-
               <div className="flex flex-col space-y-4">
                 {!isAuthenticated ? (
                   <div>
-                   
-                  <Link href={`http://localhost:8080/auth/google-login`}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="ml-4"
-                      onClick={handleGoogleLogin}
-                    >
-                      Login with Google
-                    </Button>
-                  </Link>
+                    <Link href={`${baseURL}auth/google-login`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-4"
+                        onClick={handleGoogleLogin}
+                      >
+                        Login with Google
+                      </Button>
+                    </Link>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-y-2">
                     {user?.isSeller ? (
                       <div className="flex flex-col gap-y-2">
-                      <div>   <ProfilePic /> </div>
-                     <Link
-                       href={`/editProfile?id=${user?._id}`}
-                       onClick={() => setIsSheetOpen(false)}
-                     >
-                       Profile
-                     </Link>
-                     <Link
-                       href="/myGigs"
-                       onClick={() => setIsSheetOpen(false)}
-                     >
-                       My Gigs
-                     </Link>
-                   </div>
+                        <div>
+                          {" "}
+                          <ProfilePic />{" "}
+                        </div>
+                        <Link
+                          href={`/editProfile?id=${user?._id}`}
+                          onClick={() => setIsSheetOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          href="/myGigs"
+                          onClick={() => setIsSheetOpen(false)}
+                        >
+                          My Gigs
+                        </Link>
+                      </div>
                     ) : (
-
-                <Button variant='shine'>Become a Seller</Button>
-
-                    )
-                  
-                  
-                  }
+                      <Button variant="shine">Become a Seller</Button>
+                    )}
 
                     <div className="flex flex-col gap-y-2">
                       <Link
@@ -174,10 +197,7 @@ const Header = () => {
                       >
                         Saved Gigs
                       </Link>
-                      <Link
-                        href="/"
-                        onClick={handleLogout}
-                      >
+                      <Link href="/" onClick={handleLogout}>
                         Log Out
                       </Link>
                     </div>

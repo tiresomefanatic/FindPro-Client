@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Bookmark } from "lucide-react";
+import { Bookmark, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
@@ -37,10 +37,6 @@ import {
   setTryingToBookmarkId,
 } from "@/redux/authFlowSlice";
 import axios from "axios";
-import {
-  useBookmarkGig,
-  useBookmarkedGigs,
-} from "@/pages/api/gigs/useBookmarksGigs";
 import { useEffect, useState } from "react";
 import { addBookmarkedGig, removeBookmarkedGig } from "@/redux/authSlice";
 import { useRenderInfo } from "@uidotdev/usehooks";
@@ -110,7 +106,7 @@ export default function GigCard({
     setIsBookmarked(BookmarkedGigs?.includes(id));
   }, [BookmarkedGigs, id]);
 
-  console.log('bookmarkedgigs', isBookmarked)
+  console.log("bookmarkedgigs", isBookmarked);
 
   const handleBookmarkClick = async (gigId: string) => {
     if (!isAuthenticated) {
@@ -118,10 +114,14 @@ export default function GigCard({
     } else {
       try {
         const toastPromise = toast.promise(
-          customAxios.post(`http://localhost:8080/gigs/bookmarkGig/${gigId}`, null, {
-            baseURL: baseURL,
-            withCredentials: true,
-          }),
+          customAxios.post(
+            `${baseURL}/gigs/bookmarkGig/${gigId}`,
+            null,
+            {
+              baseURL: baseURL,
+              withCredentials: true,
+            }
+          ),
           {
             duration: 1500,
             loading: "",
@@ -156,11 +156,10 @@ export default function GigCard({
           <div className="flex items-center ">
             <div className="flex items-center mb-4">
               <Avatar className="h-12 w-12 mt-8 mr-2 rounded-full bg-gray-300">
-                <AvatarImage
-                  src={profilePic}
-                  alt="CN"
-                />
-                <AvatarFallback>{name}</AvatarFallback>
+                <AvatarImage src={profilePic} alt="CN" />
+                <AvatarFallback>
+                  <User className="w-9 h-9 rounded-full bg-gray-100" />
+                </AvatarFallback>
               </Avatar>
             </div>
             <div className="mt-3">
@@ -168,7 +167,6 @@ export default function GigCard({
               <div className="w-24 h-6 mt-0 px-2 text-green-300 bg-gray-100 rounded-lg flex items-center shadow-sm">
                 <p className="text-sm text-slate-900">₹</p>
                 <p className="m-1 text-sm text-slate-900">{price}</p>
-
               </div>
             </div>
           </div>
@@ -176,8 +174,6 @@ export default function GigCard({
           <div className="h-10 w-72 mt-2 overflow-hidden">
             <p className="text-sm">{title}</p>
           </div>
-          
-         
         </CardContent>
       </Link>
       <div className="h-40 w-full group">
@@ -231,7 +227,7 @@ export default function GigCard({
           >
             <Bookmark
               size={24}
-              color='black'
+              color="black"
               fill={isBookmarked ? "black" : "white"}
             />
           </Button>
@@ -264,7 +260,7 @@ const LoginAlertDialog: React.FC<LoginAlertDialogProps> = ({
   const handleGoogleLogin = () => {
     dispatch(setLoggingInFromRoute(`/gigPage/${id}`));
     dispatch(setTryingToBookmarkId(id));
-    router.push(`http://localhost:8080/auth/google-login`);
+    router.push(`${baseURL}/auth/google-login`);
   };
 
   return (

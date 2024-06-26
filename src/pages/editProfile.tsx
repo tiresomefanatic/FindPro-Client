@@ -25,7 +25,7 @@ export default function EditProfilePage() {
     <div>
       {/* <h1 className="text-6xl mx-8 mt-12">Edit Gig</h1> */}
       {id && typeof id === "string" && (
-        <ProfileForm userId={id} />
+        <ProfileForm isBecomingSeller={true} userId={id} />
       )}
     </div>
   );

@@ -67,22 +67,27 @@ const formSchema = z.object({
   location: z.string().optional(),
   languages: z.array(z.string()).optional(),
   skills: z.array(z.string()).optional(),
-  phoneNumber: z.string().min(1, {
-    message: "Phone number is required.",
-  }).min(10, {
-    message: "Phone number must be at least 10 characters.",
-  }),
+  phoneNumber: z
+    .string()
+    .min(1, {
+      message: "Phone number is required.",
+    })
+    .min(10, {
+      message: "Phone number must be at least 10 characters.",
+    }),
   profilePic: z.string().optional(),
 });
 
 type ProfileFormProps = {
   userId: string | string[] | undefined;
+  isBecomingSeller: boolean;
 };
 
-export default function ProfileForm({userId}: ProfileFormProps) {
+export default function ProfileForm({ userId }: ProfileFormProps) {
   const { edgestore } = useEdgeStore();
   const [profilePicUrl, setProfilePicUrl] = useState("");
   const [userKiId, setUserKiId] = useState("");
+  const [isSeller, setIsSeller] = useState();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [didProfileUpload, setDidProfileUpload] = useState(0);
   const [imageToBeUploaded, setImageToBeUploaded] = useState("");
@@ -92,10 +97,9 @@ export default function ProfileForm({userId}: ProfileFormProps) {
   const [intendedRoute, setIntendedRoute] = useState<string | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessages, setAlertMessages] = useState<string[]>([]);
- 
+
   const router = useRouter();
   const dispatch = useDispatch();
-  
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -108,8 +112,6 @@ export default function ProfileForm({userId}: ProfileFormProps) {
       phoneNumber: "",
     },
   });
-
-  
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -125,6 +127,7 @@ export default function ProfileForm({userId}: ProfileFormProps) {
         form.setValue("phoneNumber", userData.phoneNumber);
         setUserKiId(userData._id);
         setProfilePicUrl(userData.profilePic);
+        setIsSeller(userData.isSeller)
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -152,7 +155,6 @@ export default function ProfileForm({userId}: ProfileFormProps) {
       );
       const userData = response.data;
       dispatch(setUser(userData));
-      console.log("returned data", userData);
     },
     onSuccess: () => {
       toast.success("Profile updated successfully");
@@ -171,11 +173,13 @@ export default function ProfileForm({userId}: ProfileFormProps) {
     error: errorBecomingSeller,
   } = useMutation({
     mutationFn: async () => {
-      const response =await customAxios.put(`${baseUrl}/user/become-seller/${userKiId}`);
-      return response.data
+      const response = await customAxios.put(
+        `${baseUrl}/user/become-seller/${userKiId}`
+      );
+      return response.data;
     },
     onSuccess: (data) => {
-      dispatch(setUser(data))
+      dispatch(setUser(data));
       toast.success("You are now a seller!");
     },
     onError: (error) => {
@@ -183,7 +187,7 @@ export default function ProfileForm({userId}: ProfileFormProps) {
       console.error("Error becoming a seller:", error);
     },
   });
- 
+
   // Watch for form changes
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
@@ -195,7 +199,6 @@ export default function ProfileForm({userId}: ProfileFormProps) {
     return () => subscription.unsubscribe();
   }, [form]);
 
- 
   const onSubmit = async () => {
     try {
       const formData = form.getValues();
@@ -213,7 +216,7 @@ export default function ProfileForm({userId}: ProfileFormProps) {
         phoneNumber: validatedData.phoneNumber,
         profilePic: profilePicUrl,
       });
-      setIsFormDirty(false)
+      setIsFormDirty(false);
 
       console.log("User data updated successfully");
     } catch (error) {
@@ -255,7 +258,6 @@ export default function ProfileForm({userId}: ProfileFormProps) {
 
       await setDidProfileUpload((prevCount) => prevCount + 1);
       await setImageToBeUploaded(URL.createObjectURL(croppedFile));
-      toast.success("YAY");
     } catch (error) {
       console.error("Error uploading profile picture:", error);
       toast.error("error uploading, try again");
@@ -265,8 +267,6 @@ export default function ProfileForm({userId}: ProfileFormProps) {
     }
   };
 
-  
-
   const validateBecomeSeller = (): {
     isDisabled: boolean;
     errors: {
@@ -275,37 +275,41 @@ export default function ProfileForm({userId}: ProfileFormProps) {
       languages: boolean;
       skills: boolean;
       phoneNumber: boolean;
+      profilePic: boolean
     };
   } => {
     const formData = form.getValues();
-  
+
     const errors = {
       name: !formData.name,
       bio: !formData.bio,
       languages: !formData.languages || formData.languages.length === 0,
       skills: !formData.skills || formData.skills.length === 0,
       phoneNumber: !formData.phoneNumber,
+      profilePic: !profilePicUrl || profilePicUrl === '',
     };
-  
+
     const isDisabled = Object.values(errors).some((error) => error);
-  
+
     return { isDisabled, errors };
   };
 
   const handleBecomeSeller = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-  
+
     const { isDisabled, errors } = validateBecomeSeller();
-  
+
     if (isDisabled) {
       const errorMessages: string[] = [];
-  
-      if (errors.name) errorMessages.push('Name is required');
-      if (errors.bio) errorMessages.push('Bio is required');
-      if (errors.languages) errorMessages.push('At least one language is required');
-      if (errors.skills) errorMessages.push('At least one skill is required');
-      if (errors.phoneNumber) errorMessages.push('Phone number is required');
-  
+
+      if (errors.name) errorMessages.push("Name is required");
+      if (errors.bio) errorMessages.push("Bio is required");
+      if (errors.languages) errorMessages.push("At least one language is required");
+      if (errors.skills) errorMessages.push("At least one skill is required");
+      if (errors.phoneNumber) errorMessages.push("Phone number is required");
+      if (errors.profilePic) errorMessages.push("Profile Picture is required");
+
+
       setAlertMessages(errorMessages);
       setShowAlert(true);
       return;
@@ -318,26 +322,27 @@ export default function ProfileForm({userId}: ProfileFormProps) {
       // Validate the form data against the schema
       const validatedData = formSchema.parse(formData);
 
-      await updateUserMutation({
-        name: validatedData.name,
-        bio: validatedData.bio,
-        location: validatedData.location,
-        languages: validatedData.languages,
-        skills: validatedData.skills,
-        phoneNumber: validatedData.phoneNumber,
-        profilePic: profilePicUrl,
-      },{
-        onSuccess: () => {
-         
-          setIsFormDirty(false)
+      await updateUserMutation(
+        {
+          name: validatedData.name,
+          bio: validatedData.bio,
+          location: validatedData.location,
+          languages: validatedData.languages,
+          skills: validatedData.skills,
+          phoneNumber: validatedData.phoneNumber,
+          profilePic: profilePicUrl,
+        },
+        {
+          onSuccess: () => {
+            setIsFormDirty(false);
 
-          becomeSeller();
-        },
-        onError: (error) => {
-          console.error("Error updating gig:", error);
-          toast.error("Error updating gig");
-        },
-      }
+            becomeSeller();
+          },
+          onError: (error) => {
+            console.error("Error updating gig:", error);
+            toast.error("Error updating gig");
+          },
+        }
       );
 
       console.log("You are now a seller successfully");
@@ -353,7 +358,6 @@ export default function ProfileForm({userId}: ProfileFormProps) {
         // Handle the error, display an error message, or perform any necessary actions
       }
     }
-  
   };
 
   // Handle route changes
@@ -378,18 +382,6 @@ export default function ProfileForm({userId}: ProfileFormProps) {
       router.events.off("routeChangeStart", handleRouteChange);
     };
   }, [isFormDirty, isAlertOpen, router.events]);
-
-
-
-
-
-
-
-
-
-
-
-
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -471,7 +463,7 @@ export default function ProfileForm({userId}: ProfileFormProps) {
                   <FormControl>
                     <Input placeholder="+1 123-456-7890" {...field} />
                   </FormControl>
-                  <FormMessage /> 
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -571,11 +563,13 @@ export default function ProfileForm({userId}: ProfileFormProps) {
                 </FormItem>
               )}
             />
-
-            <Button type="submit">Submit</Button>
-            <Button onClick={handleBecomeSeller}>Become a Seller</Button>
-
-
+            <div className="flex flex-col gap-y-3">
+              {isSeller ? (
+                <Button type="submit">Submit</Button>
+              ) : (
+                <Button onClick={handleBecomeSeller}>Become a Seller</Button>
+              )}
+            </div>
           </form>
         </Form>
 
@@ -614,31 +608,28 @@ export default function ProfileForm({userId}: ProfileFormProps) {
           </AlertDialogContent>
         </AlertDialog>
 
-
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Fill all fields to become a seller</AlertDialogTitle>
-        <AlertDialogDescription>
-          <div className="error-messages">
-            {alertMessages.map((message, index) => (
-              <p key={index}>{message}</p>
-            ))}
-          </div>
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel onClick={() => setShowAlert(false)}>
-          Close
-        </AlertDialogCancel>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-
-        
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Fill all fields to become a seller
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                <div className="error-messages">
+                  {alertMessages.map((message, index) => (
+                    <p key={index}>{message}</p>
+                  ))}
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowAlert(false)}>
+                Close
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </Card>
     </div>
   );
 }
-
-

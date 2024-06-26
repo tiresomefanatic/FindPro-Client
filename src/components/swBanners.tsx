@@ -6,6 +6,7 @@ import {
 } from "../redux/filtersSlice";
 import { useDispatch } from "react-redux";
 import { categories } from "../lib/categories";
+import router from "next/router";
 
 export function SwBanners() {
   const banners = [
@@ -21,8 +22,8 @@ export function SwBanners() {
       color: "bg-green-500",
       name: "Photoshop",
       image: "/Photoshop.png",
-      cl1: "absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-full",
-      cl2: "px-8 py-2  bg-black rounded-full  relative group transition duration-200 text-white hover:bg-transparent",
+      cl1: "absolute inset-0 bg-black to-blue-500 rounded-md",
+      cl2: "px-8 py-2  bg-white rounded-md  relative group transition duration-200 text-white hover:bg-transparent",
     },
     {
       color: "bg-purple-500",
@@ -51,6 +52,8 @@ export function SwBanners() {
     if (category) {
       dispatch(setSelectedCategory(category.name));
       dispatch(setSelectedSubcategory(subcategory));
+      router.push('/exploreGigs');
+
     }
   };
 
@@ -61,11 +64,11 @@ export function SwBanners() {
         {banners.map((banner, index) => (
           <button
             key={index}
-            className="p-[3px] relative rounded-full"
+            className="mx-4 rounded-xl text-sm font-semibold text-black hover:text-white hover:bg-zinc-800 shadow-md py-2"
             onClick={() => handleSubcategoryClick(banner.name)}
           >
-            <div className={banner.cl1} />
-            <div className={banner.cl2}>
+            
+         
               <div className="flex items-center justify-center space-x-2">
                 <Image
                   src={banner.image}
@@ -75,7 +78,7 @@ export function SwBanners() {
                 />
                 <span className="text-sm">{banner.name}</span>
               </div>
-            </div>
+          
           </button>
         ))}
       </div>

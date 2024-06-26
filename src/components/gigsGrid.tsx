@@ -7,11 +7,14 @@ import { setSelectedCategory, setSelectedSubcategory } from "../redux/filtersSli
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { ArrowRightIcon } from "lucide-react";
+import { setSearchTerm } from "@/redux/searchSlice";
+
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
 
 const fetchGigsByCategory = async () => {
-  const response = await fetch("http://localhost:8080/gigs/gigs-by-category");
+  const response = await fetch(`${baseURL}/gigs/gigs-by-category`);
   const data = await response.json();
-  console.log("gig grid home", data)
   return data;
 };
 
@@ -25,6 +28,7 @@ const GigsGrid: React.FC = () => {
   });
 
   const handleViewMore = (category: string) => {
+    dispatch(setSearchTerm(''))
     dispatch(setSelectedCategory(category));
     dispatch(setSelectedSubcategory(""));
     router.push("/exploreGigs");
@@ -44,12 +48,14 @@ const GigsGrid: React.FC = () => {
   }
 
   if (isError) {
-    return <div>Error fetching gigs.</div>;
+    return <div className="flex h-screen justify-center mt-20">
+    <p className="text-2xl"> Sorry an error occured </p>
+  </div>
   }
 
   return (
     <div>
-      {gigsData.map((categoryData: any) => (
+      {gigsData?.map((categoryData: any) => (
         <div className="flex flex-col gap-y-3 mb-16" key={categoryData.category}>
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold md:px-20 px-0">

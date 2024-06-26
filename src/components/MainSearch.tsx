@@ -8,6 +8,7 @@ import { setSelectedCategory, setSelectedSubcategory } from "@/redux/filtersSlic
 import { RootState } from "@/redux/rootReducer";
 import { useRouter } from "next/router";
 import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
 
 interface MainSearchProps {
   shouldRoute?: boolean;
@@ -44,9 +45,9 @@ export function MainSearch({ shouldRoute, className }: MainSearchProps) {
       } else {
         dispatch(setSearchTerm(searchInput));
       }
-      if (shouldRoute) {
-        router.push('/exploreGigs');
-      }
+      // if (shouldRoute) {
+      //   router.push('/exploreGigs');
+      // }
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -63,6 +64,9 @@ export function MainSearch({ shouldRoute, className }: MainSearchProps) {
     dispatch(setSearchTerm(suggestion));
       dispatch(setSelectedCategory(''));
       dispatch(setSelectedSubcategory(''));
+      if (shouldRoute) {
+        router.push('/exploreGigs');
+      }
    
   }
 
@@ -79,12 +83,12 @@ export function MainSearch({ shouldRoute, className }: MainSearchProps) {
           className="flex-grow text-md m-2 py-4 px-6 rounded-full bg-white dark:bg-black focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 border-none" 
       />
       <Button 
-           variant="default" 
+           variant="searchIcon" 
            type="submit" 
            className="text-md rounded-full m-2"
           onClick={handleSearch}
           >
-            Search
+            <Search />
            </Button>  
     </div>
 

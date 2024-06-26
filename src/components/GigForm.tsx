@@ -4,7 +4,7 @@ import Image from "next/image";
 import { GigSlideshow } from "@/components/GigSlideshow";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
@@ -124,7 +124,7 @@ export default function GigForm({
   const uploadedUrls = useSelector(
     (state: RootState) => state.portfolioMedia.confirmUploadUrls
   );
- 
+
   // For Go Live Alert Message
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessages, setAlertMessages] = useState<string[]>([]);
@@ -153,14 +153,18 @@ export default function GigForm({
     error,
   } = useMutation({
     mutationFn: async (updateData: Partial<z.infer<typeof formSchema>>) => {
-      const response = await customAxios.put(`${baseUrl}/gigs/${gigId}`, updateData, {
-       // baseURL: baseUrl, // Set your API base URL, does not work without it
-       // withCredentials: true, // To let axios send cookies in header
-      });
+      const response = await customAxios.put(
+        `${baseUrl}/gigs/${gigId}`,
+        updateData,
+        {
+          // baseURL: baseUrl, // Set your API base URL, does not work without it
+          // withCredentials: true, // To let axios send cookies in header
+        }
+      );
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["gig", data._id], data);
+      queryClient.invalidateQueries({ queryKey: ["gig"] });
     },
   });
 
@@ -172,14 +176,16 @@ export default function GigForm({
     error: makeLiveError,
   } = useMutation({
     mutationFn: async () => {
-      const response = await customAxios.put(`${baseUrl}/gigs/make-gig-live/${gigId}`);
-      return response.data
+      const response = await customAxios.put(
+        `${baseUrl}/gigs/make-gig-live/${gigId}`
+      );
+      return response.data;
     },
     onSuccess: async (data) => {
-           queryClient.setQueryData(["gig", data._id], data);
+      queryClient.invalidateQueries({ queryKey: ["gig"] });
+      // queryClient.setQueryData(['gig', { id: data._id}], data)
 
       await setIsFormDirty(false);
-      
     },
     onError: (error) => {
       console.error("Error making gig live:", error);
@@ -197,7 +203,10 @@ export default function GigForm({
     mutationFn: async () => {
       await customAxios.put(`${baseUrl}/gigs/make-gig-draft/${gigId}`);
     },
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      queryClient.invalidateQueries({ queryKey: ["gig"] });
+      //queryClient.setQueryData(['gig', { status: 'isDraft' }], data)
+
       await setIsFormDirty(false);
       toast.success("Gig is now a draft!");
     },
@@ -254,12 +263,12 @@ export default function GigForm({
 
   // To check for changes made to the images(removed an image or reordered the images), this makes the form dirty so that alert can be shown if leaving wihout saving changes
   useEffect(() => {
-    if (isPortfolioMediaInitialized) {
+    if (isPortfolioMediaInitialized && portfolioMediaState) {
       // Check if portfolioMedia state has changed
       if (
-        portfolioMediaState.length !== gigData.portfolioMedia.length ||
+        portfolioMediaState.length !== gigData?.portfolioMedia.length ||
         portfolioMediaState.some(
-          (media, index) => media.src !== gigData.portfolioMedia[index].src
+          (media, index) => media.src !== gigData?.portfolioMedia[index].src
         )
       ) {
         setIsFormDirty(true);
@@ -307,7 +316,7 @@ export default function GigForm({
   //for routing AFTER isFormDirty state update
   useEffect(() => {
     if (shouldRoute) {
-      router.push(`/gigPage/${gigId}`);
+      router.back();
     }
   }, [shouldRoute, gigId, router]);
 
@@ -337,15 +346,15 @@ export default function GigForm({
       ]);
 
       await setIsFormDirty(false);
-      toast.success("Gig Updated ss Successfully");
-      setShouldRoute(true); // Set the flag to trigger routing
+      toast.success("Gig Updated Successfully");
+     setShouldRoute(true); // Set the flag to trigger routing
     } catch (error) {
       console.error("Error updating gig:", error);
       toast.error("Error Updating Gig");
     }
   };
 
-//Validating data before making the gig live
+  //Validating data before making the gig live
   const validateGoLive = (): {
     isDisabled: boolean;
     errors: {
@@ -391,16 +400,17 @@ export default function GigForm({
     if (isDisabled) {
       const errorMessages: string[] = [];
 
-      if (errors.title) errorMessages.push('Title is empty');
-      if (errors.description) errorMessages.push('Description is empty');
-      if (errors.portfolioMedia) errorMessages.push('Portfolio Media is empty');
-      if (errors.basicPackage.per) errorMessages.push('Basic Package: Per is empty');
-      if (errors.basicPackage.price) errorMessages.push('Basic Package: Price is empty');
-      if (errors.basicPackage.description) errorMessages.push('Basic Package: Description is empty');
-      if (errors.category) errorMessages.push('Category is empty');
-      if (errors.subCategory) errorMessages.push('Subcategory is empty');
-  
-  
+      if (errors.title) errorMessages.push("Title is empty");
+      if (errors.description) errorMessages.push("Description is empty");
+      if (errors.portfolioMedia) errorMessages.push("Portfolio Media is empty");
+      if (errors.basicPackage.per)
+        errorMessages.push("Basic Package: Per is empty");
+      if (errors.basicPackage.price)
+        errorMessages.push("Basic Package: Price is empty");
+      if (errors.basicPackage.description)
+        errorMessages.push("Basic Package: Description is empty");
+      if (errors.category) errorMessages.push("Category is empty");
+      if (errors.subCategory) errorMessages.push("Subcategory is empty");
 
       setAlertMessages(errorMessages);
       setShowAlert(true);
@@ -408,28 +418,32 @@ export default function GigForm({
     }
 
     try {
-      await updateGigMutation({
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        subCategory: formData.subCategory,
-        faqs: formData.faqs,
-        packages: formData.packages,
-        portfolioMedia: portfolioMediaState,
-        
-      },{
-        onSuccess: () => {
-          // Make the gig live after the updateGigMutation is successful
-          makeGigLiveMutation();
-        },
-        onError: (error) => {
-          console.error("Error updating gig:", error);
-          toast.error("Error updating gig");
-        },
-      }
-    );
-
-    
+      Promise.all(
+        uploadedUrls?.map(async (url) => {
+          await edgestore.publicFiles.confirmUpload({ url: url });
+        })
+      ),
+        await updateGigMutation(
+          {
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            subCategory: formData.subCategory,
+            faqs: formData.faqs,
+            packages: formData.packages,
+            portfolioMedia: portfolioMediaState,
+          },
+          {
+            onSuccess: () => {
+              // Make the gig live after the updateGigMutation is successful
+              makeGigLiveMutation();
+            },
+            onError: (error) => {
+              console.error("Error updating gig:", error);
+              toast.error("Error updating gig");
+            },
+          }
+        );
 
       await setIsFormDirty(false);
       toast.success("Gig is now live!");
@@ -444,28 +458,27 @@ export default function GigForm({
     const formData = form.getValues();
 
     try {
-      await updateGigMutation({
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        subCategory: formData.subCategory,
-        faqs: formData.faqs,
-        packages: formData.packages,
-        portfolioMedia: portfolioMediaState,
-        
-      },{
-        onSuccess: () => {
-          // Make the gig live after the updateGigMutation is successful
-          makeGigDraftMutation();
+      await updateGigMutation(
+        {
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          subCategory: formData.subCategory,
+          faqs: formData.faqs,
+          packages: formData.packages,
+          portfolioMedia: portfolioMediaState,
         },
-        onError: (error) => {
-          console.error("Error updating gig:", error);
-          toast.error("Error updating gig");
-        },
-      }
-    );
-
-    
+        {
+          onSuccess: () => {
+            // Make the gig live after the updateGigMutation is successful
+            makeGigDraftMutation();
+          },
+          onError: (error) => {
+            console.error("Error updating gig:", error);
+            toast.error("Error updating gig");
+          },
+        }
+      );
 
       await setIsFormDirty(false);
       //toast.success("Gig is no longer live!");
@@ -475,29 +488,29 @@ export default function GigForm({
     }
   };
 
+  const {
+    fields: faqFields,
+    append: appendFaq,
+    remove: removeFaq,
+  } = useFieldArray({
+    control: form.control,
+    name: "faqs",
+  });
+
   const handleAddQuestionAnswer = () => {
-    const faqs = form.getValues("faqs");
-    if (Array.isArray(faqs)) {
-      form.setValue("faqs", [...faqs, { question: "", answer: "" }]);
-    } else {
-      form.setValue("faqs", [{ question: "", answer: "" }]);
-    }
+    appendFaq({ question: "", answer: "" });
   };
 
   const handleRemoveQuestionAnswer = (index: number) => {
-    const faqs = form.getValues("faqs");
-    if (Array.isArray(faqs)) {
-      form.setValue(
-        "faqs",
-        faqs.filter((_, i) => i !== index)
-      );
-    }
+    removeFaq(index);
   };
 
   if (isGigLoading) {
-    return  <div className="flex justify-center items-center "> 
-    <div className="h-10 w-10  animate-spin rounded-full border-4 border-gray-200 border-t-black" />
-    </div>;
+    return (
+      <div className="flex justify-center items-center ">
+        <div className="h-10 w-10  animate-spin rounded-full border-4 border-gray-200 border-t-black" />
+      </div>
+    );
   }
 
   if (gigError) {
@@ -505,6 +518,7 @@ export default function GigForm({
   }
   //error check the form
   //const onInvalid = (errors) => console.error(errors)
+  console.log("gigData", gigData.status);
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -515,392 +529,384 @@ export default function GigForm({
               handleUpdateGig
               // onInvalid //for error checking the form
             )}
-            className="space-y-8"
+            className="space-y-8 px-4 sm:px-6 lg:px-8"
           >
-            <div className="max-w-screen-xl mx-auto px-4">
-              <div className="grid grid-cols-1 xl:grid-cols-12 lg:gap-8">
-                <div className="xl:col-span-8">
-                  {/* Gig details */}
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter gig title" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 gap-8">
+                {/* Gig details */}
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter gig title" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  {/* Seller info */}
-                  <div className="flex items-center mb-6">
-                    <div>
-                      <h3 className="text-lg font-medium">Simran</h3>
-                      <p className="text-gray-500">
-                        Pakistan | I speak English | 107 orders completed
-                      </p>
-                    </div>
-                  </div>
+                {/* Upload */}
+                <div className="bg-gray-100 p-3">
+                  <h4>Upload Images and drag to reorder or delete</h4>
 
-                  {/* <div className="mb-8 relative bg-gray-100 dark:bg-gray-900">
-                    <ImageSorter />
-                  </div> */}
-
-                  {/* Upload */}
-                  <div className="mb-8 relative z-0">
+                  <div className="flex justify-center items-center">
                     <DragNDropUploader
                       onUploadStatusChange={handleUploadStatusChange}
                     />
                   </div>
+                </div>
 
-                  {/* Gig description */}
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          {/* <Textarea
+                {/* Gig description */}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        {/* <Textarea
                             placeholder="Enter gig description"
                             className="flex w-full resize-none"
                             {...field}
                           /> */}
-                          <AutosizeTextarea
-                            placeholder="Enter Gig Description"
-                            className="w-full min-h-200"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Category */}
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            // handleUpdateGig("category", value);
-                          }}
-                          defaultValue={gigData?.category || ""}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Categories</SelectLabel>
-                              <SelectItem value="Video Production">
-                                Video Production
-                              </SelectItem>
-                              <SelectItem value="Video Editing">
-                                Video Editing
-                              </SelectItem>
-                              <SelectItem value="Music">Music</SelectItem>
-                              <SelectItem value="Writers">Writers</SelectItem>
-                              <SelectItem value="Photographers">
-                                Photographers
-                              </SelectItem>
-                              <SelectItem value="Visual-Graphics">
-                                Visual Graphics
-                              </SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Subcategory */}
-                  <FormField
-                    control={form.control}
-                    name="subCategory"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Subcategory</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            //handleUpdateGig("subCategory", value);
-                          }}
-                          defaultValue={gigData?.subCategory || ""}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a subcategory" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Subcategories</SelectLabel>
-                              {form.watch("category") ===
-                                "Video Production" && (
-                                <>
-                                  <SelectItem value="WeddingFilms">
-                                    Wedding Films
-                                  </SelectItem>
-                                  <SelectItem value="Social Media Videos">
-                                    Social Media Videos
-                                  </SelectItem>
-                                  <SelectItem value="Music Videos">
-                                    Music Videos
-                                  </SelectItem>
-                                  <SelectItem value="Influencer Collabs">
-                                    Influencer Collabs
-                                  </SelectItem>
-                                </>
-                              )}
-                              {form.watch("category") === "Video Editing" && (
-                                <>
-                                  <SelectItem value="Color Correction">
-                                    Color Collection
-                                  </SelectItem>
-                                  <SelectItem value="Instagram Videos">
-                                    Instagram Videos
-                                  </SelectItem>
-                                  <SelectItem value="Wedding Video Editors">
-                                    Wedding Video Editors
-                                  </SelectItem>
-                                  <SelectItem value="Music Videos">
-                                    Music Videos
-                                  </SelectItem>
-                                  <SelectItem value="Youtube Videos">
-                                    YouTube Videos
-                                  </SelectItem>
-                                  <SelectItem value="Commercials">
-                                    Commercials
-                                  </SelectItem>
-                                </>
-                              )}
-                              {form.watch("category") === "Music" && (
-                                <>
-                                  <SelectItem value="Sync Sound">
-                                    Sync Sound
-                                  </SelectItem>
-                                  <SelectItem value="Dubbing Artist">
-                                    Dubbing Artist
-                                  </SelectItem>
-                                  <SelectItem value="SFX Editing">
-                                    SFX Editing
-                                  </SelectItem>
-                                  <SelectItem value="Mixing and Mastering">
-                                    Mixing and Mastering
-                                  </SelectItem>
-                                  <SelectItem value="Music Direction">
-                                    Music Direction
-                                  </SelectItem>
-                                </>
-                              )}
-                              {form.watch("category") === "Writers" && (
-                                <>
-                                  <SelectItem value="Content Writers">
-                                    Content Writers
-                                  </SelectItem>
-                                  <SelectItem value="Script Writers">
-                                    Script Writers
-                                  </SelectItem>
-                                </>
-                              )}
-                              {form.watch("category") === "Photographers" && (
-                                <>
-                                  <SelectItem value="Fashion Photographers">
-                                    Fashion Photographers
-                                  </SelectItem>
-                                  <SelectItem value="Event Photographers">
-                                    Event Photographers
-                                  </SelectItem>
-                                </>
-                              )}
-                              {form.watch("category") === "Visual Graphics" && (
-                                <>
-                                  <SelectItem value="Social Media Animations">
-                                    Social Media Animations
-                                  </SelectItem>
-                                  <SelectItem value="Logo and Subtitles">
-                                    Logo and Subtitles
-                                  </SelectItem>
-                                  <SelectItem value="Illustrators">
-                                    Illustrators
-                                  </SelectItem>
-                                  <SelectItem value="Intros and Outros">
-                                    Intros and Outros
-                                  </SelectItem>
-                                  <SelectItem value="VFX and Motion Graphics">
-                                    VFX and Motion Graphics
-                                  </SelectItem>
-                                </>
-                              )}
-                              {/* Add more subcategory options based on the selected category */}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Question-Answer Sets */}
-                  <div className="mb-8">
-                    <h3 className="text-2xl font-bold mb-4">
-                      Questions & Answers
-                    </h3>
-                    {form.getValues("faqs")?.map((_, index) => (
-                      <div key={index} className="mb-4">
-                        <FormField
-                          control={form.control}
-                          name={`faqs.${index}.question`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Question</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="Enter question"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                        <AutosizeTextarea
+                          placeholder="Enter Gig Description"
+                          className="w-full min-h-200"
+                          {...field}
                         />
-                        <FormField
-                          control={form.control}
-                          name={`faqs.${index}.answer`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Answer</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="Enter answer"
-                                  className="w-full"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button
-                          onClick={() => handleRemoveQuestionAnswer(index)}
-                          className="mt-2"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))}
-                    <div className="space-x-2">
-                      <Button
-                        onClick={handleAddQuestionAnswer}
-                        className="px-4 mb-4"
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Category */}
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          // handleUpdateGig("category", value);
+                        }}
+                        defaultValue={gigData?.category || ""}
                       >
-                        Add Question-Answer Set
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Categories</SelectLabel>
+                            <SelectItem value="Video Production">
+                              Video Production
+                            </SelectItem>
+                            <SelectItem value="Video Editing">
+                              Video Editing
+                            </SelectItem>
+                            <SelectItem value="Music">Music</SelectItem>
+                            <SelectItem value="Writers">Writers</SelectItem>
+                            <SelectItem value="Photographers">
+                              Photographers
+                            </SelectItem>
+                            <SelectItem value="Visual Graphics">
+                              Visual Graphics
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Subcategory */}
+                <FormField
+                  control={form.control}
+                  name="subCategory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subcategory</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          //handleUpdateGig("subCategory", value);
+                        }}
+                        defaultValue={gigData?.subCategory || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a subcategory" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Subcategories</SelectLabel>
+                            {form.watch("category") === "Video Production" && (
+                              <>
+                                <SelectItem value="WeddingFilms">
+                                  Wedding Films
+                                </SelectItem>
+                                <SelectItem value="Social Media Videos">
+                                  Social Media Videos
+                                </SelectItem>
+                                <SelectItem value="Music Videos">
+                                  Music Videos
+                                </SelectItem>
+                                <SelectItem value="Influencer Collabs">
+                                  Influencer Collabs
+                                </SelectItem>
+                              </>
+                            )}
+                            {form.watch("category") === "Video Editing" && (
+                              <>
+                                <SelectItem value="Color Correction">
+                                  Color Collection
+                                </SelectItem>
+                                <SelectItem value="Instagram Videos">
+                                  Instagram Videos
+                                </SelectItem>
+                                <SelectItem value="Wedding Video Editors">
+                                  Wedding Video Editors
+                                </SelectItem>
+                                <SelectItem value="Music Videos">
+                                  Music Videos
+                                </SelectItem>
+                                <SelectItem value="Youtube Videos">
+                                  YouTube Videos
+                                </SelectItem>
+                                <SelectItem value="Commercials">
+                                  Commercials
+                                </SelectItem>
+                              </>
+                            )}
+                            {form.watch("category") === "Music" && (
+                              <>
+                                <SelectItem value="Sync Sound">
+                                  Sync Sound
+                                </SelectItem>
+                                <SelectItem value="Dubbing Artist">
+                                  Dubbing Artist
+                                </SelectItem>
+                                <SelectItem value="SFX Editing">
+                                  SFX Editing
+                                </SelectItem>
+                                <SelectItem value="Mixing and Mastering">
+                                  Mixing and Mastering
+                                </SelectItem>
+                                <SelectItem value="Music Direction">
+                                  Music Direction
+                                </SelectItem>
+                              </>
+                            )}
+                            {form.watch("category") === "Writers" && (
+                              <>
+                                <SelectItem value="Content Writers">
+                                  Content Writers
+                                </SelectItem>
+                                <SelectItem value="Script Writers">
+                                  Script Writers
+                                </SelectItem>
+                              </>
+                            )}
+                            {form.watch("category") === "Photographers" && (
+                              <>
+                                <SelectItem value="Fashion Photographers">
+                                  Fashion Photographers
+                                </SelectItem>
+                                <SelectItem value="Event Photographers">
+                                  Event Photographers
+                                </SelectItem>
+                              </>
+                            )}
+                            {form.watch("category") === "Visual Graphics" && (
+                              <>
+                                <SelectItem value="Social Media Animations">
+                                  Social Media Animations
+                                </SelectItem>
+                                <SelectItem value="Logo and Subtitles">
+                                  Logo and Subtitles
+                                </SelectItem>
+                                <SelectItem value="Illustrators">
+                                  Illustrators
+                                </SelectItem>
+                                <SelectItem value="Intros and Outros">
+                                  Intros and Outros
+                                </SelectItem>
+                                <SelectItem value="VFX and Motion Graphics">
+                                  VFX and Motion Graphics
+                                </SelectItem>
+                              </>
+                            )}
+                            {/* Add more subcategory options based on the selected category */}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Question-Answer Sets */}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold mb-4">
+                    Questions & Answers
+                  </h3>
+                  {faqFields.map((field, index) => (
+                    <div key={field.id} className="mb-4">
+                      <FormField
+                        control={form.control}
+                        name={`faqs.${index}.question`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Question</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter question" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`faqs.${index}.answer`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Answer</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Enter answer"
+                                className="w-full"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => handleRemoveQuestionAnswer(index)}
+                        className="mt-2"
+                      >
+                        Remove
                       </Button>
                     </div>
+                  ))}
+                  <div className="space-x-2">
+                    <Button
+                      type="button"
+                      onClick={handleAddQuestionAnswer}
+                      className="px-4 mb-4"
+                    >
+                      Add Question-Answer Set
+                    </Button>
                   </div>
                 </div>
+
                 {/* Pricing Plans */}
-                <div className="xl:col-span-4">
-                  <h3 className="text-2xl font-bold mb-4">Pricing Plans</h3>
-                  <Form {...form}>
-                    {["Basic", "Premium", "Custom"].map((plan, index) => (
-                      <div key={index} className="mb-8">
-                        <h4 className="text-xl font-semibold mb-2">{plan}</h4>
-                        <FormField
-                          control={form.control}
-                          name={`packages.${index}.per`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Per</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="Enter per unit"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`packages.${index}.price`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Price</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Enter price" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`packages.${index}.description`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Description</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="Enter package description"
-                                  className="w-full"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    ))}
-                  </Form>
+
+                <h3 className="text-2xl font-bold mb-4">Pricing Plans</h3>
+                <Form {...form}>
+                  {["Basic", "Premium", "Custom"].map((plan, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+                    >
+                      <h4 className="text-xl font-semibold mb-2 md:col-span-4">
+                        {plan}
+                      </h4>
+                      <FormField
+                        control={form.control}
+                        name={`packages.${index}.per`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Per</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter per unit" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`packages.${index}.price`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Price</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter price" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`packages.${index}.description`}
+                        render={({ field }) => (
+                          <FormItem className="md:col-span-2">
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Enter package description"
+                                className="w-full"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  ))}
+                </Form>
+                {/* {Save Changes button} */}
+                <div className="flex justify-start">
+                  <Button
+                    type="submit"
+                    // onClick={handleUpdateGig}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                  >
+                    {isNewGig ? "Create New Gig" : "Save All Changes"}
+                  </Button>
+                </div>
+                <div className="flex justify-start">
+                  {gigData?.status === "isDraft" ? (
+                    <div className="flex flex-col">
+                      <p className="mb-2">
+                        Save changes and make this gig live
+                      </p>
+                      <Button
+                        onClick={handleGoLive}
+                        className="bg-green-500 text-white px-4 py-2 rounded"
+                      >
+                        Make Gig Live
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col">
+                      <p className="mb-2 text-center">
+                        Remove Live and make draft
+                      </p>
+                      <Button
+                        onClick={handleMakeDraft}
+                        className="bg-yellow-500 text-white px-4 py-2 rounded"
+                      >
+                        Make Gig Draft
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {isPending && <p>Updating gig...</p>}
               {isError && <p>Error updating gig: {error.message}</p>}
             </div>
-            {/* {Save Changes button} */}
-            <div>
-              <Button
-                type="submit"
-                // onClick={handleUpdateGig}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                {isNewGig ? "Create New Gig" : "Save All Changes"}
-              </Button>
-            </div>
-            <div>
-      {gigData?.status === 'isDraft' ? (
-        <>
-          <p className="mb-2">Save changes and make this gig live</p>
-          <Button
-            onClick={handleGoLive}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Make Gig Live
-          </Button>
-        </>
-      ) : (
-        <>
-          <p className="mb-2">Remove Live and make draft</p>
-          <Button
-            onClick={handleMakeDraft}
-            className="bg-yellow-500 text-white px-4 py-2 rounded"
-          >
-            Make Gig Draft
-          </Button>
-        </>
-      )}
-    </div>
           </form>
         </Form>
       </section>
@@ -935,37 +941,36 @@ export default function GigForm({
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-        </AlertDialog>
-    
-        <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>You cannot make this Gig live without these fields</AlertDialogTitle>
-        <AlertDialogDescription>
-          <div className="error-messages">
-            {alertMessages.map((message, index) => (
-              <p key={index}>{message}</p>
-            ))}
-          </div>
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel onClick={() => setShowAlert(false)}>
-          Close
-        </AlertDialogCancel>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
+      </AlertDialog>
 
-  <style jsx>{`
-    .error-messages p {
-      margin-bottom: 0.5rem;
-      color: red;
-    }
-  `}</style>
-      
+      <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              You cannot make this Gig live without these fields
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="error-messages">
+                {alertMessages.map((message, index) => (
+                  <p key={index}>{message}</p>
+                ))}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowAlert(false)}>
+              Close
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-    
+      <style jsx>{`
+        .error-messages p {
+          margin-bottom: 0.5rem;
+          color: red;
+        }
+      `}</style>
     </div>
   );
 }

@@ -12,8 +12,8 @@ import {
 import customAxios from "@/lib/customAxios";
 import axios from "axios";
 import { Loader } from "lucide-react";
-import { useBookmarkGig } from "../pages/api/gigs/useBookmarksGigs";
 import { setTryingToBookmarkId } from "../redux/authFlowSlice";
+import { toast } from "sonner";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -34,7 +34,7 @@ export default function LoginSuccess() {
     const fetchAuthData = async () => {
       try {
         const response = await axios.get("/auth/setAuthenticated", {
-          baseURL: "http://localhost:8080",
+          baseURL: `${baseURL}`,
           withCredentials: true,
         });
         const { isAuthenticated, userData } = response.data;
@@ -48,7 +48,7 @@ export default function LoginSuccess() {
           bookmarkId = tryingToBookmarkId.replace(/"/g, ''); //removes strings orelse url is not encoded properly
           const encodedId = encodeURIComponent(bookmarkId);
           const response = await axios.post(
-            `http://localhost:8080/gigs/bookmarkGig/${encodedId}`,
+            `${baseURL}/gigs/bookmarkGig/${encodedId}`,
             null,
             {
               baseURL: baseURL, // Set your API base URL, cookies does not work without it
@@ -59,20 +59,25 @@ export default function LoginSuccess() {
           if (data.message === "Gig Added") {
             dispatch(addBookmarkedGig(data.id));
             console.log("GIG added successfully");
+            toast.success('Gig bookmarked successfully')
           } else {
             dispatch(removeBookmarkedGig(data.gigId));
             console.log("GIG removed successfully");
+            toast.success('Gig removed successfully')
+
           }
           dispatch(setTryingToBookmarkId(""));
         }
 
-        if (loggingInFromRoute) {
-          router.replace(`${loggingInFromRoute}`);
-        }
+        // if (loggingInFromRoute) {
+        //   router.replace(`${loggingInFromRoute}`);
+        // }
       } catch (error) {
         console.error("Failed to fetch authentication data:", error);
 
         // router.replace("/error");
+      } finally {
+         router.replace(`${loggingInFromRoute}`);
       }
     };
 

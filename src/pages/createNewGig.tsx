@@ -20,10 +20,13 @@ export default function EditGigPage() {
 
 
   return (
-    <div>
-      <h1 className="text-6xl mx-8 mt-12">Create a new Gig</h1>
+    <div className="max-w-screen-xl mx-auto px-6 sm:px-6 lg:px-10">
+      <div className="text-3xl font-bold mt-12 mb-4">Create New Gig</div>
+      <div className="text-lg text-gray-600 mb-4">
+        Update your Gig details, Pricing, and Portfolio images.
+      </div>
       {gigId && typeof gigId === "string" && (
-        <GigForm isNewGig={true} gigId={gigId} />
+        <GigForm isNewGig={false} gigId={gigId} />
       )}
     </div>
   );

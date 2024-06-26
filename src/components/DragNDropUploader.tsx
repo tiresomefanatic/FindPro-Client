@@ -244,25 +244,25 @@ export default function DragNDropUploader({ onUploadStatusChange }: DragNDropUpl
   return (
     <div className="w-full h-full gap-8 mt-2.5">
       <InstanceIdContext.Provider value={instanceId}>
-        <div className="flex">
-          <div className="grid grid-cols-3 gap-2 ">
+        <div className="flex w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 place-items-center bg-gray-100 gap-2 w-full">
             {images.map(({ uid, src }) => (
               <Item id={uid} src={src} key={uid} />
             ))}
           </div>
         </div>
       </InstanceIdContext.Provider>
-
-      <TrashIcon />
+     {images.length>0 && ( <TrashIcon />)}
+     
 
       {uploadProgress === 0 ? (
-   <div>
+   <div className="w-full">
     {isUploading ? <div>Loading...</div> : 
         <FixedCropper isGigImage={true} onCrop={onCrop} />
       }
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-y-0 place-items-center w-4/5 max-w-lg h-40 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center">
+        <div className="grid grid-cols-1 gap-y-0 place-items-center w-full max-w-lg h-24 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center">
           <p className="text-lg text-gray-600">Uploading Files...</p>
           <Progress value={uploadProgress} className="w-full max-w-lg" />
         </div>
