@@ -25,7 +25,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function App({ Component, pageProps:  { ...pageProps }  }: AppProps) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <div className={inter.className}>
      
         <Provider store={store}>
