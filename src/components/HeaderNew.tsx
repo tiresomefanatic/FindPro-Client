@@ -113,7 +113,7 @@ const Header = () => {
         <div className="flex flex-row justify-center items-center pr-20 max-md:hidden">
           {!isAuthenticated ? (
             <div>
-              <Link href={`${baseURL}/auth/google-login`}>
+            
                 <Button
                   variant="outline"
                   size="sm"
@@ -122,7 +122,7 @@ const Header = () => {
                 >
                   Login with Google
                 </Button>
-              </Link>
+         
             </div>
           ) : (
             <div className="flex flex-row gap-x-7 justify-center items-center">
@@ -154,7 +154,6 @@ const Header = () => {
               <div className="flex flex-col space-y-4">
                 {!isAuthenticated ? (
                   <div>
-                    <Link href={`${baseURL}auth/google-login`}>
                       <Button
                         variant="outline"
                         size="sm"
@@ -163,7 +162,7 @@ const Header = () => {
                       >
                         Login with Google
                       </Button>
-                    </Link>
+                
                   </div>
                 ) : (
                   <div className="flex flex-col gap-y-2">
