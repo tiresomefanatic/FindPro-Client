@@ -19,6 +19,7 @@ import FixedCropper from "@/components/ImageCropper";
 import { useEdgeStore } from "@/lib/edgeStore";
 import { setIsAuthenticated, setLoggedInAt, setUser } from "@/redux/authSlice";
 import customAxios from "@/lib/customAxios";
+import axios from 'axios';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -70,18 +71,28 @@ export default function ProfileForm() {
         `${baseUrl}/user/updateUser/${userKiId}`,
         updateData
       );
-      const userData = response.data;
-
+      return response.data;
+    },
+    onSuccess: (userData) => {
       dispatch(setIsAuthenticated(true));
       dispatch(setUser(userData));
       dispatch(setLoggedInAt(Date.now()));
-    },
-    onSuccess: () => {
-      toast.success("Welcome");
+      toast.success("Welcome! Your profile has been updated.");
       router.push('/');
     },
     onError: (error) => {
-      toast.error("Error updating user profile");
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          toast.error("Authentication failed. Please log in again.");
+          router.push('/login');
+        } else if (error.response?.status === 403) {
+          toast.error("You don't have permission to update this profile.");
+        } else {
+          toast.error("An error occurred while updating your profile. Please try again.");
+        }
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
       console.error("Error updating user profile:", error);
     },
   });
