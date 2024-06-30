@@ -1,52 +1,66 @@
-// customAxios.ts
-
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { clearAuthState } from '../redux/authSlice';
 import store from '../redux/store';
 import Router from 'next/router';
 import { toast } from 'sonner';
 
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-
+const baseURL = 'https://findpro-416514.el.r.appspot.com';
 
 interface CustomRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
 const customAxios: AxiosInstance = axios.create({
-  baseURL: `https://findpro-416514.el.r.appspot.com`, // Set your API base URL
+  baseURL: baseURL,
   withCredentials: true,
 });
 
+const MAX_REFRESH_ATTEMPTS = 5;
 const retryMap = new Map<string, number>();
-const MAX_REFRESH_ATTEMPTS = 5; // Maximum number of refresh token attempts
 
 const clearAuthAndRedirect = () => {
   store.dispatch(clearAuthState());
- // Router.push('/');
+  Router.push('/');
 };
 
+// Request interceptor
+customAxios.interceptors.request.use(
+  (config) => {
+    console.log(`[Request] ${config.method?.toUpperCase()} ${config.url}`);
+    console.log('Request headers:', config.headers);
+    console.log('Cookies being sent:', document.cookie);
+    return config;
+  },
+  (error) => {
+    console.error('[Request Error]', error);
+    return Promise.reject(error);
+  }
+);
 
-
+// Response interceptor
 customAxios.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log(`[Response] ${response.status} ${response.config.url}`);
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomRequestConfig;
+    console.error(`[Response Error] ${error.response?.status} ${originalRequest?.url}`);
+    console.error('Error response:', error.response?.data);
 
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
-
       const requestUrl = originalRequest.url || '';
-      console.log('refresh frontend');
+      console.log('[Token Refresh] Attempting to refresh token');
 
       if (!retryMap.has(requestUrl)) {
-        retryMap.set(requestUrl, 0); // Initialize the retry count for the request URL
+        retryMap.set(requestUrl, 0);
       }
 
       const retryCount = retryMap.get(requestUrl);
 
       if (retryCount !== undefined && retryCount < MAX_REFRESH_ATTEMPTS) {
-        retryMap.set(requestUrl, retryCount + 1); // Increment the retry count
+        retryMap.set(requestUrl, retryCount + 1);
 
         try {
           const response = await axios.post(`${baseURL}/auth/refresh-token`, {}, {
@@ -54,27 +68,33 @@ customAxios.interceptors.response.use(
           });
 
           if (response.status === 200) {
+            console.log('[Token Refresh] Success');
             retryMap.delete(requestUrl);
             return customAxios(originalRequest);
           } else {
-            console.log('Refresh token request failed with status:', response.status);
+            console.log('[Token Refresh] Failed with status:', response.status);
             clearAuthAndRedirect();
             return Promise.reject(error);
           }
         } catch (refreshError) {
-          console.error('Failed to refresh access token:', refreshError);
+          console.error('[Token Refresh] Failed:', refreshError);
           clearAuthAndRedirect();
           return Promise.reject(error);
         }
       } else {
-        console.log('Maximum refresh token attempts reached or retry count undefined');
+        console.log('[Token Refresh] Maximum attempts reached or retry count undefined');
         clearAuthAndRedirect();
-        toast.error("Unauthorized! Please login again")
+        toast.error("Session expired. Please log in again.");
         return Promise.reject(error);
       }
     }
 
-    clearAuthAndRedirect();
+    if (error.response?.status === 403) {
+      toast.error("You don't have permission to access this resource.");
+    } else if (error.response?.status !== 401) {
+      toast.error("An error occurred. Please try again.");
+    }
+
     return Promise.reject(error);
   }
 );
