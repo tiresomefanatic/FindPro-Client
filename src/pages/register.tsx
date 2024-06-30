@@ -92,7 +92,7 @@ export default function ProfileForm() {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           toast.error("Authentication failed. Please log in again.");
-          router.push('/login');
+          router.push('/');
         } else if (error.response?.status === 403) {
           toast.error("You don't have permission to update this profile.");
         } else {
