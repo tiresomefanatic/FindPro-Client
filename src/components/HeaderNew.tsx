@@ -187,7 +187,10 @@ const Header = () => {
                         </Link>
                       </div>
                     ) : (
-                      <Button variant="shine">Become a Seller</Button>
+                      <Button 
+                      variant="shine"
+                      onClick={handleBecomeSellerClick}
+                      >Become a Seller</Button>
                     )}
 
                     <div className="flex flex-col gap-y-2">
