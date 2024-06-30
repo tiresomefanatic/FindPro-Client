@@ -17,7 +17,7 @@ import { AutosizeTextarea } from "@/components/ui/autoResizeTextArea";
 import MultipleSelector from "@/components/ui/multipleSelector";
 import FixedCropper from "@/components/ImageCropper";
 import { useEdgeStore } from "@/lib/edgeStore";
-import { setIsAuthenticated, setLoggedInAt, setUser } from "@/redux/authSlice";
+import { setIsAuthenticated, setLoggedInAt, setUser, setAccessToken } from "@/redux/authSlice";
 import customAxios from "@/lib/customAxios";
 import axios from 'axios';
 
@@ -47,6 +47,14 @@ export default function ProfileForm() {
 
   const userName = router.query.userName?.toString() ?? "";
   const userId = router.query.userId?.toString() ?? "";
+  const accessToken = router.query.accessToken?.toString() ?? "";
+
+  useEffect(() => {
+    if (accessToken) {
+      dispatch(setAccessToken(accessToken));
+    }
+  }, [accessToken, dispatch]);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
