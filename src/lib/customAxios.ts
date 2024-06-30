@@ -4,7 +4,7 @@ import store from '../redux/store';
 import Router from 'next/router';
 import { toast } from 'sonner';
 
-const baseURL = 'https://findpro-416514.el.r.appspot.com';
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 interface CustomRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -19,7 +19,7 @@ const retryMap = new Map<string, number>();
 
 const clearAuthAndRedirect = () => {
   store.dispatch(clearAuthState());
-  Router.push('/');
+  Router.push('/login');
 };
 
 // Request interceptor
@@ -28,9 +28,13 @@ customAxios.interceptors.request.use(
     const state = store.getState();
     const accessToken = state.auth.accessToken;
     
-    if (accessToken) {
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
+    if (!accessToken) {
+      // If there's no access token, throw an error
+      throw new Error('No access token available');
     }
+
+    // Always set the Authorization header
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
 
     console.log(`[Request] ${config.method?.toUpperCase()} ${config.url}`);
     console.log('Request headers:', config.headers);
@@ -71,6 +75,10 @@ customAxios.interceptors.response.use(
           const state = store.getState();
           const currentAccessToken = state.auth.accessToken;
           
+          if (!currentAccessToken) {
+            throw new Error('No access token available for refresh');
+          }
+
           const response = await axios.post(`${baseURL}/auth/refresh-token`, {}, {
             headers: { 'Authorization': `Bearer ${currentAccessToken}` }
           });
@@ -109,5 +117,6 @@ customAxios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export default customAxios;
