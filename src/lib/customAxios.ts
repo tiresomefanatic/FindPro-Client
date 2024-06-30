@@ -68,13 +68,18 @@ customAxios.interceptors.response.use(
         retryMap.set(requestUrl, retryCount + 1);
 
         try {
+          const state = store.getState();
+          const currentAccessToken = state.auth.accessToken;
+          
           const response = await axios.post(`${baseURL}/auth/refresh-token`, {}, {
-            withCredentials: true,
+            headers: { 'Authorization': `Bearer ${currentAccessToken}` }
           });
 
           if (response.status === 200) {
             console.log('[Token Refresh] Success');
-            store.dispatch(setAccessToken(response.data.accessToken));
+            const newAccessToken = response.data.accessToken;
+            store.dispatch(setAccessToken(newAccessToken));
+            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
             retryMap.delete(requestUrl);
             return customAxios(originalRequest);
           } else {
