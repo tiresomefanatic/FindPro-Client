@@ -14,7 +14,7 @@ interface CustomRequestConfig extends InternalAxiosRequestConfig {
 }
 
 const customAxios: AxiosInstance = axios.create({
-  baseURL: `${baseURL}`, // Set your API base URL
+  baseURL: `https://findpro-416514.el.r.appspot.com`, // Set your API base URL
   withCredentials: true,
 });
 
