@@ -6,7 +6,6 @@ import { setIsAuthenticated, setUser, setLoggedInAt, setAccessToken } from "@/re
 import customAxios from "@/lib/customAxios";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
 
 export default function LoginSuccess() {
   const loggingInFromRoute = useSelector((state: RootState) => state.authFlow.loggingInFromRoute);
@@ -16,11 +15,16 @@ export default function LoginSuccess() {
   useEffect(() => {
     const fetchAuthData = async () => {
       try {
-        // Assuming the access token is now passed as a query parameter
+        console.log("Router query:", router.query);
+        console.log("Full URL:", window.location.href);
+
+        // Get the access token from the URL
         const { accessToken } = router.query;
-        
+
+        console.log("Access token from query:", accessToken);
+
         if (!accessToken || typeof accessToken !== 'string') {
-          throw new Error('No access token provided');
+          throw new Error('No access token provided from loginsuccess page');
         }
 
         // Store the access token in Redux
@@ -37,22 +41,22 @@ export default function LoginSuccess() {
         router.replace(loggingInFromRoute || '/');
       } catch (error) {
         console.error("Failed to fetch authentication data:", error);
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 401) {
-            toast.error("Authentication failed. Please log in again.");
-          } else if (error.response?.status === 403) {
-            toast.error("You don't have permission to access this resource.");
+        if (error instanceof Error) {
+          if (error.message === 'No access token provided') {
+            toast.error("Authentication failed: No access token provided.");
           } else {
-            toast.error("An error occurred while logging in. Please try again.");
+            toast.error(`An unexpected error occurred: ${error.message}`);
           }
         } else {
           toast.error("An unexpected error occurred. Please try again.");
         }
-        router.replace("/");
+        router.replace("/login");
       }
     };
 
-    fetchAuthData();
+    if (router.isReady) {
+      fetchAuthData();
+    }
   }, [dispatch, router, loggingInFromRoute]);
 
   return (
