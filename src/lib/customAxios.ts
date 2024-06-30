@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
-import { clearAuthState } from '../redux/authSlice';
+import { clearAuthState, setAccessToken } from '../redux/authSlice';
 import store from '../redux/store';
 import Router from 'next/router';
 import { toast } from 'sonner';
@@ -12,7 +12,6 @@ interface CustomRequestConfig extends InternalAxiosRequestConfig {
 
 const customAxios: AxiosInstance = axios.create({
   baseURL: baseURL,
-  withCredentials: true,
 });
 
 const MAX_REFRESH_ATTEMPTS = 5;
@@ -26,9 +25,15 @@ const clearAuthAndRedirect = () => {
 // Request interceptor
 customAxios.interceptors.request.use(
   (config) => {
+    const state = store.getState();
+    const accessToken = state.auth.accessToken;
+    
+    if (accessToken) {
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
     console.log(`[Request] ${config.method?.toUpperCase()} ${config.url}`);
     console.log('Request headers:', config.headers);
-    console.log('Cookies being sent:', document.cookie);
     return config;
   },
   (error) => {
@@ -69,6 +74,7 @@ customAxios.interceptors.response.use(
 
           if (response.status === 200) {
             console.log('[Token Refresh] Success');
+            store.dispatch(setAccessToken(response.data.accessToken));
             retryMap.delete(requestUrl);
             return customAxios(originalRequest);
           } else {

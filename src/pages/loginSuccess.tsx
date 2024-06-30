@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { RootState } from "@/redux/rootReducer";
-import { setIsAuthenticated, setUser, setLoggedInAt } from "@/redux/authSlice";
+import { setIsAuthenticated, setUser, setLoggedInAt, setAccessToken } from "@/redux/authSlice";
 import customAxios from "@/lib/customAxios";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
@@ -16,6 +16,17 @@ export default function LoginSuccess() {
   useEffect(() => {
     const fetchAuthData = async () => {
       try {
+        // Assuming the access token is now passed as a query parameter
+        const { accessToken } = router.query;
+        
+        if (!accessToken || typeof accessToken !== 'string') {
+          throw new Error('No access token provided');
+        }
+
+        // Store the access token in Redux
+        dispatch(setAccessToken(accessToken));
+
+        // Use the access token to fetch user data
         const response = await customAxios.get("/auth/setAuthenticated");
         const { isAuthenticated, userData } = response.data;
 

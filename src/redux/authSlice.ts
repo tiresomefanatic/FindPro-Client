@@ -3,34 +3,20 @@ import { persistReducer } from "redux-persist";
 //import storage from "redux-persist/lib/storage";
 import storage from "../lib/persistStorage"
 
-interface UserData {
-  bio: string;
-  bookmarkedGigs: string[];
-  email: string;
-  googleId: string;
-  isSeller: boolean;
-  languages: string[];
-  location: string;
-  myGigs: string[];
-  name: string;
-  orders: string[];
-  phoneNumber: string;
-  profilePic: string;
-  refreshToken: string;
-  skills: string[];
-  _id: string;
-}
 
 interface AuthState {
   isAuthenticated: boolean;
   user: any;
   loggedInAt: number | null;
+  accessToken: string | null;
+
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
   loggedInAt: null,
+  accessToken: null,
 };
 
 const authSlice = createSlice({
@@ -40,14 +26,16 @@ const authSlice = createSlice({
     setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
       state.isAuthenticated = action.payload;
     },
-    setUser: (state, action: PayloadAction<Partial<UserData>>) => {
+    setUser: (state, action: PayloadAction<Partial<any>>) => {
       state.user = action.payload;
     },
     setLoggedInAt: (state, action: PayloadAction<number>) => {
       state.loggedInAt = action.payload;
     },
+    setAccessToken: (state, action: PayloadAction<string>) => {
+      state.accessToken = action.payload;
+    },
     clearAuthState: (state) => {
-      console.log('clear auth state hitting?')
       state.isAuthenticated = false;
       state.user = null;
       state.loggedInAt = null;
@@ -65,7 +53,7 @@ const authSlice = createSlice({
   }
 });
 
-export const { setIsAuthenticated, setUser, setLoggedInAt, clearAuthState, addBookmarkedGig, removeBookmarkedGig } = authSlice.actions;
+export const { setIsAuthenticated, setUser, setLoggedInAt, setAccessToken, clearAuthState, addBookmarkedGig, removeBookmarkedGig } = authSlice.actions;
 
 const persistConfig = {
   key: "auth",
