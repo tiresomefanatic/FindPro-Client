@@ -45,6 +45,7 @@ import { addBookmarkedGig, removeBookmarkedGig } from "@/redux/authSlice";
 import { toast } from "sonner";
 import useAuth from "@/lib/useAuth";
 import { Separator } from "@radix-ui/react-select";
+import customAxios from "@/lib/customAxios";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -143,9 +144,7 @@ export default function GigPage() {
     } else {
       try {
         const toastPromise = toast.promise(
-          axios.post(`${baseURL}/gigs/bookmarkGig/${gigId}`, null, {
-            baseURL: baseURL,
-            withCredentials: true,
+          customAxios.post(`${baseURL}/gigs/bookmarkGig/${gigId}`, null, {
           }),
           {
             duration: 1500,
