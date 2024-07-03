@@ -498,7 +498,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                     <Input placeholder="https://yourportfolio.com" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Add a link to your portfolio website (optional)
+                    Add a link to your portfolio website (recommended)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

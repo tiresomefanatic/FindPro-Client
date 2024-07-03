@@ -49,18 +49,6 @@ import customAxios from "@/lib/customAxios";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-const skills = [
-  "React",
-  "JavaScript",
-  "React Native",
-  "Tailwind CSS",
-  "Expressjs",
-  "MongoDB",
-  "Node.js",
-  "HTML5",
-];
-
-
 export default function GigPage() {
   const [showAllReviews, setShowAllReviews] = React.useState(false);
   const router = useRouter();
@@ -227,7 +215,7 @@ export default function GigPage() {
               {/* Skills */}
               <h3 className="text-xl font-bold mb-2.5">Skills</h3>
               <div className="flex flex-wrap gap-4 mb-5">
-                {skills.map((skill) => (
+                {gig.owner.skills.map((skill: string) => (
                   <p
                     key={skill}
                     className="inline-flex items-center rounded-full border border-1 px-2.5 py-0.5 text-sm font-semibold text-foreground whitespace-normal"
