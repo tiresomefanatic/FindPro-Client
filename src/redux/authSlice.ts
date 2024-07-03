@@ -39,6 +39,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
       state.loggedInAt = null;
+      state.accessToken= null;
     },
     addBookmarkedGig: (state, action: PayloadAction<string>) => {
       if (state.user) {
