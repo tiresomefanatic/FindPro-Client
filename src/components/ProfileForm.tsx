@@ -64,6 +64,7 @@ const formSchema = z.object({
     message: "Name must be at least 2 characters.",
   }),
   bio: z.string().optional(),
+  portfolioLink: z.string().url().optional().or(z.literal("")),
   location: z.string().optional(),
   languages: z.array(z.string()).optional(),
   skills: z.array(z.string()).optional(),
@@ -106,6 +107,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     defaultValues: {
       name: "",
       bio: "",
+      portfolioLink: "",
       location: "",
       languages: [],
       skills: [],
@@ -121,13 +123,14 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
 
         form.setValue("name", userData.name);
         form.setValue("bio", userData.bio);
+        form.setValue("portfolioLink", userData.portfolioLink || "");
         form.setValue("location", userData.location);
         form.setValue("languages", userData.languages);
         form.setValue("skills", userData.skills);
         form.setValue("phoneNumber", userData.phoneNumber);
         setUserKiId(userData._id);
         setProfilePicUrl(userData.profilePic);
-        setIsSeller(userData.isSeller)
+        setIsSeller(userData.isSeller);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -210,6 +213,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
       await updateUserMutation({
         name: validatedData.name,
         bio: validatedData.bio,
+        portfolioLink: validatedData.portfolioLink,
         location: validatedData.location,
         languages: validatedData.languages,
         skills: validatedData.skills,
@@ -275,7 +279,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
       languages: boolean;
       skills: boolean;
       phoneNumber: boolean;
-      profilePic: boolean
+      profilePic: boolean;
     };
   } => {
     const formData = form.getValues();
@@ -286,7 +290,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
       languages: !formData.languages || formData.languages.length === 0,
       skills: !formData.skills || formData.skills.length === 0,
       phoneNumber: !formData.phoneNumber,
-      profilePic: !profilePicUrl || profilePicUrl === '',
+      profilePic: !profilePicUrl || profilePicUrl === "",
     };
 
     const isDisabled = Object.values(errors).some((error) => error);
@@ -304,11 +308,11 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
 
       if (errors.name) errorMessages.push("Name is required");
       if (errors.bio) errorMessages.push("Bio is required");
-      if (errors.languages) errorMessages.push("At least one language is required");
+      if (errors.languages)
+        errorMessages.push("At least one language is required");
       if (errors.skills) errorMessages.push("At least one skill is required");
       if (errors.phoneNumber) errorMessages.push("Phone number is required");
       if (errors.profilePic) errorMessages.push("Profile Picture is required");
-
 
       setAlertMessages(errorMessages);
       setShowAlert(true);
@@ -480,6 +484,23 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                       {...field}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="portfolioLink"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Portfolio Link</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://yourportfolio.com" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Add a link to your portfolio website (optional)
+                  </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />
