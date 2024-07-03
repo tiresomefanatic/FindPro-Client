@@ -21,7 +21,7 @@ const authFlowPersistConfig = {
 const authPersistConfig = {
   key: 'auth',
   storage,
-  whitelist: [ 'isAuthenticated', 'user', 'loggedInAt']
+  whitelist: [ 'isAuthenticated', 'user', 'loggedInAt', 'accessToken']
 };
 
 const rootReducer = combineReducers({
