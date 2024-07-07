@@ -514,7 +514,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
               name="socialMediaLink"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Portfolio Link</FormLabel>
+                  <FormLabel>Social Media Link</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="https://instagram.com/yourProfilePageLink"
