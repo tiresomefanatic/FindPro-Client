@@ -13,7 +13,7 @@ import {
   SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, Moon, ShoppingCart, Sun } from "lucide-react";
+import { Bookmark, Menu, Moon, ShoppingCart, Sun } from "lucide-react";
 import ProfileButton from "./ProfileButton";
 import {
   NavigationMenu,
@@ -56,18 +56,13 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await customAxios.post(
-        `${baseURL}/auth/logout`,
-        null,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await customAxios.post(`${baseURL}/auth/logout`, null, {
+        withCredentials: true,
+      });
 
       if (response.data.message === "Logout successful") {
         dispatch(clearAuthState());
         router.push("/");
-        setIsSheetOpen(false);
       }
     } catch (error) {
       console.error("Logout error:", error);
@@ -126,6 +121,7 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex flex-row gap-x-7 justify-center items-center">
+              <div> <Bookmark /></div>
               <div className="flex justify-center items-center">
                {!user?.isSeller && (
                <button onClick={handleBecomeSellerClick} className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md">
@@ -206,9 +202,9 @@ const Header = () => {
                       >
                         Saved Gigs
                       </Link>
-                      <Link href="/" onClick={handleLogout}>
+                      <button onClick={handleLogout}>
                         Log Out
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 )}
