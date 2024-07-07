@@ -105,7 +105,7 @@ const Profile: React.FC = () => {
             <div className="flex flex-col items-center mb-4">
               <p className="font-semibold mb-2">Expertise in</p>
               <div className="flex flex-wrap justify-center gap-2">
-                {user.skills?.map((skill, index) => (
+                {user.skills?.map((skill: string, index: number) => (
                   <span key={index} className="bg-gray-200 px-2 py-1 rounded-full text-sm">
                     {skill}
                   </span>
@@ -152,7 +152,7 @@ const Profile: React.FC = () => {
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">Expert in</h2>
             <div className="flex flex-wrap gap-2">
-              {user.skills?.map((skill, index) => (
+              {user.skills?.map((skill: string, index: number) => (
                 <span key={index} className="bg-gray-200 px-3 py-1 rounded-full">
                   {skill}
                 </span>
