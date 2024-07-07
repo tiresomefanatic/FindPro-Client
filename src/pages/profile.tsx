@@ -112,7 +112,19 @@ const Profile: React.FC = () => {
   const priceRange = useMemo(() => calculatePriceRange(gigs), [gigs]);
 
   if (!id || isGigsLoading || isUserLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-white dark:bg-background">
+        <section className="bg-white dark:bg-background py-8 lg:py-16">
+          <div className="max-w-screen-xl mx-auto px-4">
+            <div className="lg:col-span-8  rounded-xl p-6">
+              <div className="flex justify-center items-center ">
+                <div className="h-10 w-10  animate-spin rounded-full border-4 border-gray-200 border-t-black" />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
   }
 
   if (isGigsError || isUserError) {
@@ -213,22 +225,25 @@ const Profile: React.FC = () => {
 
         {/* Right column */}
         <div className="col-span-1 md:col-span-3">
-        <div className="mb-8">
-  <h2 className="text-2xl font-bold mb-4">My Gigs</h2>
-  <Carousel className="w-full">
-    <CarouselContent className="-ml-4">
-      {gigs.map((gig: any) => (
-        <CarouselItem key={gig._id} className="pl-2 sm:basis-1/2 md:basis-1/3">
-          <div className="h-full">
-            <ProfileGigCard gig={gig} id={gig._id} />
+          <div className="mb-8 p-4">
+            <h2 className="text-2xl font-bold mb-4">My Gigs</h2>
+            <Carousel className="w-full">
+              <CarouselContent className="-ml-4">
+                {gigs.map((gig: any) => (
+                  <CarouselItem
+                    key={gig._id}
+                    className="pl-2 sm:basis-1/2 md:basis-1/3"
+                  >
+                    <div className="h-full">
+                      <ProfileGigCard gig={gig} id={gig._id} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
+              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
+            </Carousel>
           </div>
-        </CarouselItem>
-      ))}
-    </CarouselContent>
-    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
-    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
-  </Carousel>
-</div>
 
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">About me</h2>
