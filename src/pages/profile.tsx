@@ -137,6 +137,7 @@ const Profile: React.FC = () => {
         {/* Left column */}
         <div className="col-span-1">
           <div className="flex flex-col items-start sticky top-24">
+            <Card className="rounded-lg bg-red-100"> 
             <Avatar className="h-32 w-32 mb-4">
               <AvatarImage src={user.profilePic} alt={user.name} />
               <AvatarFallback>
@@ -220,6 +221,7 @@ const Profile: React.FC = () => {
             {/* <Button className="w-full bg-blue-500 text-white mt-4">
               Get in touch
             </Button> */}
+            </Card>
           </div>
         </div>
 
