@@ -441,7 +441,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1">
-            <p className="text-sm text-gray-100">Uploading Files...</p>
+            <p className="text-sm text-black-100">Uploading Files...</p>
             <Progress value={uploadProgress} className="w-full max-w-lg" />
           </div>
         )}
