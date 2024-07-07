@@ -65,7 +65,7 @@ const formSchema = z.object({
   }),
   bio: z.string().optional(),
   portfolioLink: z.string().url().optional().or(z.literal("")),
-  socialMediaLink: z.string().url().optional().or(z.literal("")),
+  instagramLink: z.string().url().optional().or(z.literal("")),
   location: z.string().optional(),
   languages: z.array(z.string()).optional(),
   skills: z.array(z.string()).optional(),
@@ -125,7 +125,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
         form.setValue("name", userData.name);
         form.setValue("bio", userData.bio);
         form.setValue("portfolioLink", userData.portfolioLink || "");
-        form.setValue("socialMediaLink", userData.socialMediaLink || "");
+        form.setValue("instagramLink", userData.instagramLink || "");
         form.setValue("location", userData.location);
         form.setValue("languages", userData.languages);
         form.setValue("skills", userData.skills);
@@ -216,7 +216,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
         name: validatedData.name,
         bio: validatedData.bio,
         portfolioLink: validatedData.portfolioLink,
-        socialMediaLink: validatedData.socialMediaLink,
+        instagramLink: validatedData.instagramLink,
 
         location: validatedData.location,
         languages: validatedData.languages,
@@ -511,10 +511,10 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
 
             <FormField
               control={form.control}
-              name="socialMediaLink"
+              name="instagramLink"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Social Media Link</FormLabel>
+                  <FormLabel>Instagram Link</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="https://instagram.com/yourProfilePageLink"
@@ -522,7 +522,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    Add a link to your socialMediaLink (recommended)
+                    Add a link to your Social Media (recommended)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
