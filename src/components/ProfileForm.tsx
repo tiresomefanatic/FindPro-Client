@@ -522,7 +522,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    Add a link to your Social Media (recommended)
+                    Add a link to your Instagram profile (recommended)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

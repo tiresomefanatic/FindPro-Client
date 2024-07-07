@@ -29,6 +29,12 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
 
+  const handleEditProfileClick = () => {
+    if (user) {
+      router.push(`/profile?id=${user._id}`);
+    }
+  };
+
   const handleProfileClick = () => {
     if (user) {
       router.push(`/editProfile?id=${user._id}`);
@@ -77,7 +83,13 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
               className="cursor-pointer"
               onClick={handleProfileClick}
             >
-              Profile
+             My Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={handleEditProfileClick}
+            >
+             Edit Profile
             </DropdownMenuItem>
             <DropdownMenuItem
               className="cursor-pointer"

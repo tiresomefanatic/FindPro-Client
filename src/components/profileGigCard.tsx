@@ -97,75 +97,67 @@ const ProfileGigCard: React.FC<ProfileGigCardProps> = ({ gig, id }) => {
   };
 
   return (
-    <Card className="w-80 max-w-sm relative mx-auto rounded-2xl cursor-pointer overflow-hidden shadow-md transition-shadow duration-200 hover:shadow-2xl">
-      <CardContent>
-        <div className="h-10 w-72 mt-2 overflow-hidden">
-          <p className="text-sm">{gig.title}</p>
-        </div>
-        <div className="w-24 h-6 mt-0 px-2 text-green-300 bg-gray-100 rounded-lg flex items-center shadow-sm">
-          <p className="text-sm text-slate-900">₹</p>
-          <p className="m-1 text-sm text-slate-900">{gig.packages[0].price}</p>
-        </div>
-        <div className="h-40 w-full group">
-          <Carousel className="w-full overflow-hidden">
-            <CarouselContent>
-              {gig.portfolioMedia.length > 0 ? (
-                gig.portfolioMedia.map((media: any) => (
-                  <CarouselItem key={media.uid}>
-                    <div className="p-1">
-                      <AspectRatio ratio={16 / 9} className="bg-none">
-                        <img src={media.src} alt={`Portfolio Item ${media.uid}`} />
-                      </AspectRatio>
-                    </div>
-                  </CarouselItem>
-                ))
-              ) : (
-                <CarouselItem>
-                  <div className="p-1">
-                    <Card>
-                      <CardContent className="flex flex-col items-center justify-center aspect-[16/9] p-4 md:p-6">
-                        <h3 className="text-lg font-semibold md:text-xl">
-                          {gig.category}
-                        </h3>
-                        <p className="text-center text-sm">{gig.subCategory}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
+    <Card className="w-full max-w-sm relative rounded-2xl cursor-pointer overflow-hidden shadow-md transition-shadow duration-200 hover:shadow-2xl">
+    <CardContent className="p-4">
+      <div className="h-10 mb-2 overflow-hidden">
+        <p className="text-sm">{gig.title}</p>
+      </div>
+      <div className="w-24 h-6 px-2 text-green-300 bg-gray-100 rounded-lg flex items-center shadow-sm mb-2">
+        <p className="text-sm text-slate-900">₹</p>
+        <p className="m-1 text-sm text-slate-900">{gig.packages[0].price}</p>
+      </div>
+      <div className="aspect-w-16 aspect-h-9 group mb-4">
+        <Carousel className="w-full overflow-hidden">
+          <CarouselContent>
+            {gig.portfolioMedia.length > 0 ? (
+              gig.portfolioMedia.map((media: any) => (
+                <CarouselItem key={media.uid}>
+                  <AspectRatio ratio={16 / 9} className="bg-none">
+                    <img src={media.src} alt={`Portfolio Item ${media.uid}`} className="object-cover w-full h-full" />
+                  </AspectRatio>
                 </CarouselItem>
-              )}
-            </CarouselContent>
-            <CarouselPrevious className="absolute top-1/2 left-2 transform -translate-y-1/2 z-10 hidden group-hover:flex items-center justify-center" />
-            <CarouselNext className="absolute top-1/2 right-2 transform -translate-y-1/2 z-10 hidden group-hover:flex items-center justify-center" />
-          </Carousel>
-        </div>
-        <CardContent className="p-0">
-          <div className="mt-8 mb-4 flex justify-center items-center">
-            <Button
-              className="flex flex-grow mx-4 rounded-full text-sm font-semibold text-white hover:text-black hover:bg-white border border-2 border-zinc-900"
-              onClick={() => router.push(`/gigPage/${id}`)}
-            >
-              Get in touch
-            </Button>
-            <Button
-              variant="outline"
-              className="mr-4 p-4 rounded-full border-none"
-              onClick={() => handleBookmarkClick(id)}
-            >
-              <Bookmark
-                size={24}
-                color="black"
-                fill={isBookmarked ? "black" : "white"}
-              />
-            </Button>
-            <LoginAlertDialog
-              open={isAlertOpen}
-              onOpenChange={setIsAlertOpen}
-              id={id}
-            />
-          </div>
-        </CardContent>
-      </CardContent>
-    </Card>
+              ))
+            ) : (
+              <CarouselItem>
+                <AspectRatio ratio={16 / 9}>
+                  <div className="flex flex-col items-center justify-center h-full bg-gray-100">
+                    <h3 className="text-lg font-semibold">{gig.category}</h3>
+                    <p className="text-center text-sm">{gig.subCategory}</p>
+                  </div>
+                </AspectRatio>
+              </CarouselItem>
+            )}
+          </CarouselContent>
+          <CarouselPrevious className="absolute top-1/2 left-2 transform -translate-y-1/2 z-10 hidden group-hover:flex" />
+          <CarouselNext className="absolute top-1/2 right-2 transform -translate-y-1/2 z-10 hidden group-hover:flex" />
+        </Carousel>
+      </div>
+      <div className="flex justify-between items-center">
+        <Button
+          className="flex-grow mr-2 rounded-full text-sm font-semibold text-white hover:text-black hover:bg-white border border-2 border-zinc-900"
+          onClick={() => router.push(`/gigPage/${id}`)}
+        >
+          Get in touch
+        </Button>
+        <Button
+          variant="outline"
+          className="p-2 rounded-full border-none"
+          onClick={() => handleBookmarkClick(id)}
+        >
+          <Bookmark
+            size={20}
+            color="black"
+            fill={isBookmarked ? "black" : "white"}
+          />
+        </Button>
+      </div>
+    </CardContent>
+    <LoginAlertDialog
+      open={isAlertOpen}
+      onOpenChange={setIsAlertOpen}
+      id={id}
+    />
+  </Card>
   );
 };
 

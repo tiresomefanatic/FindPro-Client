@@ -188,8 +188,11 @@ export default function GigPage() {
                   className="rounded-full mr-4 mb-2 md:mb-0"
                 />
                 <div className="flex flex-col">
-                  <h3 className="text-lg font-medium">{gig.owner.name}</h3>
-                  <div className="flex flex-col md:flex-row md:items-center">
+                <Link href={`/profile?id=${gig.owner._id}`}>
+                    <h3 className="text-lg font-medium hover:underline cursor-pointer">
+                      {gig.owner.name}
+                    </h3>
+                  </Link>                  <div className="flex flex-col md:flex-row md:items-center">
                     <div className="flex items-center mb-1 md:mb-0 md:mr-4">
                       <MapPin className="mr-1" />
                       <p className="text-gray-500">{gig.owner.location}</p>
