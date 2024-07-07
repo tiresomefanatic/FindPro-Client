@@ -50,7 +50,7 @@ export default function LoginSuccess() {
         } else {
           toast.error("An unexpected error occurred. Please try again.");
         }
-        router.replace("/login");
+        router.replace("/");
       }
     };
 
