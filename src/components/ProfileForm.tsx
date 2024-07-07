@@ -163,7 +163,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     },
     onSuccess: () => {
       toast.success("Profile updated successfully");
-      // router.back();
+       router.back();
     },
     onError: (error) => {
       toast.error("Error updating user profile");
@@ -433,10 +433,12 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
             {isUploading ? (
               <div>Loading...</div>
             ) : (
+              <div className="mt-2"> 
               <FixedCropper
                 isGigImage={false}
                 onCrop={handleProfilePicUpload}
               />
+              </div>
             )}
           </div>
         ) : (
