@@ -121,7 +121,7 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex flex-row gap-x-4 justify-center items-center">
-              <div> <Bookmark /></div>
+              {/* <div> <Bookmark /></div> */}
               <div className="flex justify-center items-center">
                {!user?.isSeller && (
                <button onClick={handleBecomeSellerClick} className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md">
@@ -197,7 +197,7 @@ const Header = () => {
 
                     <div className="flex flex-col gap-y-2">
                       <Link
-                        href="/subscription"
+                        href="/savedGigs"
                         onClick={() => setIsSheetOpen(false)}
                       >
                         Saved Gigs

@@ -49,6 +49,12 @@ const GigsGrid: React.FC = () => {
   </div>
   }
 
+  if (savedGigs.bookmarkedGigs?.length === 0) {
+    return <div className="flex h-screen justify-center mt-20">
+    <p className="text-2xl"> You have no saved gigs </p>
+  </div>
+  }
+
   if (isError) {
     return <div className="flex h-screen justify-center mt-20">
     <p className="text-2xl"> Sorry an error occured </p>
