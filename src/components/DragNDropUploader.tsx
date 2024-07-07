@@ -262,8 +262,8 @@ export default function DragNDropUploader({ onUploadStatusChange }: DragNDropUpl
       }
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-y-0 place-items-center w-full max-w-lg h-24 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center">
-          <p className="text-md text-gray-600">Uploading Files...</p>
+        <div className="grid grid-cols-1 gap-y-0 place-items-center w-full max-w-lg h-16 rounded-sm flex items-center justify-center">
+          <p className="text-md text-gray-400">Uploading Files...</p>
           <Progress value={uploadProgress} className="w-full max-w-lg" />
         </div>
       )}
