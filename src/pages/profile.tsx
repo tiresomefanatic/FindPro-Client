@@ -137,7 +137,7 @@ const Profile: React.FC = () => {
         {/* Left column */}
         <div className="col-span-1">
           <div className="flex flex-col items-start sticky top-24">
-            <Card className="rounded-lg bg-red-100"> 
+            <Card className="rounded-xl bg-blue-100"> 
             <Avatar className="h-32 w-32 mb-4">
               <AvatarImage src={user.profilePic} alt={user.name} />
               <AvatarFallback>
