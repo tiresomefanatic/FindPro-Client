@@ -124,7 +124,7 @@ const Profile: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Left column */}
         <div className="col-span-1">
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start sticky top-24">
             <Avatar className="h-32 w-32 mb-4">
               <AvatarImage src={user.profilePic} alt={user.name} />
               <AvatarFallback>

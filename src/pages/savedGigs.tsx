@@ -62,7 +62,7 @@ const GigsGrid: React.FC = () => {
   }
 
   return (
-    <div className="mt-20">
+    <div className="mt-20 px-16">
       {savedGigs.bookmarkedGigs?.map((categoryData: any) => (
         <div className="flex flex-col gap-y-3 mb-16" key={categoryData.category}>
           <div className="flex justify-between items-center mb-8">
