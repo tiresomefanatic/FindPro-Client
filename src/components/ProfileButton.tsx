@@ -19,7 +19,6 @@ import { clearAuthState } from "@/redux/authSlice";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-
 interface ProfileButtonProps {
   isAuthenticated: boolean;
 }
@@ -32,20 +31,24 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
   const handleEditProfileClick = () => {
     if (user) {
       router.push(`/editProfile?id=${user._id}`);
-
     }
   };
 
   const handleProfileClick = () => {
     if (user) {
       router.push(`/profile?id=${user._id}`);
-
     }
   };
 
   const handleMyGigsClick = () => {
     if (user) {
       router.push(`/myGigs`);
+    }
+  };
+
+  const handleSavedGigsClick = () => {
+    if (user) {
+      router.push(`/savedGigs`);
     }
   };
 
@@ -85,13 +88,13 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
               className="cursor-pointer"
               onClick={handleProfileClick}
             >
-             My Profile
+              My Profile
             </DropdownMenuItem>
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={handleEditProfileClick}
             >
-             Edit Profile
+              Edit Profile
             </DropdownMenuItem>
             <DropdownMenuItem
               className="cursor-pointer"
@@ -102,13 +105,14 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={handleSavedGigsClick}
+        >
           Saved Gigs
         </DropdownMenuItem>
         {isAuthenticated && (
-          <DropdownMenuItem className="cursor-pointer"
-          onClick={handleLogout}
-          >
+          <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
             Log Out
           </DropdownMenuItem>
         )}

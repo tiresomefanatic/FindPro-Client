@@ -120,7 +120,7 @@ const Header = () => {
        
             </div>
           ) : (
-            <div className="flex flex-row gap-x-7 justify-center items-center">
+            <div className="flex flex-row gap-x-4 justify-center items-center">
               <div> <Bookmark /></div>
               <div className="flex justify-center items-center">
                {!user?.isSeller && (

@@ -54,8 +54,8 @@ customAxios.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomRequestConfig;
-    console.error(`[Response Error] ${error.response?.status} ${originalRequest?.url}`);
-    console.error('Error response:', error.response?.data);
+    console.error(`[Response Error] ${error}`);
+    console.error('Error response:', error);
 
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
