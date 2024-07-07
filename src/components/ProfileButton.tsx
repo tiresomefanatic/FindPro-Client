@@ -31,13 +31,15 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
 
   const handleEditProfileClick = () => {
     if (user) {
-      router.push(`/profile?id=${user._id}`);
+      router.push(`/editProfile?id=${user._id}`);
+
     }
   };
 
   const handleProfileClick = () => {
     if (user) {
-      router.push(`/editProfile?id=${user._id}`);
+      router.push(`/profile?id=${user._id}`);
+
     }
   };
 

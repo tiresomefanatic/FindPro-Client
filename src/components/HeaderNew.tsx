@@ -174,10 +174,16 @@ const Header = () => {
                           <ProfilePic />{" "}
                         </div>
                         <Link
+                          href={`/profile?id=${user?._id}`}
+                          onClick={() => setIsSheetOpen(false)}
+                        >
+                          My Profile
+                        </Link>
+                        <Link
                           href={`/editProfile?id=${user?._id}`}
                           onClick={() => setIsSheetOpen(false)}
                         >
-                          Profile
+                          Edit Profile
                         </Link>
                         <Link
                           href="/myGigs"
