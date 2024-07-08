@@ -138,7 +138,6 @@ const ProfileGigCard: React.FC<ProfileGigCardProps> = ({ gig, id }) => {
         <p className="text-sm">{gig.title}</p>
       </div>
       <div className="w-24 h-6 px-2 text-green-300 bg-gray-100 rounded-lg flex items-center shadow-sm mb-2">
-        <p className="text-sm text-slate-900">₹</p>
         <p className="text-xs text-slate-900 whitespace-nowrap">{priceRange}</p>
       </div>
       <div className="aspect-w-16 aspect-h-9 group mb-4">
