@@ -288,6 +288,7 @@ export default function GigPage() {
                       color="black"
                       fill={isBookmarked ? "black" : "white"}
                     />
+                    Bookmark
                   </Button>
                   <Button
                     variant="outline"
@@ -295,6 +296,7 @@ export default function GigPage() {
                     onClick={handleShareClick}
                   >
                     <Share2 size={24} />
+                    Share
                   </Button>
                   <LoginAlertDialog
                     open={isAlertOpen}
