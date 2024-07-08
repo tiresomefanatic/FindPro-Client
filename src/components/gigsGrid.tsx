@@ -82,7 +82,7 @@ const GigsGrid: React.FC = () => {
                     id={gig._id}
                     name={gig.owner?.name}
                     profilePic={gig.owner?.profilePic}
-                    price={gig.packages[0]?.price}
+                    packages={gig.packages}
                     title={gig.title}
                     skills={gig.skills}
                     portfolioMedia={gig.portfolioMedia}

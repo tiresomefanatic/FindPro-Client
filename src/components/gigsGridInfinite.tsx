@@ -166,7 +166,7 @@ const GigsGridInf: React.FC = () => {
                   id={gig._id}
                   profilePic={gig.owner.profilePic}
                   name={gig.owner.name}
-                  price={gig.packages[0].price}
+                  packages={gig.packages}
                   title={gig.title}
                   skills={gig.skills}
                   portfolioMedia={gig.portfolioMedia}

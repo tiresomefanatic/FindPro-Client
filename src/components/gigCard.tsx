@@ -48,16 +48,47 @@ import customAxios from "@/lib/customAxios";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
+const formatPrice = (price: number): string => {
+  if (price >= 1000) {
+    return `${(price / 1000).toFixed(1).replace(".0", "")}k`;
+  }
+  return price.toString();
+};
+
+const calculatePriceRange = (packages: any[]): string => {
+  if (!packages || packages.length === 0) return "Price range not available";
+
+  let minPrice = Infinity;
+  let maxPrice = -Infinity;
+
+  packages.forEach((pkg: any) => {
+    if (pkg.price && !isNaN(parseFloat(pkg.price))) {
+      const price = parseFloat(pkg.price);
+      minPrice = Math.min(minPrice, price);
+      maxPrice = Math.max(maxPrice, price);
+    }
+  });
+
+  if (minPrice === Infinity || maxPrice === -Infinity) {
+    return "Price range not available";
+  }
+
+  const formattedMinPrice = formatPrice(minPrice);
+  const formattedMaxPrice = formatPrice(maxPrice);
+
+  return `₹${formattedMinPrice} - ₹${formattedMaxPrice}`;
+};
+
 interface GigCardProps {
   id: string;
   name: string;
   profilePic: string;
-  price: string;
   title: string;
   skills: string[];
   portfolioMedia: { src: string; uid: string }[];
   category: string;
   subCategory: string;
+  packages: any[]; 
 }
 
 const mockskills = [
@@ -73,12 +104,12 @@ export default function GigCard({
   id,
   name,
   profilePic,
-  price,
   title,
   skills,
   portfolioMedia,
   category,
   subCategory,
+  packages,
 }: GigCardProps) {
   // const info = useRenderInfo("GigCard");
 
@@ -101,6 +132,9 @@ export default function GigCard({
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   // console.log('isBookmarked?', isBookmarked)
+
+  const priceRange = React.useMemo(() => calculatePriceRange(packages), [packages]);
+
 
   useEffect(() => {
     setIsBookmarked(BookmarkedGigs?.includes(id));
@@ -166,7 +200,7 @@ export default function GigCard({
               <p className="text-md font-semibold">{name}</p>
               <div className="w-24 h-6 mt-0 px-2 text-green-300 bg-gray-100 rounded-lg flex items-center shadow-sm">
                 <p className="text-sm text-slate-900">₹</p>
-                <p className="m-1 text-sm text-slate-900">{price}</p>
+                <p className="m-1 text-sm text-slate-900">{priceRange}</p>
               </div>
             </div>
           </div>
