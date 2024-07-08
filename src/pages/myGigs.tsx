@@ -98,10 +98,10 @@ export default function MyGigs() {
           </TableRow>
         ) : (
           searchedGigs?.map((gig: any) => (
-            <TableRow key={gig._id}
-            className="cursor-pointer hover:bg-gray-100"
-            onClick={() => router.push(`/gigPage/${gig._id}`)}
-            
+            <TableRow
+              key={gig._id}
+              className="cursor-pointer hover:bg-gray-100"
+              onClick={() => router.push(`/gigPage/${gig._id}`)}
             >
               <TableCell className="w-full sm:w-1/2 md:w-2/3">
                 {gig.title}
@@ -115,9 +115,6 @@ export default function MyGigs() {
                     href={`/editGigPage?gigId=${gig._id}`}
                     className="w-full sm:w-auto"
                     onClick={(e) => e.stopPropagation()}
-
-
-
                   >
                     <Button variant="outline" className="w-full">
                       Edit
@@ -126,7 +123,10 @@ export default function MyGigs() {
                   <Button
                     variant="outline"
                     className="w-full sm:w-auto"
-                    onClick={() => handleDeleteGig(gig._id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteGig(gig._id);
+                    }}
                   >
                     Delete
                   </Button>
