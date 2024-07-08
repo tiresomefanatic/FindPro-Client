@@ -522,7 +522,6 @@ export default function GigForm({
   }
   //error check the form
   //const onInvalid = (errors) => console.error(errors)
-  console.log("gigData", gigData.status);
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -553,7 +552,7 @@ export default function GigForm({
                 />
 
                 {/* Upload */}
-                <div className="bg-gray-100 p-3">
+                <div className="bg-gray-100 p-3 my-2">
                   <h4>Upload Images and drag to reorder or delete</h4>
 
                   <div className="flex justify-center items-center">
