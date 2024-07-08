@@ -19,6 +19,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import router from "next/router";
@@ -33,6 +43,10 @@ const fetchGigs = async () => {
 };
 
 export default function MyGigs() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [gigToDelete, setGigToDelete] = useState(null);
+
   const {
     data: gigs,
     isLoading,
@@ -43,20 +57,34 @@ export default function MyGigs() {
     queryFn: fetchGigs,
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
+  // const handleSearch = (event: any) => {
+  //   setSearchTerm(event.target.value);
+  // };
 
-  const handleSearch = (event: any) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleDeleteGig = async (gigId: string) => {
-    try {
-      await customAxios.delete(`${baseURL}/gigs/${gigId}`, {});
-      // Refresh the gigs data after successful deletion
-      await refetch();
-    } catch (error) {
+  const deleteGigMutation = useMutation({
+    mutationFn: async (gigId: string) => {
+      await customAxios.delete(`${baseURL}/gigs/${gigId}`);
+    },
+    onSuccess: () => {
+      toast.success("Gig deleted successfully");
+      refetch(); // Refresh the gigs data after successful deletion
+    },
+    onError: (error) => {
       console.error("Error deleting gig:", error);
       toast.error("Error deleting gig");
+    },
+  });
+
+  const handleDeleteClick = (gig:any) => {
+    setGigToDelete(gig._id);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (gigToDelete) {
+      deleteGigMutation.mutate(gigToDelete);
+      setIsDeleteAlertOpen(false);
+      setGigToDelete(null);
     }
   };
 
@@ -125,7 +153,7 @@ export default function MyGigs() {
                     className="w-full sm:w-auto"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteGig(gig._id);
+                      handleDeleteClick(gig);
                     }}
                   >
                     Delete
@@ -272,6 +300,26 @@ export default function MyGigs() {
           </Card>
         </TabsContent>
       </Tabs>
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to delete this gig?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your gig.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsDeleteAlertOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
