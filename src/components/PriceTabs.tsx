@@ -24,7 +24,7 @@ interface PriceTabsProps {
 }
 
 export function PriceTabs({ packages, phoneNumber }: PriceTabsProps) {
-  const tabsListClass = `grid grid-cols-${packages.length} gap-4 bg-gray-100 max-w-60 mx-auto items-center justify-center rounded-[10px]`;
+  const tabsListClass = `grid grid-cols-${packages.length} gap-4 bg-gray-100 max-w-60 mx-auto items-center justify-center rounded-xl`;
 
   return (
     <Tabs defaultValue={packages[0]?.name} className="w-full">
