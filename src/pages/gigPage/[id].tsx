@@ -276,11 +276,11 @@ export default function GigPage() {
             </div>
             {/* PriceTabs */}
             <div className="lg:col-span-4">
-              <div className="sticky top-24">
-                <div className="hidden md:flex justify-end space-x-2 mb-4">
+              <div className="sticky top-24 space-y-4">
+                <div className="hidden md:flex justify-end space-x-2">
                   <Button
                     variant="outline"
-                    className="mr-4 p-4 rounded-full"
+                    className="p-2 rounded-full"
                     onClick={() => handleBookmarkClick(id as string)}
                   >
                     <Bookmark
@@ -288,7 +288,7 @@ export default function GigPage() {
                       color="black"
                       fill={isBookmarked ? "black" : "white"}
                     />
-                    Bookmark
+                    <span className="ml-2">Bookmark</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -296,17 +296,17 @@ export default function GigPage() {
                     onClick={handleShareClick}
                   >
                     <Share2 size={24} />
-                    Share
+                    <span className="ml-2">Share</span>
                   </Button>
-                  <LoginAlertDialog
-                    open={isAlertOpen}
-                    onOpenChange={setIsAlertOpen}
-                    id={id as string}
-                  />
                 </div>
                 <PriceTabs
                   packages={gig.packages}
                   phoneNumber={gig.owner.phoneNumber}
+                />
+                <LoginAlertDialog
+                  open={isAlertOpen}
+                  onOpenChange={setIsAlertOpen}
+                  id={id as string}
                 />
               </div>
             </div>
