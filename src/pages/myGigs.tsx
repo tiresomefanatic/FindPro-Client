@@ -34,6 +34,7 @@ import { useState } from "react";
 import router from "next/router";
 import customAxios from "@/lib/customAxios";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -75,7 +76,7 @@ export default function MyGigs() {
     },
   });
 
-  const handleDeleteClick = (gig:any) => {
+  const handleDeleteClick = (gig: any) => {
     setGigToDelete(gig._id);
     setIsDeleteAlertOpen(true);
   };
@@ -135,7 +136,15 @@ export default function MyGigs() {
                 {gig.title}
               </TableCell>
               <TableCell className="sm:table-cell">
-                {gig.status === "isLive" ? <div> Live </div> : "Draft"}
+                <div className="flex items-center">
+                  <span
+                    className={cn(
+                      "h-2 w-2 rounded-full mr-2",
+                      gig.status === "isLive" ? "bg-green-500" : "bg-yellow-500"
+                    )}
+                  />
+                  {gig.status === "isLive" ? "Live" : "Draft"}
+                </div>
               </TableCell>
               <TableCell className="sm:w-1/4 md:w-1/6">
                 <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
@@ -307,7 +316,8 @@ export default function MyGigs() {
               Are you sure you want to delete this gig?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your gig.
+              This action cannot be undone. This will permanently delete your
+              gig.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
