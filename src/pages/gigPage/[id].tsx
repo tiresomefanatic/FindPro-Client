@@ -39,7 +39,7 @@ import {
   setTryingToBookmarkId,
 } from "@/redux/authFlowSlice";
 import axios from "axios";
-import { Bookmark, Languages, MapPin } from "lucide-react";
+import { Bookmark, Languages, MapPin, Share2 } from "lucide-react";
 import { RootState } from "@/redux/store";
 import { addBookmarkedGig, removeBookmarkedGig } from "@/redux/authSlice";
 import { toast } from "sonner";
@@ -167,6 +167,16 @@ export default function GigPage() {
     setShowAllReviews(!showAllReviews);
   };
 
+  const handleShareClick = () => {
+    const currentURL = window.location.href;
+    navigator.clipboard.writeText(currentURL).then(() => {
+      toast.success("Link copied to clipboard!");
+    }, (err) => {
+      console.error('Could not copy text: ', err);
+      toast.error("Failed to copy link");
+    });
+  };
+
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -178,6 +188,27 @@ export default function GigPage() {
               <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-3xl">
                 {gig.title}
               </h1>
+              {/* Bookmark and Share buttons */}
+              <div className="flex space-x-2 md:hidden">
+                  <Button
+                    variant="outline"
+                    className="p-2 rounded-full"
+                    onClick={() => handleBookmarkClick(id as string)}
+                  >
+                    <Bookmark
+                      size={20}
+                      fill={isBookmarked ? "currentColor" : "none"}
+                      color={isBookmarked ? "blue" : "gray"}
+                    />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="p-2 rounded-full"
+                    onClick={handleShareClick}
+                  >
+                    <Share2 size={20} />
+                  </Button>
+                </div>
               {/* Seller info */}
               <div className="flex flex-col md:flex-row md:items-center mb-6">
                 <img
@@ -252,7 +283,7 @@ export default function GigPage() {
             {/* PriceTabs */}
             <div className="lg:col-span-4">
               <div className="sticky top-24">
-                <div className="flex justify-center items-center mb-4">
+                <div className="hidden md:flex justify-end space-x-2 mb-4">
                   <Button
                     variant="outline"
                     className="mr-4 p-4 rounded-full"
@@ -263,6 +294,13 @@ export default function GigPage() {
                       fill={isBookmarked ? "currentColor" : "none"}
                       color={isBookmarked ? "blue" : "gray"}
                     />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="p-2 rounded-full"
+                    onClick={handleShareClick}
+                  >
+                    <Share2 size={24} />
                   </Button>
                   <LoginAlertDialog
                     open={isAlertOpen}
