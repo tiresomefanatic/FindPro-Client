@@ -33,7 +33,7 @@ export function PriceTabs({ packages, phoneNumber }: PriceTabsProps) {
           <TabsTrigger
             key={pkg.name}
             value={pkg.name}
-            className="px-4 py-2 text-sm font-medium transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 data-[state=active]:bg-blue-100 data-[state=active]:rounded-lg"
+            className="px-4 py-2 text-sm font-medium transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 data-[state=active]:bg-blue-100 data-[state=active]:rounded-xl"
           >
             {pkg.name}
           </TabsTrigger>

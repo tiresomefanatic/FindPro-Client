@@ -55,10 +55,7 @@ export default function GigPage() {
   const { id } = router.query;
   const { isAuthenticated, checkAuth } = useAuth();
 
-
   const dispatch = useDispatch();
-
-
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -101,25 +98,18 @@ export default function GigPage() {
   });
   if (isLoading) {
     return (
-
       <div className="min-h-screen bg-white dark:bg-background">
-      <section className="bg-white dark:bg-background py-8 lg:py-16">
-        <div className="max-w-screen-xl mx-auto px-4">
+        <section className="bg-white dark:bg-background py-8 lg:py-16">
+          <div className="max-w-screen-xl mx-auto px-4">
             <div className="lg:col-span-8  rounded-xl p-6">
-
-    <div className="flex justify-center items-center "> 
-    <div className="h-10 w-10  animate-spin rounded-full border-4 border-gray-200 border-t-black" />
-    </div>
-
-    </div>
+              <div className="flex justify-center items-center ">
+                <div className="h-10 w-10  animate-spin rounded-full border-4 border-gray-200 border-t-black" />
+              </div>
+            </div>
           </div>
-      </section>
-    </div>
-
-
-
-
-    )
+        </section>
+      </div>
+    );
   }
 
   if (isError) {
@@ -132,8 +122,7 @@ export default function GigPage() {
     } else {
       try {
         const toastPromise = toast.promise(
-          customAxios.post(`${baseURL}/gigs/bookmarkGig/${gigId}`, null, {
-          }),
+          customAxios.post(`${baseURL}/gigs/bookmarkGig/${gigId}`, null, {}),
           {
             duration: 1500,
             loading: "",
@@ -169,14 +158,16 @@ export default function GigPage() {
 
   const handleShareClick = () => {
     const currentURL = window.location.href;
-    navigator.clipboard.writeText(currentURL).then(() => {
-      toast.success("Link copied to clipboard!");
-    }, (err) => {
-      console.error('Could not copy text: ', err);
-      toast.error("Failed to copy link");
-    });
+    navigator.clipboard.writeText(currentURL).then(
+      () => {
+        toast.success("Link copied to clipboard!");
+      },
+      (err) => {
+        console.error("Could not copy text: ", err);
+        toast.error("Failed to copy link");
+      }
+    );
   };
-
 
   return (
     <div className="min-h-screen bg-white dark:bg-background">
@@ -189,27 +180,6 @@ export default function GigPage() {
                 {gig.title}
               </h1>
 
-               {/* Bookmark and Share buttons */}
-               <div className="flex space-x-2 my-1  md:hidden bg-gray-100 self-end sticky top-10">
-                  <Button
-                    variant="outline"
-                    className="p-2 rounded-full"
-                    onClick={() => handleBookmarkClick(id as string)}
-                  >
-                    <Bookmark
-                      size={20}
-                      fill={isBookmarked ? "currentColor" : "none"}
-                      color={isBookmarked ? "blue" : "gray"}
-                    />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="p-2 rounded-full"
-                    onClick={handleShareClick}
-                  >
-                    <Share2 size={24} />
-                  </Button>
-                </div>
               {/* Seller info */}
               <div className="flex flex-col md:flex-row md:items-center mb-6">
                 <img
@@ -220,11 +190,12 @@ export default function GigPage() {
                   className="rounded-full mr-4 mb-2 md:mb-0"
                 />
                 <div className="flex flex-col">
-                <Link href={`/profile?id=${gig.owner._id}`}>
+                  <Link href={`/profile?id=${gig.owner._id}`}>
                     <h3 className="text-lg font-medium hover:underline cursor-pointer">
                       {gig.owner.name}
                     </h3>
-                  </Link>                  <div className="flex flex-col md:flex-row md:items-center">
+                  </Link>{" "}
+                  <div className="flex flex-col md:flex-row md:items-center">
                     <div className="flex items-center mb-1 md:mb-0 md:mr-4">
                       <MapPin className="mr-1" />
                       <p className="text-gray-500">{gig.owner.location}</p>
@@ -247,7 +218,28 @@ export default function GigPage() {
                 <GigSlideshow portfolioMedia={gig.portfolioMedia} />
               </div>
 
-  
+              {/* Bookmark and Share buttons */}
+              <div className="flex space-x-2 my-1  md:hidden bg-gray-100 self-end sticky top-10">
+                <Button
+                  variant="outline"
+                  className="p-2 rounded-full"
+                  onClick={() => handleBookmarkClick(id as string)}
+                >
+                  <Bookmark
+                    size={20}
+                    fill={isBookmarked ? "currentColor" : "none"}
+                    color={isBookmarked ? "blue" : "gray"}
+                  />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="p-2 rounded-full"
+                  onClick={handleShareClick}
+                >
+                  <Share2 size={24} />
+                </Button>
+              </div>
+
               {/* Skills */}
               <h3 className="text-xl font-bold mb-2.5">Skills</h3>
               <div className="flex flex-wrap gap-4 mb-5">
@@ -260,7 +252,7 @@ export default function GigPage() {
                   </p>
                 ))}
               </div>
-  
+
               {/* Gig description */}
               <h3 className="text-xl font-bold mb-3">About this gig</h3>
               <div className="mb-8 overflow-hidden">
@@ -268,7 +260,7 @@ export default function GigPage() {
                   {gig.description}
                 </p>
               </div>
-  
+
               {gig.faqs && gig.faqs.length > 0 && (
                 <div className="mb-8">
                   <Accordion type="single" collapsible className="w-full">
@@ -310,7 +302,10 @@ export default function GigPage() {
                     id={id as string}
                   />
                 </div>
-                <PriceTabs packages={gig.packages} phoneNumber={gig.owner.phoneNumber} />
+                <PriceTabs
+                  packages={gig.packages}
+                  phoneNumber={gig.owner.phoneNumber}
+                />
               </div>
             </div>
           </div>
