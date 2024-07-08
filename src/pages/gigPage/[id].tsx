@@ -277,7 +277,7 @@ export default function GigPage() {
             {/* PriceTabs */}
             <div className="lg:col-span-4">
               <div className="sticky top-24">
-                <div className="hidden md:flex justify-end space-x-2 my-16">
+                <div className="hidden md:flex justify-end space-x-2 mb-4">
                   <Button
                     variant="outline"
                     className="mr-4 p-4 rounded-full"
