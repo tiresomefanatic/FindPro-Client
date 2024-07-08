@@ -41,7 +41,7 @@ export function PriceTabs({ packages, phoneNumber }: PriceTabsProps) {
       </TabsList>
       {packages.map((pkg) => (
         <TabsContent key={pkg.name} value={pkg.name}>
-          <Card className="rounded-xl shadow-lg">
+          <Card className="rounded-2xl shadow-lg">
             <div className="p-6 bg-white rounded-lg shadow-sm">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
                 <h3 className="text-2xl font-bold">{pkg.title}</h3>
