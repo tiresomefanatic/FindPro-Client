@@ -188,27 +188,6 @@ export default function GigPage() {
               <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-3xl">
                 {gig.title}
               </h1>
-              {/* Bookmark and Share buttons */}
-              <div className="flex space-x-2 md:hidden">
-                  <Button
-                    variant="outline"
-                    className="p-2 rounded-full"
-                    onClick={() => handleBookmarkClick(id as string)}
-                  >
-                    <Bookmark
-                      size={20}
-                      fill={isBookmarked ? "currentColor" : "none"}
-                      color={isBookmarked ? "blue" : "gray"}
-                    />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="p-2 rounded-full"
-                    onClick={handleShareClick}
-                  >
-                    <Share2 size={20} />
-                  </Button>
-                </div>
               {/* Seller info */}
               <div className="flex flex-col md:flex-row md:items-center mb-6">
                 <img
@@ -245,6 +224,28 @@ export default function GigPage() {
               <div className="mb-8 relative z-0">
                 <GigSlideshow portfolioMedia={gig.portfolioMedia} />
               </div>
+
+               {/* Bookmark and Share buttons */}
+               <div className="flex space-x-2 mt-2 md:hidden bg-grey-100 sticky top-20">
+                  <Button
+                    variant="outline"
+                    className="p-2 rounded-full"
+                    onClick={() => handleBookmarkClick(id as string)}
+                  >
+                    <Bookmark
+                      size={20}
+                      fill={isBookmarked ? "currentColor" : "none"}
+                      color={isBookmarked ? "blue" : "gray"}
+                    />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="p-2 rounded-full"
+                    onClick={handleShareClick}
+                  >
+                    <Share2 size={24} />
+                  </Button>
+                </div>
   
               {/* Skills */}
               <h3 className="text-xl font-bold mb-2.5">Skills</h3>
