@@ -28,9 +28,7 @@ import { toast } from "sonner";
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const fetchGigs = async () => {
-  const response = await customAxios.get(
-    `${baseURL}/gigs/myGigs`
-  );
+  const response = await customAxios.get(`${baseURL}/gigs/myGigs`);
   return response.data.gigs;
 };
 
@@ -53,13 +51,12 @@ export default function MyGigs() {
 
   const handleDeleteGig = async (gigId: string) => {
     try {
-      await customAxios.delete(`${baseURL}/gigs/${gigId}`, {
-      });
+      await customAxios.delete(`${baseURL}/gigs/${gigId}`, {});
       // Refresh the gigs data after successful deletion
       await refetch();
     } catch (error) {
       console.error("Error deleting gig:", error);
-      toast.error('Error deleting gig')
+      toast.error("Error deleting gig");
     }
   };
 
@@ -109,18 +106,23 @@ export default function MyGigs() {
                 {gig.status === "isLive" ? <div> Live </div> : "Draft"}
               </TableCell>
               <TableCell className="sm:w-1/4 md:w-1/6">
-                <Link href={`/editGigPage?gigId=${gig._id}`}>
-                  <Button variant="outline" className="whitespace-nowrap">
-                    Edit
+                <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+                  <Link
+                    href={`/editGigPage?gigId=${gig._id}`}
+                    className="w-full sm:w-auto"
+                  >
+                    <Button variant="outline" className="w-full">
+                      Edit
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                    onClick={() => handleDeleteGig(gig._id)}
+                  >
+                    Delete
                   </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  className="whitespace-nowrap ml-2"
-                  onClick={() => handleDeleteGig(gig._id)}
-                >
-                  Delete
-                </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))
@@ -130,9 +132,11 @@ export default function MyGigs() {
   };
 
   const createNewGig = async () => {
-    const response = await customAxios.post(`${baseURL}/gigs/createGig`, null, {
-    
-    });
+    const response = await customAxios.post(
+      `${baseURL}/gigs/createGig`,
+      null,
+      {}
+    );
 
     return response.data;
   };
