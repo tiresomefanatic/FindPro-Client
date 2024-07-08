@@ -39,7 +39,7 @@ import {
   setTryingToBookmarkId,
 } from "@/redux/authFlowSlice";
 import axios from "axios";
-import { Bookmark, Languages, MapPin, Share2 } from "lucide-react";
+import { Bookmark, Frown, Languages, MapPin, RefreshCw, Share2 } from "lucide-react";
 import { RootState } from "@/redux/store";
 import { addBookmarkedGig, removeBookmarkedGig } from "@/redux/authSlice";
 import { toast } from "sonner";
@@ -48,6 +48,10 @@ import { Separator } from "@radix-ui/react-select";
 import customAxios from "@/lib/customAxios";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+const handleReload = () => {
+  window.location.reload();
+};
 
 export default function GigPage() {
   const [showAllReviews, setShowAllReviews] = React.useState(false);
@@ -113,8 +117,21 @@ export default function GigPage() {
   }
 
   if (isError) {
-    return <div>Error fetching gig.</div>;
-  }
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Frown size={48} className="text-gray-400 mb-4" />
+        <p className="text-2xl mb-6">Sorry, an error occurred</p>
+        <Button 
+          variant="outline" 
+          onClick={handleReload}
+          className="flex items-center"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Try Reloading
+        </Button>
+      </div>
+    );
+    }
 
   const handleBookmarkClick = async (gigId: string) => {
     if (!isAuthenticated) {
@@ -219,7 +236,7 @@ export default function GigPage() {
               </div>
 
               {/* Bookmark and Share buttons */}
-              <div className="flex space-x-2 my-1 md:hidden bg-slate-50 rounded-full justify-items-end sticky top-4">
+              <div className="flex space-x-2 my-1 md:hidden bg-slate-50 rounded-full justify-items-end sticky top-4 p-2">
                 <Button
                   variant="outline"
                   className="p-2 rounded-full"
@@ -230,6 +247,7 @@ export default function GigPage() {
                     color="black"
                     fill={isBookmarked ? "black" : "white"}
                   />
+                  Save
                 </Button>
                 <Button
                   variant="outline"
@@ -237,6 +255,7 @@ export default function GigPage() {
                   onClick={handleShareClick}
                 >
                   <Share2 size={24} />
+                  Share
                 </Button>
               </div>
 
@@ -288,7 +307,7 @@ export default function GigPage() {
                       color="black"
                       fill={isBookmarked ? "black" : "white"}
                     />
-                    <span className="ml-2">Bookmark</span>
+                    <span className="ml-1">Save</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -296,7 +315,7 @@ export default function GigPage() {
                     onClick={handleShareClick}
                   >
                     <Share2 size={24} />
-                    <span className="ml-2">Share</span>
+                    <span className="ml-1">Share</span>
                   </Button>
                 </div>
                 <PriceTabs

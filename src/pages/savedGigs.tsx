@@ -6,12 +6,16 @@ import { useDispatch } from "react-redux";
 import { setSelectedCategory, setSelectedSubcategory } from "../redux/filtersSlice";
 import { Button } from "../components/ui/button";
 import { Skeleton } from "../components/ui/skeleton";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, Frown, RefreshCw, SearchX } from "lucide-react";
 import { setSearchTerm } from "@/redux/searchSlice";
 import customAxios from "@/lib/customAxios";
 import axios from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+const handleReload = () => {
+  window.location.reload();
+};
 
 
 const fetchSavedGigs = async () => {
@@ -50,29 +54,46 @@ const GigsGrid: React.FC = () => {
   }
 
   if (savedGigs.bookmarkedGigs?.length === 0) {
-    return <div className="flex h-screen justify-center mt-20">
-    <p className="text-2xl"> You have no saved gigs </p>
-  </div>
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+       <SearchX size={48} className="text-gray-400 mb-4" />
+
+       <p className="text-2xl mb-6"> No saved gigs  </p>
+       <p className="text-lg mb-6"> Explore and save some gigs to see them here  </p>
+
+        </div>
+    );
   }
 
   if (isError) {
-    return <div className="flex h-screen justify-center mt-20">
-    <p className="text-2xl"> Sorry an error occured </p>
-  </div>
+    return(
+    <div className="flex flex-col items-center justify-center h-screen">
+      <Frown size={48} className="text-red-500 mb-4" />
+      <p className="text-2xl mb-6">Sorry, an error occurred</p>
+      <Button
+        variant="outline"
+        onClick={handleReload}
+        className="flex items-center"
+      >
+        <RefreshCw className="mr-2 h-4 w-4" />
+        Try Reloading
+      </Button>
+    </div>
+    );
   }
 
   return (
-    <div className="mt-20 px-16">
-      {savedGigs.bookmarkedGigs?.map((categoryData: any) => (
+<div className="mt-12 px-4 sm:px-6 md:px-16">
+        {savedGigs.bookmarkedGigs?.map((categoryData: any) => (
         <div className="flex flex-col gap-y-3 mb-16" key={categoryData.category}>
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold md:px-20 px-0">
+          <h2 className="text-2xl font-bold">
               {categoryData.category || "Uncategorized"}
             </h2>
           </div>
           <div className="flex flex-col jusify-center items-center">
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 w-full">
             {categoryData.gigs &&
               categoryData.gigs.map((gig: any) => (
                 <div key={gig._id} className="flex justify-center">

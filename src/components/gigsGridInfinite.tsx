@@ -12,9 +12,14 @@ import GigCard from "./gigCard";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
-import { Ellipsis } from "lucide-react";
+import { Check, Ellipsis, Frown, RefreshCw, SearchX } from "lucide-react";
+import { Button } from "./ui/button";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
+const handleReload = () => {
+  window.location.reload();
+};
 
 interface Gig {
   _id: string;
@@ -141,16 +146,29 @@ const GigsGridInf: React.FC = () => {
 
   if (status === "error") {
     return (
-      <div className="flex h-screen justify-center mt-20">
-        <p className="text-2xl"> Error: {error.message} </p>
-      </div>
+      <div className="flex flex-col items-center justify-center h-screen">
+      <Frown size={48} className="text-gray-400 mb-4" />
+      <p className="text-2xl mb-6">Sorry, an error occurred</p>
+      <Button 
+        variant="outline" 
+        onClick={handleReload}
+        className="flex items-center"
+      >
+        <RefreshCw className="mr-2 h-4 w-4" />
+        Try Reloading
+      </Button>
+    </div>
     );
   }
 
   if (data && data.pages[0].gigs.length === 0) {
     return (
-      <div className="flex h-screen justify-center mt-20">
-       <p className="text-2xl"> No gigs found.  </p>
+      <div className="flex flex-col items-center justify-center h-screen">
+       <SearchX size={48} className="text-gray-400 mb-4" />
+
+       <p className="text-2xl mb-6"> No gigs found.  </p>
+       <p className="text-lg mb-6"> Try using different filters or search term.  </p>
+
         </div>
     );
   }
@@ -184,7 +202,10 @@ const GigsGridInf: React.FC = () => {
         ) : hasNextPage ? (
           "Load More"
         ) : (
-          "All caught up"
+          <div className="flex items-center justify-center space-x-2 p-4">
+      <Check className="text-green-500" />
+      <p className="text-sm font-medium">All caught up</p>
+    </div>
         )}
       </div>
       <div className="text-center mt-4">
