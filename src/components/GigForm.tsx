@@ -76,7 +76,8 @@ const formSchema = z.object({
     .optional(),
   packages: z.array(
     z.object({
-      name: z.enum(["basic", "premium", "custom"]),
+      name: z.enum(["Basic", "Premium", "Custom"]),
+      title: z.string(),
       per: z.string(),
       price: z.string(),
       description: z.string(),
@@ -226,9 +227,9 @@ export default function GigForm({
       subCategory: gigData?.subCategory || "",
       faqs: gigData?.faqs || [],
       packages: gigData?.packages || [
-        { name: "basic", per: "", price: "", description: "" },
-        { name: "premium", per: "", price: "", description: "" },
-        { name: "custom", per: "", price: "", description: "" },
+        { name: "Basic", title: "", per: "", price: "", description: "" },
+        { name: "Premium", title: "", per: "", price: "", description: "" },
+        { name: "Custom", title: "", per: "", price: "", description: "" },
       ],
       portfolioMedia: gigData?.portfolioMedia || [],
     },
@@ -361,7 +362,7 @@ export default function GigForm({
       title: boolean;
       description: boolean;
       portfolioMedia: boolean;
-      basicPackage: { per: boolean; price: boolean; description: boolean };
+      basicPackage: { title: boolean, per: boolean; price: boolean; description: boolean };
       category: boolean;
       subCategory: boolean;
     };
@@ -373,6 +374,7 @@ export default function GigForm({
       description: !formData.description,
       portfolioMedia: portfolioMediaState.length === 0,
       basicPackage: {
+        title: !formData.packages[0].title,
         per: !formData.packages[0].per,
         price: !formData.packages[0].price,
         description: !formData.packages[0].description,
@@ -403,6 +405,8 @@ export default function GigForm({
       if (errors.title) errorMessages.push("Title is empty");
       if (errors.description) errorMessages.push("Description is empty");
       if (errors.portfolioMedia) errorMessages.push("Portfolio Media is empty");
+      if (errors.basicPackage.title)
+        errorMessages.push("Basic Package: Title is empty");
       if (errors.basicPackage.per)
         errorMessages.push("Basic Package: Per is empty");
       if (errors.basicPackage.price)
@@ -819,6 +823,19 @@ export default function GigForm({
                       <h4 className="text-xl font-semibold mb-2 md:col-span-4">
                         {plan}
                       </h4>
+                      <FormField
+                        control={form.control}
+                        name={`packages.${index}.title`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter package title" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       <FormField
                         control={form.control}
                         name={`packages.${index}.per`}
