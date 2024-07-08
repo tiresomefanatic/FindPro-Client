@@ -270,7 +270,7 @@ export default function GigPage() {
                     id={id as string}
                   />
                 </div>
-                <PriceTabs packages={gig.packages} />
+                <PriceTabs packages={gig.packages} phoneNumber={gig.owner.phoneNumber} />
               </div>
             </div>
           </div>
