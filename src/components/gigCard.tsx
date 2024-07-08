@@ -50,7 +50,9 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const formatPrice = (price: number): string => {
   if (price >= 1000) {
-    return `${(price / 1000).toFixed(1).replace(".0", "")}k`;
+    const formattedPrice = (price / 1000).toFixed(1);
+    // Remove trailing zero if it exists, but keep .5, .1, etc.
+    return `${formattedPrice.endsWith('.0') ? Math.floor(price / 1000) : formattedPrice}k`;
   }
   return price.toString();
 };
@@ -58,25 +60,25 @@ const formatPrice = (price: number): string => {
 const calculatePriceRange = (packages: any[]): string => {
   if (!packages || packages.length === 0) return "Price range not available";
 
-  let minPrice = Infinity;
-  let maxPrice = -Infinity;
+  const prices = packages
+    .map(pkg => parseFloat(pkg.price))
+    .filter(price => !isNaN(price));
 
-  packages.forEach((pkg: any) => {
-    if (pkg.price && !isNaN(parseFloat(pkg.price))) {
-      const price = parseFloat(pkg.price);
-      minPrice = Math.min(minPrice, price);
-      maxPrice = Math.max(maxPrice, price);
-    }
-  });
+  if (prices.length === 0) return "Price range not available";
 
-  if (minPrice === Infinity || maxPrice === -Infinity) {
-    return "Price range not available";
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+
+  if (minPrice === maxPrice) {
+    return `₹${formatPrice(minPrice)}`;
   }
 
-  const formattedMinPrice = formatPrice(minPrice);
-  const formattedMaxPrice = formatPrice(maxPrice);
+  // Special handling for when max price is exactly 1000
+  if (maxPrice === 1000) {
+    return `₹${formatPrice(minPrice)} - ₹1k`;
+  }
 
-  return `₹${formattedMinPrice} - ₹${formattedMaxPrice}`;
+  return `₹${formatPrice(minPrice)} - ₹${formatPrice(maxPrice)}`;
 };
 
 interface GigCardProps {
@@ -199,8 +201,7 @@ export default function GigCard({
             <div className="mt-3">
               <p className="text-md font-semibold">{name}</p>
               <div className="w-24 h-6 mt-0 px-2 text-green-300 bg-gray-100 rounded-lg flex items-center shadow-sm">
-                <p className="text-sm text-slate-900">₹</p>
-                <p className="m-1 text-sm text-slate-900">{priceRange}</p>
+                <p className="m-1 text-sm text-slate-900 whitespace-nowrap">{priceRange}</p>
               </div>
             </div>
           </div>
