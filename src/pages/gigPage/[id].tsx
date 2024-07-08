@@ -214,12 +214,12 @@ export default function GigPage() {
                 </div>
               </div>
               {/* Slideshow */}
-              <div className="mb-8 relative z-0">
+              <div className="mb-4 relative z-0">
                 <GigSlideshow portfolioMedia={gig.portfolioMedia} />
               </div>
 
               {/* Bookmark and Share buttons */}
-              <div className="flex space-x-2 my-1  md:hidden bg-gray-100 self-end sticky top-10">
+              <div className="flex space-x-2 my-1 md:hidden bg-slate-50 rounded-full justify-items-end sticky top-4">
                 <Button
                   variant="outline"
                   className="p-2 rounded-full"
@@ -227,8 +227,8 @@ export default function GigPage() {
                 >
                   <Bookmark
                     size={20}
-                    fill={isBookmarked ? "currentColor" : "none"}
-                    color={isBookmarked ? "blue" : "gray"}
+                    color="black"
+                    fill={isBookmarked ? "black" : "white"}
                   />
                 </Button>
                 <Button
@@ -285,8 +285,8 @@ export default function GigPage() {
                   >
                     <Bookmark
                       size={24}
-                      fill={isBookmarked ? "currentColor" : "none"}
-                      color={isBookmarked ? "blue" : "gray"}
+                      color="black"
+                      fill={isBookmarked ? "black" : "white"}
                     />
                   </Button>
                   <Button
