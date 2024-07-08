@@ -433,7 +433,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
             {isUploading ? (
               <div>Loading...</div>
             ) : (
-              <div className="mt-2"> 
+              <div className=""> 
               <FixedCropper
                 isGigImage={false}
                 onCrop={handleProfilePicUpload}
