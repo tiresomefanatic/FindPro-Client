@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,6 +56,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import customAxios from "@/lib/customAxios";
+import { Textarea } from "./ui/textarea";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -78,6 +79,18 @@ const formSchema = z.object({
       message: "Phone number must be at least 10 characters.",
     }),
   profilePic: z.string().optional(),
+  faqs: z
+    .array(
+      z.object({
+        question: z.string().min(1, {
+          message: "Question cannot be empty.",
+        }),
+        answer: z.string().min(1, {
+          message: "Answer cannot be empty.",
+        }),
+      })
+    )
+    .optional(),
 });
 
 type ProfileFormProps = {
@@ -116,6 +129,15 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     },
   });
 
+  const {
+    fields: faqFields,
+    append: appendFaq,
+    remove: removeFaq,
+  } = useFieldArray({
+    control: form.control,
+    name: "faqs",
+  });
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -130,6 +152,8 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
         form.setValue("languages", userData.languages);
         form.setValue("skills", userData.skills);
         form.setValue("phoneNumber", userData.phoneNumber);
+        form.setValue("faqs", userData.faqs);
+
         setUserKiId(userData._id);
         setProfilePicUrl(userData.profilePic);
         setIsSeller(userData.isSeller);
@@ -163,7 +187,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     },
     onSuccess: () => {
       toast.success("Profile updated successfully");
-       router.back();
+      router.back();
     },
     onError: (error) => {
       toast.error("Error updating user profile");
@@ -217,12 +241,12 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
         bio: validatedData.bio,
         portfolioLink: validatedData.portfolioLink,
         instagramLink: validatedData.instagramLink,
-
         location: validatedData.location,
         languages: validatedData.languages,
         skills: validatedData.skills,
         phoneNumber: validatedData.phoneNumber,
         profilePic: profilePicUrl,
+        faqs: validatedData.faqs,
       });
       setIsFormDirty(false);
 
@@ -391,6 +415,14 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     };
   }, [isFormDirty, isAlertOpen, router.events]);
 
+  const handleAddQuestionAnswer = () => {
+    appendFaq({ question: "", answer: "" });
+  };
+
+  const handleRemoveQuestionAnswer = (index: number) => {
+    removeFaq(index);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-md p-8 shadow-xl">
@@ -433,11 +465,11 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
             {isUploading ? (
               <div>Loading...</div>
             ) : (
-              <div className=""> 
-              <FixedCropper
-                isGigImage={false}
-                onCrop={handleProfilePicUpload}
-              />
+              <div className="">
+                <FixedCropper
+                  isGigImage={false}
+                  onCrop={handleProfilePicUpload}
+                />
               </div>
             )}
           </div>
@@ -610,6 +642,58 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                 </FormItem>
               )}
             />
+
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold mb-4">Questions & Answers</h3>
+              {faqFields.map((field, index) => (
+                <div key={field.id} className="mb-4">
+                  <FormField
+                    control={form.control}
+                    name={`faqs.${index}.question`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Question</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter question" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`faqs.${index}.answer`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Answer</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Enter answer"
+                            className="w-full"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => handleRemoveQuestionAnswer(index)}
+                    className="mt-2"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              <Button
+                type='button'
+                onClick={handleAddQuestionAnswer}
+                className="mt-2"
+              >
+                Add Question-Answer Set
+              </Button>
+            </div>
             <div className="flex flex-col gap-y-3">
               {isSeller ? (
                 <Button type="submit">Submit</Button>
