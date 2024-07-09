@@ -55,8 +55,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import LabelWithTooltip from "./LabelWithTooltip";
 import customAxios from "@/lib/customAxios";
 import { Textarea } from "./ui/textarea";
+import { CircleAlert, Plus, TriangleAlert, User, X } from "lucide-react";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -424,345 +426,363 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md p-8 shadow-xl">
-        <div className="flex justify-center items-center">
-          {didProfileUpload === 0 ? (
-            <Avatar key={profilePicUrl} className="w-24 h-24">
-              <AvatarImage
-                src={profilePicUrl}
-                alt="@shadcn"
-                onLoadingStatusChange={(status) => {
-                  if (status === "loaded") {
-                    console.log("Profile picture loaded 1 successfully");
-                  } else if (status === "error") {
-                    console.error("Failed to load 1 profile picture");
-                  }
-                }}
-              />
-              <AvatarFallback></AvatarFallback>
-            </Avatar>
-          ) : (
-            <Avatar key={imageToBeUploaded} className="w-24 h-24">
-              <AvatarImage
-                src={imageToBeUploaded}
-                alt="@shadcn"
-                onLoadingStatusChange={(status) => {
-                  if (status === "loaded") {
-                    console.log("Profile picture loaded 2 successfully");
-                  } else if (status === "error") {
-                    console.error("Failed to load 2 profile picture");
-                  }
-                }}
-              />
-              <AvatarFallback></AvatarFallback>
-            </Avatar>
-          )}
+    <div className="w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
+        {/* Left column */}
+        <div className="lg:col-span-4 mb-8 lg:mb-0">
+          <div className="sticky top-24">
+            <Card className="rounded-xl shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center mb-6">
+                  <Avatar className="h-32 w-32 mb-4">
+                    <AvatarImage
+                      src={profilePicUrl}
+                      alt={form.getValues("name")}
+                    />
+                    <AvatarFallback>
+                      <User className="w-24 h-24" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <FixedCropper
+                    isGigImage={false}
+                    onCrop={handleProfilePicUpload}
+                  />
+                </div>
+                <Form {...form}>
+                  <form className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Type in your name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="location"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Location</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a location" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Hyderabad">
+                                Hyderabad
+                              </SelectItem>
+                              <SelectItem value="Bengaluru">
+                                Bengaluru
+                              </SelectItem>
+                              <SelectItem value="Mumbai">Mumbai</SelectItem>
+                              <SelectItem value="Chennai">Chennai</SelectItem>
+                              <SelectItem value="Delhi">Delhi</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="languages"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Languages</FormLabel>
+                          <FormControl>
+                            <MultipleSelector
+                              {...field}
+                              placeholder="Type a language and enter to add"
+                              creatable
+                              value={field.value?.map((language: string) => ({
+                                value: language,
+                                label: language,
+                              }))}
+                              onChange={(selected) => {
+                                field.onChange(
+                                  selected.map((option) => option.value)
+                                );
+                              }}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </form>
+                </Form>
+                <div className="flex justify-end my-6 rounded-full">
+                  <div className="space-x-4">
+                    <Button type="submit" variant='default' className="rounded-full" onClick={form.handleSubmit(onSubmit)}>
+                      Update Profile
+                    </Button>
+                    {!isSeller && (
+                      <button onClick={handleBecomeSeller} className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md">
+                      <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+                      <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-white">
+                        Become a Seller
+                      </span>
+                    </button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {uploadProgress === 0 ? (
-          <div className="flex justify-center items-center">
-            {isUploading ? (
-              <div>Loading...</div>
-            ) : (
-              <div className="">
-                <FixedCropper
-                  isGigImage={false}
-                  onCrop={handleProfilePicUpload}
-                />
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1">
-            <p className="text-sm text-black-100">Uploading Image...</p>
-            <Progress value={uploadProgress} className="w-full max-w-lg" />
-          </div>
-        )}
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+1 123-456-7890" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <AutosizeTextarea
-                      className="w-full resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="portfolioLink"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Portfolio Link</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://yourportfolio.com" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Add a link to your portfolio website (recommended)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="instagramLink"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Instagram Link</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://instagram.com/yourProfilePageLink"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Add a link to your Instagram profile (recommended)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Hyderabad">Hyderabad</SelectItem>
-                      <SelectItem value="Bengaluru">Bengaluru</SelectItem>
-                      <SelectItem value="Mumbai">Mumbai</SelectItem>
-                      <SelectItem value="Chennai">Chennai</SelectItem>
-                      <SelectItem value="Delhi">Delhi</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>Select your location</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="languages"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Languages</FormLabel>
-                  <FormControl>
-                    <MultipleSelector
-                      {...field}
-                      placeholder="Type a language and enter to add"
-                      creatable
-                      value={field.value?.map((language: string) => ({
-                        value: language,
-                        label: language,
-                      }))}
-                      onChange={(selected) => {
-                        field.onChange(selected.map((option) => option.value));
-                      }}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Example: English, Spanish, French
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="skills"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Skills</FormLabel>
-                  <FormControl>
-                    <MultipleSelector
-                      {...field}
-                      placeholder="Type a skill and enter to add"
-                      creatable
-                      value={field.value?.map((language: string) => ({
-                        value: language,
-                        label: language,
-                      }))}
-                      onChange={(selected) => {
-                        field.onChange(selected.map((option) => option.value));
-                      }}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Example: JavaScript, React, Node.js
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold mb-4">Questions & Answers</h3>
-              {faqFields.map((field, index) => (
-                <div key={field.id} className="mb-4">
+        {/* Right column */}
+        <div className="lg:col-span-8">
+          <Card className="rounded-xl shadow-lg">
+            <CardContent className="p-6">
+              <Form {...form}>
+                <form className="space-y-6">
                   <FormField
                     control={form.control}
-                    name={`faqs.${index}.question`}
+                    name="bio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Question</FormLabel>
+                        <FormLabel>
+                          {" "}
+                          <LabelWithTooltip
+                            label="Bio"
+                            tooltipText="Write a brief description about yourself, your skills, and your experience."
+                            tooltipImage="/BioTooltip.png"
+                          />
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter question" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`faqs.${index}.answer`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Answer</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Enter answer"
-                            className="w-full"
+                          <AutosizeTextarea
+                            className="w-full resize-none"
                             {...field}
                           />
                         </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+1 123-456-7890" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="button"
-                    variant='outline'
-                    onClick={() => handleRemoveQuestionAnswer(index)}
-                    className="mt-2"
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type='button'
-                variant='outline'
-                onClick={handleAddQuestionAnswer}
-                className="mt-2"
-              >
-                Add Question-Answer Set
-              </Button>
-            </div>
-            <div className="flex flex-col gap-y-3">
-              {isSeller ? (
-                <Button type="submit">Submit</Button>
-              ) : (
-                <Button onClick={handleBecomeSeller}>Become a Seller</Button>
-              )}
-            </div>
-          </form>
-        </Form>
+                  <FormField
+                    control={form.control}
+                    name="portfolioLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Portfolio Link</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://yourportfolio.com"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Add a link to your portfolio website (recommended)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="instagramLink"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Instagram Link</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://instagram.com/yourProfilePageLink"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Add a link to your Instagram profile (recommended)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="skills"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          <LabelWithTooltip
+                            label="Skills"
+                            tooltipText="Add your professional skills. These will help clients find you for relevant projects."
+                            tooltipImage="/SkillsTooltip.png"
+                          />
+                        </FormLabel>
+                        <FormControl>
+                          <MultipleSelector
+                            {...field}
+                            placeholder="Type a skill and enter to add"
+                            creatable
+                            value={field.value?.map((skill: string) => ({
+                              value: skill,
+                              label: skill,
+                            }))}
+                            onChange={(selected) => {
+                              field.onChange(
+                                selected.map((option) => option.value)
+                              );
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Example: JavaScript, React, Node.js
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  />
+                  {/* FAQ Section */}
+                  <div className="space-y-4">
+                    <div className="flex flex-row">
+                      {" "}
+                      <h1 className="text-xl font-bold">Questions & Answers</h1>
+                      <LabelWithTooltip
+                        //label="Question & Answers"
+                        tooltipText="Add sets of frequently asked questions so customers can get a better idea about you"
+                        tooltipImage="/FAQTooltip.png"
+                      />
+                    </div>
 
-        <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                Are you sure you want to leave?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                You have unsaved changes. If you leave now, your changes will be
-                lost.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel
-                onClick={() => {
-                  setIsAlertOpen(false);
-                }}
-              >
-                Stay
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => {
-                  setIsFormDirty(false);
-                  if (intendedRoute) {
-                    router.push(intendedRoute);
-                  } else {
-                    router.back();
-                  }
-                }}
-              >
-                Leave
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                    {faqFields.map((field, index) => (
+                      <div key={field.id} className="space-y-2 border border-slate-300 p-4">
+                        <FormField
+                          control={form.control}
+                          name={`faqs.${index}.question`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Question</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Enter question"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`faqs.${index}.answer`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Answer</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Enter answer"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRemoveQuestionAnswer(index)}
+                        >
+                          <X color="red" /> Remove this set
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddQuestionAnswer}
+                    >
+                      <Plus /> Add Question-Answer Set
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to leave?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. If you leave now, your changes will be
+              lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>
+              Stay
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setIsFormDirty(false);
+                if (intendedRoute) {
+                  router.push(intendedRoute);
+                } else {
+                  router.back();
+                }
+              }}
+            >
+              Leave
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-        <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                Fill all fields to become a seller
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                <div className="error-messages">
-                  {alertMessages.map((message, index) => (
-                    <p key={index}>{message}</p>
-                  ))}
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setShowAlert(false)}>
-                Close
-              </AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </Card>
+      <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              <div className="flex flex-row items-center"> 
+              <TriangleAlert size={36} color="red" className="mr-1" />
+              <h6>Fill all required fields to become a seller </h6>
+              </div>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="mt-4">
+                {alertMessages.map((message, index) => (
+                  <div className="flex flex-row items-center">
+                     <CircleAlert color="red"  />
+                  <p key={index} className="text-md text-semibold text-black ml-2">{message}</p>
+                 
+
+                  </div>
+                ))}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowAlert(false)}>
+              Close
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

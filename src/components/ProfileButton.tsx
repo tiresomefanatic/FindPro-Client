@@ -9,11 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import ProfilePic from "./ProfilePic";
 import { Button } from "./ui/button";
 import { setLoggingInFromRoute } from "@/redux/authFlowSlice";
-import ShinyButton from "./ui/ShinyButton";
 import customAxios from "@/lib/customAxios";
 import { clearAuthState } from "@/redux/authSlice";
 
@@ -52,11 +50,6 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    dispatch(setLoggingInFromRoute(router.asPath));
-    router.push(`${baseURL}/auth/google-login`);
-  };
-
   const handleLogout = async () => {
     try {
       const response = await customAxios.post(`${baseURL}/auth/logout`, null, {
@@ -82,29 +75,35 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
         <ProfilePic />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={handleProfileClick}
+        >
+          My Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={handleEditProfileClick}
+        >
+          Edit Profile
+        </DropdownMenuItem>
         {user?.isSeller && (
-          <>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={handleProfileClick}
-            >
-              My Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={handleEditProfileClick}
-            >
-              Edit Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={handleMyGigsClick}
-            >
-              My Gigs
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={handleMyGigsClick}
+          >
+            My Gigs
+          </DropdownMenuItem>
         )}
+        {!user?.isSeller && (
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={handleBecomeSellerClick}
+          >
+            Become a Seller
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={handleSavedGigsClick}
