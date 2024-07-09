@@ -360,7 +360,7 @@ export default function GigForm({
       await setIsFormDirty(false);
       console.log("Form marked as not dirty");
       toast.success("Gig Updated Successfully");
-      setShouldRoute(true);
+      //setShouldRoute(true);
       console.log("Should route flag set to true");
     } catch (error) {
       console.error("Error in handleUpdateGig:", error);
