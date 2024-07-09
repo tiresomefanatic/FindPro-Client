@@ -826,6 +826,7 @@ export default function GigForm({
                       />
                       <Button
                         type="button"
+                        variant='outline'
                         onClick={() => handleRemoveQuestionAnswer(index)}
                         className="mt-2"
                       >
@@ -836,6 +837,7 @@ export default function GigForm({
                   <div className="space-x-2">
                     <Button
                       type="button"
+                      variant='outline'
                       onClick={handleAddQuestionAnswer}
                       className="px-4 mb-4"
                     >

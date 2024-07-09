@@ -679,6 +679,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                   />
                   <Button
                     type="button"
+                    variant='outline'
                     onClick={() => handleRemoveQuestionAnswer(index)}
                     className="mt-2"
                   >
@@ -688,6 +689,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
               ))}
               <Button
                 type='button'
+                variant='outline'
                 onClick={handleAddQuestionAnswer}
                 className="mt-2"
               >
