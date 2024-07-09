@@ -325,11 +325,11 @@ export default function GigForm({
   const handleUpdateGig = async () => {
     console.log("Starting handleUpdateGig function");
     const formData = form.getValues();
-  
+
     try {
       console.log("Starting sequential URL confirmations");
       await uploadedUrls.reduce(
-        (acc: Promise<void>, url: string) => 
+        (acc: Promise<void>, url: string) =>
           acc.then(async () => {
             console.log(`Attempting to confirm upload for ${url}`);
             try {
@@ -342,9 +342,11 @@ export default function GigForm({
           }),
         Promise.resolve()
       );
-      
-      console.log("All uploads confirmed sequentially, proceeding to updateGigMutation");
-  
+
+      console.log(
+        "All uploads confirmed sequentially, proceeding to updateGigMutation"
+      );
+
       console.log("Calling updateGigMutation");
       await updateGigMutation({
         title: formData.title,
@@ -356,11 +358,11 @@ export default function GigForm({
         portfolioMedia: portfolioMediaState,
       });
       console.log("updateGigMutation completed successfully");
-  
+
       await setIsFormDirty(false);
       console.log("Form marked as not dirty");
       toast.success("Gig Updated Successfully");
-      //setShouldRoute(true);
+      setShouldRoute(true);
       console.log("Should route flag set to true");
     } catch (error) {
       console.error("Error in handleUpdateGig:", error);
@@ -376,7 +378,12 @@ export default function GigForm({
       title: boolean;
       description: boolean;
       portfolioMedia: boolean;
-      basicPackage: { title: boolean, per: boolean; price: boolean; description: boolean };
+      basicPackage: {
+        title: boolean;
+        per: boolean;
+        price: boolean;
+        description: boolean;
+      };
       category: boolean;
       subCategory: boolean;
     };
@@ -411,12 +418,12 @@ export default function GigForm({
     e.preventDefault();
     console.log("Starting handleGoLive function");
     const formData = form.getValues();
-  
+
     const { isDisabled, errors } = validateGoLive();
-  
+
     if (isDisabled) {
       const errorMessages: string[] = [];
-  
+
       if (errors.title) errorMessages.push("Title is empty");
       if (errors.description) errorMessages.push("Description is empty");
       if (errors.portfolioMedia) errorMessages.push("Portfolio Media is empty");
@@ -430,17 +437,17 @@ export default function GigForm({
         errorMessages.push("Basic Package: Description is empty");
       if (errors.category) errorMessages.push("Category is empty");
       if (errors.subCategory) errorMessages.push("Subcategory is empty");
-  
+
       setAlertMessages(errorMessages);
       setShowAlert(true);
       console.log("Validation failed, showing alert");
       return;
     }
-  
+
     try {
       console.log("Starting sequential URL confirmations");
       await uploadedUrls.reduce(
-        (acc: Promise<void>, url: string) => 
+        (acc: Promise<void>, url: string) =>
           acc.then(async () => {
             console.log(`Attempting to confirm upload for ${url}`);
             try {
@@ -453,9 +460,11 @@ export default function GigForm({
           }),
         Promise.resolve()
       );
-      
-      console.log("All uploads confirmed sequentially, proceeding to updateGigMutation");
-  
+
+      console.log(
+        "All uploads confirmed sequentially, proceeding to updateGigMutation"
+      );
+
       await updateGigMutation({
         title: formData.title,
         description: formData.description,
@@ -466,14 +475,15 @@ export default function GigForm({
         portfolioMedia: portfolioMediaState,
       });
       console.log("updateGigMutation completed successfully");
-  
+
       console.log("Calling makeGigLiveMutation");
       await makeGigLiveMutation();
       console.log("makeGigLiveMutation completed successfully");
-  
+
       await setIsFormDirty(false);
       console.log("Form marked as not dirty");
       toast.success("Gig is now live!");
+      setShouldRoute(true);
     } catch (error) {
       console.error("Error in handleGoLive:", error);
       toast.error("Error updating gig status");
@@ -853,7 +863,10 @@ export default function GigForm({
                           <FormItem>
                             <FormLabel>Title</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter package title" {...field} />
+                              <Input
+                                placeholder="Enter package title"
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
