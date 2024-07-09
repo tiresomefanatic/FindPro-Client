@@ -766,7 +766,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
             <AlertDialogDescription>
               <div className="mt-4">
                 {alertMessages.map((message, index) => (
-                  <div className="flex flex-row items-center">
+                  <div key={index} className="flex flex-row items-center">
                      <CircleAlert color="red"  />
                   <p key={index} className="text-md text-semibold text-black ml-2">{message}</p>
                  
