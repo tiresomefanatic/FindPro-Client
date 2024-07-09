@@ -24,7 +24,7 @@ export default function EditProfilePage() {
       <section className="bg-white dark:bg-background py-8 lg:py-16">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-3xl font-bold mb-4">
-            {user?.isSeller ? "Edit Seller Profile" : "Edit Profile"}
+            Edit Profile
           </div>
           <div className="text-lg text-gray-600 mb-8">
             Update your profile information.
