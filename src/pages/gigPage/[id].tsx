@@ -191,14 +191,14 @@ export default function GigPage() {
       <section className="bg-white dark:bg-background py-8 lg:py-16">
         <div className="max-w-screen-xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
-            <div className="lg:col-span-8 shadow-md rounded-xl p-6">
+            <div className="lg:col-span-8 rounded-xl p-6">
               {/* Gig details */}
               <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-3xl">
                 {gig.title}
               </h1>
 
               {/* Seller info */}
-              <div className="flex flex-col md:flex-row md:items-center mb-6">
+              <div className="flex flex-col md:flex-row md:items-center mb-4">
                 <img
                   src={gig.owner.profilePic}
                   alt="Simran"
@@ -230,20 +230,16 @@ export default function GigPage() {
                   </div>
                 </div>
               </div>
-              {/* Slideshow */}
-              <div className="mb-4 relative z-0">
-                <GigSlideshow portfolioMedia={gig.portfolioMedia} />
-              </div>
 
               {/* Bookmark and Share buttons */}
-              <div className="flex space-x-2 my-1 md:hidden bg-slate-50 rounded-full justify-items-end sticky top-4 p-2">
+              <div className="flex space-x-2 md:hidden rounded-full justify-self-end sticky top-4 z-10 p-2 mb-4 ">
                 <Button
                   variant="outline"
                   className="p-2 rounded-full"
                   onClick={() => handleBookmarkClick(id as string)}
                 >
                   <Bookmark
-                    size={20}
+                    size={16}
                     color="black"
                     fill={isBookmarked ? "black" : "white"}
                   />
@@ -254,10 +250,16 @@ export default function GigPage() {
                   className="p-2 rounded-full"
                   onClick={handleShareClick}
                 >
-                  <Share2 size={24} />
+                  <Share2 size={16} />
                   Share
                 </Button>
               </div>
+
+              {/* Slideshow */}
+              <div className="mb-4 relative z-0">
+                <GigSlideshow portfolioMedia={gig.portfolioMedia} />
+              </div>
+
 
               {/* Skills */}
               <h3 className="text-xl font-bold mb-2.5">Skills</h3>
@@ -274,14 +276,14 @@ export default function GigPage() {
 
               {/* Gig description */}
               <h3 className="text-xl font-bold mb-3">About this gig</h3>
-              <div className="mb-8 overflow-hidden">
+              <div className="mb-4 overflow-hidden">
                 <p className="text-md text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">
                   {gig.description}
                 </p>
               </div>
 
               {gig.faqs && gig.faqs.length > 0 && (
-                <div className="mb-8">
+                <div className="mb-4">
                   <Accordion type="single" collapsible className="w-full">
                     {gig.faqs.map((item: any) => (
                       <AccordionItem key={item.id} value={`item-${item.id}`}>
@@ -295,15 +297,15 @@ export default function GigPage() {
             </div>
             {/* PriceTabs */}
             <div className="lg:col-span-4">
-              <div className="sticky top-24 space-y-4">
-                <div className="hidden md:flex justify-end space-x-2">
+              <div className="sticky top-24">
+                <div className="hidden md:flex justify-end space-x-2 mb-4">
                   <Button
                     variant="outline"
                     className="p-2 rounded-full"
                     onClick={() => handleBookmarkClick(id as string)}
                   >
                     <Bookmark
-                      size={24}
+                      size={16}
                       color="black"
                       fill={isBookmarked ? "black" : "white"}
                     />
@@ -314,7 +316,7 @@ export default function GigPage() {
                     className="p-2 rounded-full"
                     onClick={handleShareClick}
                   >
-                    <Share2 size={24} />
+                    <Share2 size={16} />
                     <span className="ml-1">Share</span>
                   </Button>
                 </div>
