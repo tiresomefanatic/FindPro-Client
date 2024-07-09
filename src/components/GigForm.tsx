@@ -321,38 +321,52 @@ export default function GigForm({
     }
   }, [shouldRoute, gigId, router]);
 
-  //Main Update Handler
+  // Main form submisson
   const handleUpdateGig = async () => {
+    console.log("Starting handleUpdateGig function");
     const formData = form.getValues();
-
+  
     try {
-      await Promise.all([
-        // Confirm uploaded files
-        Promise.all(
-          uploadedUrls.map(async (url) => {
-            await edgestore.publicFiles.confirmUpload({ url: url });
-          })
-        ),
-
-        // Update gig mutation
-        await updateGigMutation({
-          title: formData.title,
-          description: formData.description,
-          category: formData.category,
-          subCategory: formData.subCategory,
-          faqs: formData.faqs,
-          packages: formData.packages,
-          portfolioMedia: portfolioMediaState,
-        }),
-      ]);
-
+      console.log("Starting sequential URL confirmations");
+      await uploadedUrls.reduce(
+        (acc: Promise<void>, url: string) => 
+          acc.then(async () => {
+            console.log(`Attempting to confirm upload for ${url}`);
+            try {
+              await edgestore.publicFiles.confirmUpload({ url });
+              console.log(`Successfully confirmed upload for ${url}`);
+            } catch (error) {
+              console.error(`Failed to confirm upload for ${url}:`, error);
+              throw new Error(`Failed to confirm upload for ${url}`);
+            }
+          }),
+        Promise.resolve()
+      );
+      
+      console.log("All uploads confirmed sequentially, proceeding to updateGigMutation");
+  
+      console.log("Calling updateGigMutation");
+      await updateGigMutation({
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        subCategory: formData.subCategory,
+        faqs: formData.faqs,
+        packages: formData.packages,
+        portfolioMedia: portfolioMediaState,
+      });
+      console.log("updateGigMutation completed successfully");
+  
       await setIsFormDirty(false);
+      console.log("Form marked as not dirty");
       toast.success("Gig Updated Successfully");
-     setShouldRoute(true); // Set the flag to trigger routing
+      setShouldRoute(true);
+      console.log("Should route flag set to true");
     } catch (error) {
-      console.error("Error updating gig:", error);
+      console.error("Error in handleUpdateGig:", error);
       toast.error("Error Updating Gig");
     }
+    console.log("handleUpdateGig function completed");
   };
 
   //Validating data before making the gig live
@@ -395,13 +409,14 @@ export default function GigForm({
 
   const handleGoLive = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    console.log("Starting handleGoLive function");
     const formData = form.getValues();
-
+  
     const { isDisabled, errors } = validateGoLive();
-
+  
     if (isDisabled) {
       const errorMessages: string[] = [];
-
+  
       if (errors.title) errorMessages.push("Title is empty");
       if (errors.description) errorMessages.push("Description is empty");
       if (errors.portfolioMedia) errorMessages.push("Portfolio Media is empty");
@@ -415,46 +430,55 @@ export default function GigForm({
         errorMessages.push("Basic Package: Description is empty");
       if (errors.category) errorMessages.push("Category is empty");
       if (errors.subCategory) errorMessages.push("Subcategory is empty");
-
+  
       setAlertMessages(errorMessages);
       setShowAlert(true);
+      console.log("Validation failed, showing alert");
       return;
     }
-
+  
     try {
-      Promise.all(
-        uploadedUrls?.map(async (url) => {
-          await edgestore.publicFiles.confirmUpload({ url: url });
-        })
-      ),
-        await updateGigMutation(
-          {
-            title: formData.title,
-            description: formData.description,
-            category: formData.category,
-            subCategory: formData.subCategory,
-            faqs: formData.faqs,
-            packages: formData.packages,
-            portfolioMedia: portfolioMediaState,
-          },
-          {
-            onSuccess: () => {
-              // Make the gig live after the updateGigMutation is successful
-              makeGigLiveMutation();
-            },
-            onError: (error) => {
-              console.error("Error updating gig:", error);
-              toast.error("Error updating gig");
-            },
-          }
-        );
-
+      console.log("Starting sequential URL confirmations");
+      await uploadedUrls.reduce(
+        (acc: Promise<void>, url: string) => 
+          acc.then(async () => {
+            console.log(`Attempting to confirm upload for ${url}`);
+            try {
+              await edgestore.publicFiles.confirmUpload({ url });
+              console.log(`Successfully confirmed upload for ${url}`);
+            } catch (error) {
+              console.error(`Failed to confirm upload for ${url}:`, error);
+              throw new Error(`Failed to confirm upload for ${url}`);
+            }
+          }),
+        Promise.resolve()
+      );
+      
+      console.log("All uploads confirmed sequentially, proceeding to updateGigMutation");
+  
+      await updateGigMutation({
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        subCategory: formData.subCategory,
+        faqs: formData.faqs,
+        packages: formData.packages,
+        portfolioMedia: portfolioMediaState,
+      });
+      console.log("updateGigMutation completed successfully");
+  
+      console.log("Calling makeGigLiveMutation");
+      await makeGigLiveMutation();
+      console.log("makeGigLiveMutation completed successfully");
+  
       await setIsFormDirty(false);
+      console.log("Form marked as not dirty");
       toast.success("Gig is now live!");
     } catch (error) {
-      console.error("Error updating gig status:", error);
+      console.error("Error in handleGoLive:", error);
       toast.error("Error updating gig status");
     }
+    console.log("handleGoLive function completed");
   };
 
   const handleMakeDraft = async (e: React.MouseEvent<HTMLButtonElement>) => {
