@@ -608,7 +608,7 @@ export default function GigForm({
                   <div className="flex flex-row items-center">
                     <h4>Upload Images and drag to reorder or delete</h4>
                     <LabelWithTooltip
-                      tooltipText="Upload, Reorder and Delete Images"
+                      tooltipText="Upload, Reorder and Delete Images (Hold the grip icon on mobile)"
                       tooltipImage="/UploadImagesTooltip.gif"
                     />
                   </div>
