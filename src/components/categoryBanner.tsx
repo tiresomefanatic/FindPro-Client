@@ -38,7 +38,6 @@ export function CategoryBanners() {
 
     if (category) {
       dispatch(setSelectedCategory(category.name));
-      dispatch(setSelectedSubcategory(categoryTitle));
       router.push('/exploreGigs');
     }
   };

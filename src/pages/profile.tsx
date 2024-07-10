@@ -145,7 +145,7 @@ const Profile: React.FC = () => {
             {/* Left column */}
             <div className="lg:col-span-4">
               <div className="sticky top-24">
-                <Card className="rounded-xl shadow-lg bg-gradient-to-r from-[#bfdbfe] to-[#a5f3fc]">
+                <Card className="rounded-xl shadow-lg ">
                   <CardContent className="p-4">
                     <Avatar className="h-32 w-32 mb-4">
                       <AvatarImage src={user.profilePic} alt={user.name} />
