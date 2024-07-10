@@ -119,7 +119,6 @@ const TrashIcon = () => {
   const [isOver, setIsOver] = useState(false);
   const { edgestore } = useEdgeStore();
 
-
   const handleDelete = useCallback(async (urlToDelete: string) => {
     console.log('Deleting...');
     await edgestore.publicFiles.delete({
