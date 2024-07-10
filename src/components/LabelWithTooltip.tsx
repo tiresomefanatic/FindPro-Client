@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Image from 'next/image';
 
 interface LabelWithTooltipProps {
   label?: string;
@@ -31,10 +32,10 @@ const LabelWithTooltip: React.FC<LabelWithTooltipProps> = ({ label, tooltipText,
           </TooltipTrigger>
           <TooltipContent className="max-w-xs sm:max-w-md">
             <div className="flex flex-col items-center">
-            <p>{tooltipText}</p>
+            <p className='text-semibold'>{tooltipText}</p>
 
               {tooltipImage && (
-                <img src={tooltipImage} alt="Tooltip" className="mb-2 object-contain" />
+                <Image src={tooltipImage} height={500} width={500} alt="Tooltip"  />
               )}
             </div>
           </TooltipContent>

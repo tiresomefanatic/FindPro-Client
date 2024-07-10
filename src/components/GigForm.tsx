@@ -51,8 +51,13 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import DragNDropUploader from "./DragNDropUploader";
-import { setGigID, setImages } from "@/redux/portfolioMediaSlice";
+import {
+  clearConfirmUploadUrls,
+  setGigID,
+  setImages,
+} from "@/redux/portfolioMediaSlice";
 import customAxios from "@/lib/customAxios";
+import LabelWithTooltip from "./LabelWithTooltip";
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -247,7 +252,7 @@ export default function GigForm({
         packages: gigData.packages,
       });
       dispatch(setImages(gigData.portfolioMedia || []));
-      dispatch(setGigID(gigData._id))
+      dispatch(setGigID(gigData._id));
       setIsPortfolioMediaInitialized(true); // Set the flag to true after setting initial data
     }
   }, [gigData, form, dispatch]);
@@ -577,7 +582,13 @@ export default function GigForm({
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>
+                        <LabelWithTooltip
+                          label="Title"
+                          tooltipText="This is the main title for the gig. Make it short, clear and consice."
+                          tooltipImage="/GigTitleTooltip.png"
+                        />
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="Enter gig title" {...field} />
                       </FormControl>
@@ -585,10 +596,22 @@ export default function GigForm({
                     </FormItem>
                   )}
                 />
-
                 {/* Upload */}
-                <div className="bg-gray-100 p-3 my-2">
-                  <h4>Upload Images and drag to reorder or delete</h4>
+                <div className="flex flex-row items-center">
+                  <h3 className="text-2xl font-bold">Portfolio Images</h3>
+                  <LabelWithTooltip
+                    tooltipText="Capture attention with images related to the gig. Highly recommended!"
+                    tooltipImage="/PortFolioMediaTooltip.gif"
+                  />
+                </div>
+                <div className="bg-gray-100 p-3">
+                  <div className="flex flex-row items-center">
+                    <h4>Upload Images and drag to reorder or delete</h4>
+                    <LabelWithTooltip
+                      tooltipText="Upload, Reorder and Delete Images"
+                      tooltipImage="/UploadImagesTooltip.gif"
+                    />
+                  </div>
 
                   <div className="flex justify-center items-center">
                     <DragNDropUploader
@@ -596,14 +619,19 @@ export default function GigForm({
                     />
                   </div>
                 </div>
-
                 {/* Gig description */}
                 <FormField
                   control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>
+                        <LabelWithTooltip
+                          label="Description"
+                          tooltipText="Write a detailed description of the gig. Convey all information"
+                          tooltipImage="/GigDescriptionTooltip.png"
+                        />
+                      </FormLabel>
                       <FormControl>
                         {/* <Textarea
                             placeholder="Enter gig description"
@@ -620,7 +648,6 @@ export default function GigForm({
                     </FormItem>
                   )}
                 />
-
                 {/* Category */}
                 <FormField
                   control={form.control}
@@ -662,7 +689,6 @@ export default function GigForm({
                     </FormItem>
                   )}
                 />
-
                 {/* Subcategory */}
                 <FormField
                   control={form.control}
@@ -787,12 +813,20 @@ export default function GigForm({
                     </FormItem>
                   )}
                 />
-
                 {/* Question-Answer Sets */}
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold mb-4">
-                    Questions & Answers
-                  </h3>
+                  <div className="flex flex-row">
+                    <h3 className="text-2xl font-bold mb-4">
+                      Questions & Answers
+                    </h3>
+                    <div className="mt-2">
+                      <LabelWithTooltip
+                        label=""
+                        tooltipText="Create a set of frequently asked questions to make customers understand the gig better"
+                        tooltipImage="/GigFaqsTooltip.png"
+                      />
+                    </div>
+                  </div>
                   {faqFields.map((field, index) => (
                     <div key={field.id} className="mb-4">
                       <FormField
@@ -827,8 +861,8 @@ export default function GigForm({
                       />
                       <Button
                         type="button"
-                        variant='outline'
-                        size='sm'
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleRemoveQuestionAnswer(index)}
                         className="mt-2"
                       >
@@ -839,8 +873,8 @@ export default function GigForm({
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      size='sm'
-                      variant='outline'
+                      size="sm"
+                      variant="outline"
                       onClick={handleAddQuestionAnswer}
                       className="px-4 mb-4"
                     >
@@ -848,10 +882,19 @@ export default function GigForm({
                     </Button>
                   </div>
                 </div>
-
                 {/* Pricing Plans */}
-
-                <h3 className="text-2xl font-bold mb-4">Pricing Plans</h3>
+                <div className="flex flex-row">
+                  <h3 className="text-2xl font-bold mb-4">
+                    Pricing Plans
+                  </h3>
+                  <div className="mt-2">
+                    <LabelWithTooltip
+                      label=""
+                      tooltipText="Set prices for different categories for your gig. Enter a small title and description for the work you'll be doing for a certain price"
+                      tooltipImage="/GigPricingTooltip.gif"
+                    />
+                  </div>
+                </div>{" "}
                 <Form {...form}>
                   {["Basic", "Premium", "Custom"].map((plan, index) => (
                     <div
@@ -924,41 +967,43 @@ export default function GigForm({
                   ))}
                 </Form>
                 {/* {Save Changes button} */}
-                <div className="flex justify-start">
-                  <Button
-                    type="submit"
-                    // onClick={handleUpdateGig}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                  >
-                    {isNewGig ? "Create New Gig" : "Save All Changes"}
-                  </Button>
-                </div>
-                <div className="flex justify-start">
-                  {gigData?.status === "isDraft" ? (
-                    <div className="flex flex-col">
-                      <p className="mb-2">
-                        Save changes and make this gig live
-                      </p>
-                      <Button
-                        onClick={handleGoLive}
-                        className="bg-green-500 text-white px-4 py-2 rounded"
-                      >
-                        Make Gig Live
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col">
-                      <p className="mb-2 text-center">
-                        Remove Live and make draft
-                      </p>
-                      <Button
-                        onClick={handleMakeDraft}
-                        className="bg-yellow-500 text-white px-4 py-2 rounded"
-                      >
-                        Make Gig Draft
-                      </Button>
-                    </div>
-                  )}
+                <div className="flex flex-row space-x-4">
+                  <div className="">
+                    <Button
+                      type="submit"
+                      // onClick={handleUpdateGig}
+                      className="bg-blue-500 text-white px-4 py-2 rounded"
+                    >
+                      {isNewGig ? "Create New Gig" : "Save All Changes"}
+                    </Button>
+                  </div>
+                  <div className="">
+                    {gigData?.status === "isDraft" ? (
+                      <div className="flex flex-col">
+                        <Button
+                          onClick={handleGoLive}
+                          className="bg-green-500 text-white px-4 py-2 rounded"
+                        >
+                          Make Gig Live
+                        </Button>
+                        <p className="text-sm text-center">
+                          Save changes and make this gig live
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col">
+                        <Button
+                          onClick={handleMakeDraft}
+                          className="bg-yellow-500 text-white px-4 py-2 rounded"
+                        >
+                          Make Gig Draft
+                        </Button>
+                        <p className="text-center text-sm">
+                          Remove Live and make draft
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

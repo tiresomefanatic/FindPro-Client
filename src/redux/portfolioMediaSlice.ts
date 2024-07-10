@@ -35,7 +35,7 @@ const portfolioMediaSlice = createSlice({
     addConfirmUploadUrls: (state, action: PayloadAction<string>) => {
       state.confirmUploadUrls.push(action.payload);
     },
-    clearConfirmUploadUrls: (state) => {
+    clearConfirmUploadUrls: (state, action: PayloadAction<string[]>) => {
       state.confirmUploadUrls = [];
     },
     removeConfirmUploadUrl: (state, action: PayloadAction<string>) => {
