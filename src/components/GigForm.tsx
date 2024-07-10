@@ -43,7 +43,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useEdgeStore } from "@/lib/edgeStore";
 
 import { RootState } from "@/redux/rootReducer";
@@ -53,7 +53,6 @@ import { AppDispatch } from "@/redux/store";
 import DragNDropUploader from "./DragNDropUploader";
 import { setImages } from "@/redux/portfolioMediaSlice";
 import customAxios from "@/lib/customAxios";
-
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -130,7 +129,7 @@ export default function GigForm({
   // For Go Live Alert Message
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessages, setAlertMessages] = useState<string[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+  console.log("isformdirty", isFormDirty);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -218,21 +217,6 @@ export default function GigForm({
     },
   });
 
-  // update the portfolioMedia on the backened everytime a change happens in portfolio media state 
-  const updatePortfolioMediaMutation = useMutation({
-    mutationFn: async (portfolioMedia: any[]) => {
-      const response = await customAxios.put(`${baseUrl}/gigs/updatePortfolioMedia/${gigId}`, { portfolioMedia });
-      return response.data;
-    },
-    onSuccess: () => {
-      console.log('Portfolio media updated successfully');
-    },
-    onError: (error) => {
-      console.error('Error updating portfolio media:', error);
-      toast.error('Failed to update portfolio media');
-    },
-  });
-
   // Defining the form for react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -278,7 +262,26 @@ export default function GigForm({
     return () => subscription.unsubscribe();
   }, [form]);
 
+  // To check for changes made to the images(removed an image or reordered the images), this makes the form dirty so that alert can be shown if leaving wihout saving changes
+  useEffect(() => {
+    if (isPortfolioMediaInitialized && portfolioMediaState) {
+      // Check if portfolioMedia state has changed
+      if (
+        portfolioMediaState.length !== gigData?.portfolioMedia.length ||
+        portfolioMediaState.some(
+          (media, index) => media.src !== gigData?.portfolioMedia[index].src
+        )
+      ) {
+        setIsFormDirty(true);
+      }
+    }
+  }, [
+    portfolioMediaState,
+    isPortfolioMediaInitialized,
+    gigData?.portfolioMedia,
+  ]);
 
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUploadStatusChange = (
     uploading: boolean | ((prevState: boolean) => boolean)
@@ -286,39 +289,6 @@ export default function GigForm({
     setIsUploading(uploading);
   };
 
-
-  const handlePortfolioMediaUpdate = useCallback(async (portfolioMedia: any[]) => {
-    try {
-      await updatePortfolioMediaMutation.mutateAsync(portfolioMedia);
-      setIsFormDirty(true);
-    } catch (error) {
-      console.error('Failed to update portfolio media:', error);
-      // The error toast is already shown in the mutation's onError callback
-    }
-  }, [updatePortfolioMediaMutation]);
-
-
-  // To check for changes made to the images (removed an image or reordered the images)
-  useEffect(() => {
-    if (isPortfolioMediaInitialized && portfolioMediaState) {
-      // Check if portfolioMedia state has changed
-      if (
-        portfolioMediaState.length !== gigData?.portfolioMedia?.length ||
-        portfolioMediaState.some(
-          (media, index) => media.src !== gigData?.portfolioMedia[index]?.src
-        )
-      ) {
-        handlePortfolioMediaUpdate(portfolioMediaState);
-      }
-    }
-  }, [
-    portfolioMediaState,
-    isPortfolioMediaInitialized,
-    gigData?.portfolioMedia,
-    handlePortfolioMediaUpdate,
-  ]);
-
- 
   // for routing
   useEffect(() => {
     const handleRouteChange = (
