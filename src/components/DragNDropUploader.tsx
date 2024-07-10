@@ -29,6 +29,12 @@ import { Progress } from "./ui/progress";
 import { useDropzone } from "react-dropzone";
 import { Trash2 } from "lucide-react";
 import FixedCropper from "./ImageCropper";
+import customAxios from "@/lib/customAxios";
+import axios from "axios";
+import { toast } from "sonner";
+
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+
 
 //for drag and drop
 function getInstanceId() {
@@ -118,14 +124,35 @@ const TrashIcon = () => {
   );
   const [isOver, setIsOver] = useState(false);
   const { edgestore } = useEdgeStore();
+  const currentGigId = useSelector(
+    (state: RootState) => state.portfolioMedia.gigID
+  );
 
 
-  const handleDelete = useCallback(async (urlToDelete: string) => {
+  const handleDelete = useCallback(async (urlToDelete: string, gigID: string) => {
     console.log('Deleting...');
-    await edgestore.publicFiles.delete({
-      url: urlToDelete,
-    });
-  }, [edgestore]);
+    try {
+      // First, delete the image from the database
+      await customAxios.put(`${baseURL}/gigs/deleteImageFromPortfolioMedia/${gigID}`, {
+        imageUrl: urlToDelete
+      });
+  
+      // If the database update is successful, delete from EdgeStore
+      await edgestore.publicFiles.delete({
+        url: urlToDelete,
+      });
+  
+      console.log('Image deleted successfully from both database and EdgeStore');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error deleting image from database:', error.response?.data);
+        toast.error('Failed to delete image from database');
+      } else {
+        console.error('Error deleting image from EdgeStore:', error);
+        toast.error('Failed to delete image from EdgeStore');
+      }
+    }
+  }, [edgestore, baseURL]);
 
   useEffect(() => {
     const el = ref.current;
@@ -141,8 +168,11 @@ const TrashIcon = () => {
         onDrop: ({ source }) => {
           const itemId = source.data.id;
 
+
           if (typeof itemId === "string") {
+            
             dispatch(removeImage(itemId));
+            
             const itemSrc = source.data.src;
 
             if (
@@ -152,7 +182,7 @@ const TrashIcon = () => {
               dispatch(removeConfirmUploadUrl(itemSrc));
             }
             
-            handleDelete(itemSrc as string)
+            handleDelete(itemSrc as string, currentGigId)
           
           }
           setIsOver(false);

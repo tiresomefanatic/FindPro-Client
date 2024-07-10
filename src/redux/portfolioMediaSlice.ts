@@ -9,6 +9,7 @@ interface Image {
 interface PortfolioMediaState {
   images: Image[];
   confirmUploadUrls: string[];
+  gigID: string; // New state added
 }
 
 interface SwapImagesPayload {
@@ -18,32 +19,10 @@ interface SwapImagesPayload {
 
 const initialState: PortfolioMediaState = {
   images: [
-    // {
-    //   id: "1",
-    //   src: "https://files.edgestore.dev/b4qgt9tvc94ovz0g/publicFiles/_public/35334ba4-25a3-45d3-82d9-fa7fdb7d8ea7.jpg",
-    // },
-    // {
-    //   id: "2",
-    //   src: "https://files.edgestore.dev/b4qgt9tvc94ovz0g/publicFiles/_public/6378e460-6142-45cd-b4a9-38b9c691a538.png",
-    // },
-    // {
-    //   id: "3",
-    //   src: "https://files.edgestore.dev/b4qgt9tvc94ovz0g/publicFiles/_public/f6471048-2b6c-4e57-93d7-63614638abf8.png",
-    // },
-    // {
-    //   id: "4",
-    //   src: "https://files.edgestore.dev/b4qgt9tvc94ovz0g/publicFiles/_public/aa700de7-2a73-4488-b332-0b96505fc530.png",
-    // },
-    // {
-    //   id: "5",
-    //   src: "https://files.edgestore.dev/b4qgt9tvc94ovz0g/publicFiles/_public/1af7c43a-e951-4b0c-be03-8b6cd9ec3989.png",
-    // },
-    // {
-    //   id: "6",
-    //   src: "https://files.edgestore.dev/b4qgt9tvc94ovz0g/publicFiles/_public/ef604d93-d0b5-4174-8eda-c93e6721da86.jpg",
-    // },
+    // ... (previous image objects)
   ],
   confirmUploadUrls: [],
+  gigID: "", // Initialize gigID as an empty string
 };
 
 const portfolioMediaSlice = createSlice({
@@ -88,6 +67,9 @@ const portfolioMediaSlice = createSlice({
         (image) => image.uid !== action.payload
       );
     },
+    setGigID: (state, action: PayloadAction<string>) => {
+      state.gigID = action.payload;
+    },
   },
 });
 
@@ -98,6 +80,7 @@ export const {
   removeConfirmUploadUrl,
   swapImages,
   removeImage,
+  setGigID, // New action exported
 } = portfolioMediaSlice.actions;
 
 export default portfolioMediaSlice.reducer;

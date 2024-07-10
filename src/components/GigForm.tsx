@@ -51,7 +51,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import DragNDropUploader from "./DragNDropUploader";
-import { setImages } from "@/redux/portfolioMediaSlice";
+import { setGigID, setImages } from "@/redux/portfolioMediaSlice";
 import customAxios from "@/lib/customAxios";
 
 // Define the form schema using Zod
@@ -247,6 +247,7 @@ export default function GigForm({
         packages: gigData.packages,
       });
       dispatch(setImages(gigData.portfolioMedia || []));
+      dispatch(setGigID(gigData._id))
       setIsPortfolioMediaInitialized(true); // Set the flag to true after setting initial data
     }
   }, [gigData, form, dispatch]);
