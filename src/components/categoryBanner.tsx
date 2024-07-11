@@ -54,12 +54,9 @@ export function CategoryBanners() {
               imageClassName="object-cover"
             >
               <div className="flex flex-col items-start p-3">
-                <div className="absolute inset-0 bg-black bg-opacity-5 backdrop-blur-[2px] rounded-full"></div>
-                <div className="relative z-10">
                   <h4 className="font-bold text-xl text-white">{category.title}</h4>
                   <p className="font-normal text-sm text-white">{category.description}</p>
                 </div>
-              </div>
             </DirectionAwareHover>
           </div>
         ))}

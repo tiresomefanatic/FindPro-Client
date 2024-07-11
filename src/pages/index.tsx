@@ -33,7 +33,7 @@ import { useMediaQuery } from "@uidotdev/usehooks";
 import { RootState } from "@/redux/store";
 import GigsGrid from "@/components/gigsGrid";
 import SparklesText from "@/components/ui/sparkleText";
-import { FlipWords } from "@/components/ui/flip-words";
+import  WordRotate  from "@/components/ui/wordrotate";
 
 
 
@@ -89,7 +89,7 @@ export default function Home() {
   // }, [selectedCategory, selectedSubcategory]);
 
   console.log("state", selectedCategory, selectedSubcategory);
-  const words = ["Photographers", "Video Editors", "Writers"];
+  const words = ["Photographers", "Video Editors", "Writers", "VFX Artists",];
 
   return (
     <div className="min-h-screen">
@@ -101,24 +101,27 @@ export default function Home() {
             <div className="flex items-center justify-start gap-16">
               <div className="container mx-auto px-4">
                 <div className="flex flex-col justify-start sm:text-start gap-y-8">
-                  <motion.h1
+                  {/* <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: [20, -5, 0] }}
                     transition={{ duration: 1.5, ease: [0.4, 0.0, 0.2, 1] }}
                     className="text-5xl font-bold text-left dark:text-white max-w-4xl "
-                  >
+                  > */}
                     <div className="grid grid-col gap-y-0">
                       <div>
-                        <span className="">Discover & book</span>
+                        <span className="text-5xl font-bold text-left dark:text-white max-w-4xl">Hire the best</span>
                       </div>
 
-                      {isLargeDevice || isExtraLargeDevice ? (
-                        <FlipWords className="text-4xl" words={words} />
-                      ) : (
-                        <span className="">talent in multimedia</span>
-                      )}
+                      {/* {isLargeDevice || isExtraLargeDevice ? ( */}
+                         <WordRotate
+                         className="text-5xl font-bold text-black dark:text-white"
+                         words={["Photographers", "Video Editors", "Writers", "VFX Artists"]}
+                       />
+      {/* ) : ( */}
+                        {/* <span className="">talent in multimedia</span> */}
+                      {/* )} */}
                     </div>
-                  </motion.h1>
+                  {/* </motion.h1> */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: [20, -5, 0] }}
