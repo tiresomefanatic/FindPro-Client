@@ -269,6 +269,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
 
   const handleProfilePicUpload = async (croppedBlob: Blob) => {
     try {
+      console.log("reaching upload fucntion");
       setIsUploading(true);
 
       const croppedFile = new File([croppedBlob], "cropped_image.png", {
@@ -298,6 +299,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     } finally {
       setUploadProgress(0);
       setIsUploading(false);
+      setIsFormDirty(true);
     }
   };
 
@@ -433,21 +435,67 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
           <div className="sticky top-24">
             <Card className="rounded-xl shadow-lg">
               <CardContent className="p-6">
-                <div className="flex flex-col items-center mb-6">
-                  <Avatar className="h-32 w-32 mb-4">
-                    <AvatarImage
-                      src={profilePicUrl}
-                      alt={form.getValues("name")}
-                    />
-                    <AvatarFallback>
-                      <User className="w-24 h-24" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <FixedCropper
-                    isGigImage={false}
-                    onCrop={handleProfilePicUpload}
-                  />
+                <div className="flex justify-center items-center mb-6">
+                  {didProfileUpload === 0 ? (
+                    <Avatar key={profilePicUrl} className="w-24 h-24">
+                      <AvatarImage
+                        src={profilePicUrl}
+                        alt="@shadcn"
+                        onLoadingStatusChange={(status) => {
+                          if (status === "loaded") {
+                            console.log(
+                              "Profile picture loaded 1 successfully"
+                            );
+                          } else if (status === "error") {
+                            console.error("Failed to load 1 profile picture");
+                          }
+                        }}
+                      />
+                      <AvatarFallback></AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <Avatar key={imageToBeUploaded} className="w-24 h-24">
+                      <AvatarImage
+                        src={imageToBeUploaded}
+                        alt="@shadcn"
+                        onLoadingStatusChange={(status) => {
+                          if (status === "loaded") {
+                            console.log(
+                              "Profile picture loaded 2 successfully"
+                            );
+                          } else if (status === "error") {
+                            console.error("Failed to load 2 profile picture");
+                          }
+                        }}
+                      />
+                      <AvatarFallback></AvatarFallback>
+                    </Avatar>
+                  )}
                 </div>
+
+                {uploadProgress === 0 ? (
+                  <div className="flex justify-center items-center">
+                    {isUploading ? (
+                      <div>Loading...</div>
+                    ) : (
+                      <div className="">
+                        <FixedCropper
+                          isGigImage={false}
+                          onCrop={handleProfilePicUpload}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1">
+                    <p className="text-sm text-black-100">Uploading Image...</p>
+                    <Progress
+                      value={uploadProgress}
+                      className="w-full max-w-lg"
+                    />
+                  </div>
+                )}
+
                 <Form {...form}>
                   <form className="space-y-4">
                     <FormField
@@ -523,16 +571,24 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                 </Form>
                 <div className="flex justify-end my-6 rounded-full">
                   <div className="space-x-4">
-                    <Button type="submit" variant='default' className="rounded-full" onClick={form.handleSubmit(onSubmit)}>
+                    <Button
+                      type="submit"
+                      variant="default"
+                      className="rounded-full"
+                      onClick={form.handleSubmit(onSubmit)}
+                    >
                       Update Profile
                     </Button>
                     {!isSeller && (
-                      <button onClick={handleBecomeSeller} className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md">
-                      <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-                      <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-white">
-                        Become a Seller
-                      </span>
-                    </button>
+                      <button
+                        onClick={handleBecomeSeller}
+                        className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md"
+                      >
+                        <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+                        <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-white">
+                          Become a Seller
+                        </span>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -667,7 +723,10 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                     </div>
 
                     {faqFields.map((field, index) => (
-                      <div key={field.id} className="space-y-2 border border-slate-300 p-4">
+                      <div
+                        key={field.id}
+                        className="space-y-2 border border-slate-300 p-4"
+                      >
                         <FormField
                           control={form.control}
                           name={`faqs.${index}.question`}
@@ -758,19 +817,22 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              <div className="flex flex-row items-center"> 
-              <TriangleAlert size={36} color="red" className="mr-1" />
-              <h6>Fill all required fields to become a seller </h6>
+              <div className="flex flex-row items-center">
+                <TriangleAlert size={36} color="red" className="mr-1" />
+                <h6>Fill all required fields to become a seller </h6>
               </div>
             </AlertDialogTitle>
             <AlertDialogDescription>
               <div className="mt-4">
                 {alertMessages.map((message, index) => (
                   <div key={index} className="flex flex-row items-center">
-                     <CircleAlert color="red"  />
-                  <p key={index} className="text-md text-semibold text-black ml-2">{message}</p>
-                 
-
+                    <CircleAlert color="red" />
+                    <p
+                      key={index}
+                      className="text-md text-semibold text-black ml-2"
+                    >
+                      {message}
+                    </p>
                   </div>
                 ))}
               </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, HTMLMotionProps, motion } from "framer-motion";
-
 import { cn } from "@/lib/utils";
 
 interface WordRotateProps {
@@ -16,9 +15,9 @@ export default function WordRotate({
   words,
   duration = 2500,
   framerProps = {
-    initial: { opacity: 0, y: -50 },
+    initial: { opacity: 0, y: 50 },
     animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 50 },
+    exit: { opacity: 0, y: -50 },
     transition: { duration: 0.25, ease: "easeOut" },
   },
   className,
