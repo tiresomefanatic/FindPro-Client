@@ -34,6 +34,7 @@ import { RootState } from "@/redux/store";
 import GigsGrid from "@/components/gigsGrid";
 import SparklesText from "@/components/ui/sparkleText";
 import  WordRotate  from "@/components/ui/wordrotate";
+import TextRotate from "@/components/ui/textRotate";
 
 
 
@@ -113,10 +114,12 @@ export default function Home() {
                       </div>
 
                       {/* {isLargeDevice || isExtraLargeDevice ? ( */}
-                         <WordRotate
+                         {/* <WordRotate
                          className="text-5xl font-bold text-black dark:text-white"
                          words={["Photographers", "Video Editors", "Writers", "VFX Artists"]}
-                       />
+                       /> */}
+                       <TextRotate />
+
       {/* ) : ( */}
                         {/* <span className="">talent in multimedia</span> */}
                       {/* )} */}
