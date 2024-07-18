@@ -93,14 +93,14 @@ export function MainSearch({ shouldRoute, className }: MainSearchProps) {
     </div>
 
     { !shouldRoute ? <div> </div> :
-    <div className="flex flex-wrap space-x-2 mt-4 w-full max-w-2xl">
-        <p className="px-3 py-2 m-1">Popular</p>
+    <div className="flex flex-wrap space-x-1 mt-4 w-full max-w-2xl items-center">
+        <p className="px-3 py-2 text-lg font-semibold">Popular :</p>
         {suggestions.map((suggestion) => (
           <Button
             key={suggestion}
-            variant="secondary"
+            variant='outline'
             size="sm"
-            className="px-3 py-1 m-1"
+            className="px-3"
             onClick={() => handleSuggestionClick(suggestion)}
           >
             {suggestion}

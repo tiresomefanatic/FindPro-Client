@@ -33,10 +33,7 @@ import { useMediaQuery } from "@uidotdev/usehooks";
 import { RootState } from "@/redux/store";
 import GigsGrid from "@/components/gigsGrid";
 import SparklesText from "@/components/ui/sparkleText";
-import  WordRotate  from "@/components/ui/wordrotate";
-import TextRotate from "@/components/ui/textRotate";
-
-
+import WordRotate from "@/components/ui/wordrotate";
 
 export default function Home() {
   const router = useRouter();
@@ -65,8 +62,6 @@ export default function Home() {
     }
   };
 
-
-
   const dispatch = useDispatch();
 
   const filterBarRef = useRef<HTMLDivElement>(null);
@@ -90,62 +85,50 @@ export default function Home() {
   // }, [selectedCategory, selectedSubcategory]);
 
   console.log("state", selectedCategory, selectedSubcategory);
-  const words = ["Photographers", "Video Editors", "Writers", "VFX Artists",];
+  const words = ["Photographers", "Video Editors", "Writers", "VFX Artists"];
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
 
       <HeroHighlight>
-        <div className="px-4 sm:px-20">
-          <section className="min-h-[70vh] grid grid-cols-1 sm:grid-cols-2">
-            <div className="flex items-center justify-start gap-16">
-              <div className="container mx-auto px-4">
-                <div className="flex flex-col justify-start sm:text-start gap-y-8">
-                  {/* <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: [20, -5, 0] }}
-                    transition={{ duration: 1.5, ease: [0.4, 0.0, 0.2, 1] }}
-                    className="text-5xl font-bold text-left dark:text-white max-w-4xl "
-                  > */}
-                    <div className="grid grid-col gap-y-0">
-                      <div>
-                        <span className="text-5xl font-bold text-left dark:text-white max-w-4xl">Hire the best</span>
-                      </div>
-
-                      {/* {isLargeDevice || isExtraLargeDevice ? ( */}
-                         {/* <WordRotate
-                         className="text-5xl font-bold text-black dark:text-white"
-                         words={["Photographers", "Video Editors", "Writers", "VFX Artists"]}
-                       /> */}
-                       <TextRotate />
-
-      {/* ) : ( */}
-                        {/* <span className="">talent in multimedia</span> */}
-                      {/* )} */}
-                    </div>
-                  {/* </motion.h1> */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: [20, -5, 0] }}
-                    transition={{
-                      duration: 1.5,
-                      ease: [0.4, 0.0, 0.2, 1],
-                      delay: 0.3,
-                    }}
-                    className={`mx-auto ${getMarqueeWidth()}`}
-                  >
-                    <MainSearch shouldRoute={true} />
-                  </motion.div>
+      <div className="px-4 sm:px-20">
+        <section className="min-h-[70vh] grid grid-cols-1 sm:grid-cols-2">
+          <div className="flex items-center justify-center sm:justify-start">
+            <div className="container mx-auto px-4">
+              <div className="flex flex-col items-center sm:items-start justify-start text-center sm:text-start gap-y-8">
+                <div className="grid grid-cols-1 gap-y-2">
+                  <h1 className="text-5xl sm:text-5xl font-bold text-center sm:text-left">
+                    Hire the best
+                  </h1>
+                  <div className="h-[60px]">
+                    <WordRotate
+                      className="text-5xl sm:text-5xl font-bold text-black sm:text-left"
+                      words={["Video Editors", "Writers", "Photographers", "VFX Artists"]}
+                    />
+                  </div>
                 </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 1.5,
+                    ease: [0.4, 0.0, 0.2, 1],
+                    delay: 0.3,
+                  }}
+                  className="w-full"
+                >
+                  <MainSearch shouldRoute={true} />
+                </motion.div>
               </div>
             </div>
-            <div className="hidden md:flex items-center justify-center">
-              <Image src="/heroImage.png" width={2000} height={2000} alt="" />
-            </div>
-          </section>
-        </div>
-      </HeroHighlight>
+          </div>
+          <div className="hidden md:flex items-center justify-center">
+            <Image src="/heroImage.png" width={2000} height={2000} alt="Hero image" />
+          </div>
+        </section>
+      </div>
+    </HeroHighlight>
 
       {/* {Create Gig Button}
       <section className="py-8">
