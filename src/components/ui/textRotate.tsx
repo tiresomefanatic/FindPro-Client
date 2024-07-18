@@ -17,7 +17,7 @@ const TextRotate = () => {
   }, [])
 
   return (
-    <div className="relative flex w-full items-center justify-center py-4 text-center">
+    <div className="relative flex w-full items-center justify-center text-center">
       <AnimatePresence>
         <motion.div
           className="absolute cursor-pointer text-5xl font-bold text-black"
