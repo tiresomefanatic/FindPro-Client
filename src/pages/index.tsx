@@ -58,12 +58,12 @@ export default function Home() {
             <div className="w-full max-w-xl px-4">
               <div className="flex flex-col items-center lg:items-start justify-start text-center lg:text-left gap-y-4 sm:gap-y-8">
                 <div className="grid grid-cols-1 gap-y-2">
-                  <h1 className="text-4xl sm:text-5xl font-bold">
+                  <h1 className="text-5xl sm:text-5xl font-bold">
                     Hire the best
                   </h1>
                   <div className="h-[60px]">
                     <WordRotate
-                      className="text-4xl sm:text-5xl font-bold text-black"
+                      className="text-5xl sm:text-5xl font-bold text-black"
                       words={[
                         "Video Editors",
                         "Writers",
