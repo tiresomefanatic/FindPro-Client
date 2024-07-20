@@ -115,9 +115,9 @@ const FiltersBar = React.memo( () => {
               transition={{ duration: 0.3 }}
             >
               <Button
-              variant='link'
-                className={`flex flex-grow p-2 text-lg rounded-md text-black dark:text-white ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                  selectedCategory === category.name ? 'opacity-100' : 'opacity-70'
+              variant='filterTree'
+                className={`flex flex-grow p-2 text-lg rounded-md text-black dark:text-black ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  selectedCategory === category.name ? 'font-bold text-primary' : ''
                 }`}
                 onClick={() => handleCategoryChange(category.name)}
                // whileHover={{ scale: 1.05 }}
@@ -139,7 +139,7 @@ const FiltersBar = React.memo( () => {
                      
                         key={subcategory}
                         className={`p-2 text-md text-start rounded-md text-gray-700 ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                        selectedSubcategory === subcategory ? 'font-bold' : ''
+                        selectedSubcategory === subcategory ? 'font-bold text-primary' : ''
                         }`}
                         onClick={() => handleSubcategoryChange(subcategory)}
                       //  whileHover={{ scale: 1.05 }}

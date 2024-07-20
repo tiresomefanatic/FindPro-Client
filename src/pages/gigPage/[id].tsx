@@ -193,7 +193,7 @@ export default function GigPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-8 rounded-xl p-6">
               {/* Gig details */}
-              <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white md:text-3xl">
+              <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-black md:text-3xl">
                 {gig.title}
               </h1>
 
@@ -264,7 +264,7 @@ export default function GigPage() {
               {/* Skills */}
               <h3 className="text-xl font-bold mb-2.5">Skills</h3>
               <div className="flex flex-wrap gap-4 mb-5">
-                {gig.owner.skills.map((skill: string) => (
+                {gig.skills.map((skill: string) => (
                   <p
                     key={skill}
                     className="inline-flex items-center rounded-full border border-1 px-2.5 py-0.5 text-sm font-semibold text-foreground whitespace-normal"

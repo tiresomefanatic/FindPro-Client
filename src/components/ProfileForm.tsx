@@ -66,6 +66,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { categories } from "@/lib/categories";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -433,6 +434,15 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     removeFaq(index);
   };
 
+  const skillCategories = [
+    "Video Production",
+    "Video Editing",
+    "Music Production",
+    "Writing",
+    "Photography",
+    "Visual Graphics"
+  ];
+
   if (isUserDataLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -611,7 +621,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                         className="relative inline-flex h-12 overflow-hidden rounded-full p-[2px] mt-1 shadow-md"
                       >
                         <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-                        <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-white">
+                        <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-black">
                           {isBecomingSellerPending || isUpdateUserPending ? (
                             <Loader2 className="h-4 w-4 animate-spin mr-2" />
                           ) : null}
@@ -718,20 +728,21 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                           />
                         </FormLabel>
                         <FormControl>
-                          <MultipleSelector
-                            {...field}
-                            placeholder="Type a skill and enter to add"
-                            creatable
-                            value={field.value?.map((skill: string) => ({
-                              value: skill,
-                              label: skill,
-                            }))}
-                            onChange={(selected) => {
-                              field.onChange(
-                                selected.map((option) => option.value)
-                              );
-                            }}
-                          />
+                        <MultipleSelector
+                          {...field}
+                          placeholder="Select skills"
+                          options={skillCategories.map(skill => ({
+                            value: skill,
+                            label: skill
+                          }))}
+                          value={field.value?.map((skill: string) => ({
+                            value: skill,
+                            label: skill,
+                          }))}
+                          onChange={(selected) => {
+                            field.onChange(selected.map((option) => option.value));
+                          }}
+                        />
                         </FormControl>
                         <FormDescription>
                           Example: JavaScript, React, Node.js

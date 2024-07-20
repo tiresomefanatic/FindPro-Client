@@ -86,7 +86,7 @@ export function MainSearch({ inHomePage, shouldRoute, className }: MainSearchPro
             <Search size={18} />
           </Button>  
         </form>
-        {inHomePage}
+       {!shouldRoute?  <div> </div> :
         <div className="flex flex-row justify-center items-center"> 
           <p className="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-lg font-semibold whitespace-nowrap">Popular:</p>
           <div className="flex flex-row flex-wrap items-center justify-start gap-2 mt-4 w-full max-w-4xl overflow-x-auto">
@@ -102,7 +102,7 @@ export function MainSearch({ inHomePage, shouldRoute, className }: MainSearchPro
               </Button>
             ))}
           </div>
-        </div>
+        </div>}
       </div>
     </>
   );

@@ -66,7 +66,7 @@ function DirectionAwareTabs({
     <div className=" flex flex-col items-center w-full">
       <div
         className={cn(
-          "flex space-x-1 border border-none rounded-xl cursor-pointer bg-neutral-600 px-[3px] py-[3.2px] shadow-inner-shadow",
+          "flex space-x-1 border border-none rounded-xl cursor-pointer bg-red-100 px-[3px] py-[3.2px] shadow-inner-shadow",
           className,
           rounded
         )}
@@ -76,10 +76,10 @@ function DirectionAwareTabs({
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
             className={cn(
-              "relative rounded-xl px-3.5 py-1.5 text-xs sm:text-sm font-medium text-black transition focus-visible:outline-1 focus-visible:ring-1  focus-visible:outline-none flex gap-2 items-center ",
+              "relative rounded-xl px-3.5 py-1.5 text-xs sm:text-sm font-medium text-white transition focus-visible:outline-1 focus-visible:ring-1  focus-visible:outline-none flex gap-2 items-center ",
               activeTab === tab.id
-                ? "text-black"
-                : "hover:text-black",
+                ? "text-white"
+                : "hover:text-white",
               rounded
             )}
             style={{ WebkitTapHighlightColor: "transparent" }}
@@ -87,7 +87,7 @@ function DirectionAwareTabs({
             {activeTab === tab.id && (
               <motion.span
                 layoutId="bubble"
-                className="absolute  inset-0 z-10 bg-neutral-700 mix-blend-difference shadow-inner-shadow border border-white/10"
+                className="absolute  inset-0 z-10 bg-red-100 mix-blend-difference shadow-inner-shadow border border-white/10"
                 style={rounded ? { borderRadius: 9 } : { borderRadius: 9999 }}
                 transition={{ type: "spring", bounce: 0.19, duration: 0.4 }}
               />

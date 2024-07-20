@@ -168,7 +168,7 @@ const ProfileGigCard: React.FC<ProfileGigCardProps> = ({ gig, id }) => {
       </div>
       <div className="flex justify-between items-center">
         <Button
-          className="flex-grow mr-2 rounded-full text-sm font-semibold text-white hover:text-black hover:bg-white border border-2 border-zinc-900"
+          className="flex-grow mr-2 rounded-full text-sm font-semibold text-black hover:text-black hover:bg-white border border-2 border-zinc-900"
           onClick={() => router.push(`/gigPage/${id}`)}
         >
           Get in touch

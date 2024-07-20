@@ -203,7 +203,7 @@ const TrashIcon = () => {
       }`}
     >
       <Trash2
-        className={`w-6 h-6 ${isOver ? "text-white" : "text-gray-500"}`}
+        className={`w-6 h-6 ${isOver ? "text-black" : "text-gray-500"}`}
       />
     </div>
   );

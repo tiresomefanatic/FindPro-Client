@@ -59,10 +59,49 @@ import {
 import customAxios from "@/lib/customAxios";
 import LabelWithTooltip from "./LabelWithTooltip";
 import { Frown, RefreshCw } from "lucide-react";
+import MultipleSelector from "./ui/multipleSelector";
 
 const handleReload = () => {
   window.location.reload();
 }
+
+const skillOptionsByCategory = {
+  "Video Production": [
+    "Filming Weddings",
+    "Creating Social Media Videos",
+    "Producing Music Videos",
+    "Collaborating with Influencers"
+  ],
+  "Video Editing": [
+    "Color Correcting",
+    "Editing Instagram Videos",
+    "Editing Wedding Videos",
+    "Editing YouTube Videos",
+    "Creating Commercials"
+  ],
+  "Music": [
+    "Recording Sync Sound",
+    "Dubbing",
+    "SFX Editing",
+    "Mixing and Mastering Audio",
+    "Music Directing"
+  ],
+  "Writers": [
+    "Content Writing",
+    "Scripts Writing"
+  ],
+  "Photographers": [
+    "Fashion Photography ",
+    "Event Photography "
+  ],
+  "Visual Graphics": [
+    "Animating for Social Media",
+    "Designing Logos and Subtitles",
+    "Illustrating",
+    "Creating Intros and Outros",
+    "Designing VFX and Motion Graphics"
+  ]
+};
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -72,6 +111,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   category: z.string().optional(),
   subCategory: z.string().optional(),
+  skills: z.array(z.string()).optional(),
   faqs: z
     .array(
       z.object({
@@ -152,6 +192,7 @@ export default function GigForm({
     queryKey: ["gig", gigId],
     queryFn: async () => {
       const response = await axios.get(`${baseUrl}/gigs/getGigById/${gigId}`);
+      console.log("initial dta", response.data)
       return response.data;
     },
   });
@@ -235,6 +276,7 @@ export default function GigForm({
       description: gigData?.description || "",
       category: gigData?.category || "",
       subCategory: gigData?.subCategory || "",
+      skills: gigData?.skills || [],
       faqs: gigData?.faqs || [],
       packages: gigData?.packages || [
         { name: "Basic", title: "", per: "", price: "", description: "" },
@@ -253,6 +295,7 @@ export default function GigForm({
         description: gigData.description,
         category: gigData.category,
         subCategory: gigData.subCategory,
+        skills: gigData.skills,
         faqs: gigData.faqs,
         packages: gigData.packages,
       });
@@ -336,6 +379,7 @@ export default function GigForm({
   const handleUpdateGig = async () => {
     console.log("Starting handleUpdateGig function");
     const formData = form.getValues();
+    console.log("formdata to submit", formData)
 
     try {
       console.log("Starting sequential URL confirmations");
@@ -364,6 +408,7 @@ export default function GigForm({
         description: formData.description,
         category: formData.category,
         subCategory: formData.subCategory,
+        skills:formData.skills,
         faqs: formData.faqs,
         packages: formData.packages,
         portfolioMedia: portfolioMediaState,
@@ -382,6 +427,8 @@ export default function GigForm({
     console.log("handleUpdateGig function completed");
   };
 
+ 
+
   //Validating data before making the gig live
   const validateGoLive = (): {
     isDisabled: boolean;
@@ -397,6 +444,7 @@ export default function GigForm({
       };
       category: boolean;
       subCategory: boolean;
+      skills: boolean;
     };
   } => {
     const formData = form.getValues();
@@ -413,6 +461,7 @@ export default function GigForm({
       },
       category: !formData.category,
       subCategory: !formData.subCategory,
+      skills: !formData.skills || formData.skills.length === 0
     };
 
     const isDisabled = Object.values(errors).some((error) => {
@@ -448,9 +497,13 @@ export default function GigForm({
         errorMessages.push("Basic Package: Description is empty");
       if (errors.category) errorMessages.push("Category is empty");
       if (errors.subCategory) errorMessages.push("Subcategory is empty");
+      if (errors.skills) errorMessages.push("Atleast one skill required");
+
+
 
       setAlertMessages(errorMessages);
       setShowAlert(true);
+      toast.error("Fill required fields")
       console.log("Validation failed, showing alert");
       return;
     }
@@ -513,6 +566,7 @@ export default function GigForm({
           description: formData.description,
           category: formData.category,
           subCategory: formData.subCategory,
+          skills: formData.skills,
           faqs: formData.faqs,
           packages: formData.packages,
           portfolioMedia: portfolioMediaState,
@@ -553,6 +607,27 @@ export default function GigForm({
   const handleRemoveQuestionAnswer = (index: number) => {
     removeFaq(index);
   };
+
+  type CategoryKey = keyof typeof skillOptionsByCategory;
+
+  // Get the current category value
+const category = form.watch("category") as CategoryKey | undefined;
+
+// Use useEffect to reset skills when category changes
+useEffect(() => {
+  if (category) {
+    form.setValue("skills", []); // Clear the skills
+  }
+}, [category, form]);
+
+// Memoize the skill options based on the selected category
+const currentSkillOptions = useMemo(() => {
+  if (category && category in skillOptionsByCategory) {
+    return skillOptionsByCategory[category];
+  }
+  return [];
+}, [category]);
+ 
 
   if (isGigLoading) {
     return (
@@ -831,6 +906,40 @@ export default function GigForm({
                     </FormItem>
                   )}
                 />
+                 {/* Skills field */}
+                 <FormField
+                  control={form.control}
+                  name="skills"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        <LabelWithTooltip
+                          label="Skills"
+                          tooltipText="Select the specific skills related to this gig. These will help clients understand your expertise."
+                          tooltipImage="/SkillsTooltip.png"
+                        />
+                      </FormLabel>
+                      <FormControl>
+                        <MultipleSelector
+                          {...field}
+                          placeholder="Select skills"
+                          options={currentSkillOptions.map(skill => ({
+                            value: skill,
+                            label: skill
+                          }))}
+                          value={field.value?.map((skill: string) => ({
+                            value: skill,
+                            label: skill,
+                          }))}
+                          onChange={(selected) => {
+                            field.onChange(selected.map((option) => option.value));
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 {/* Question-Answer Sets */}
                 <div className="mb-8">
                   <div className="flex flex-row">
@@ -990,7 +1099,7 @@ export default function GigForm({
                     <Button
                       type="submit"
                       // onClick={handleUpdateGig}
-                      className="bg-blue-500 text-white px-4 py-2 rounded"
+                      className="bg-blue-500 text-black px-4 py-2 rounded"
                     >
                       {isNewGig ? "Create New Gig" : "Save All Changes"}
                     </Button>
@@ -1000,7 +1109,7 @@ export default function GigForm({
                       <div className="flex flex-col">
                         <Button
                           onClick={handleGoLive}
-                          className="bg-green-500 text-white px-4 py-2 rounded"
+                          className="bg-green-500 text-black px-4 py-2 rounded"
                         >
                           Make Gig Live
                         </Button>
@@ -1012,7 +1121,7 @@ export default function GigForm({
                       <div className="flex flex-col">
                         <Button
                           onClick={handleMakeDraft}
-                          className="bg-yellow-500 text-white px-4 py-2 rounded"
+                          className="bg-yellow-500 text-black px-4 py-2 rounded"
                         >
                           Make Gig Draft
                         </Button>

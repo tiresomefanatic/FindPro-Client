@@ -8,7 +8,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-accent text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -23,6 +23,8 @@ const buttonVariants = cva(
         ghost: "hover:text-accent-foreground",
        
         link: "text-primary underline-offset-4 hover:underline",
+
+        filterTree: "text-primary hover:font-semibold",
        
         expandIcon:
           "group relative text-primary-foreground bg-primary hover:bg-primary/90",

@@ -92,7 +92,7 @@ export function PriceTabs({ packages, phoneNumber, gigId }: PriceTabsProps) {
         <div className="p-6 bg-white rounded-lg shadow-sm">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
             <h3 className="text-2xl font-bold">{pkg.title}</h3>
-            <div className="text-3xl font-bold text-blue-500 whitespace-nowrap">
+            <div className="text-3xl font-bold text-primary whitespace-nowrap">
               ₹ {pkg.price}
             </div>
           </div>
@@ -100,7 +100,7 @@ export function PriceTabs({ packages, phoneNumber, gigId }: PriceTabsProps) {
           <div className="space-y-4">
             {!showContact ? (
               <Button
-              className="w-full bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center p-3 rounded-full"
+              className="w-full bg-accent text-white hover:bg-primary flex items-center justify-center p-3 rounded-full"
               onClick={handleContactClick}
               >
                 Contact Me
@@ -108,7 +108,7 @@ export function PriceTabs({ packages, phoneNumber, gigId }: PriceTabsProps) {
             ) : (
               <>
                 <Button
-                  className="w-full bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center p-3 rounded-full"
+                  className="w-full bg-accent text-white hover:bg-primary flex items-center justify-center p-3 rounded-full"
                   onClick={handlePhoneClick}
                 >
                   <Phone className="mr-2 h-5 w-5" />
@@ -151,7 +151,7 @@ export function PriceTabs({ packages, phoneNumber, gigId }: PriceTabsProps) {
         className="bg-white shadow-md border-none rounded-xl shadow-inner-shadow
         [&_button]:text-black [&_button]:hover:text-black 
         [&_button[data-state=active]]:!text-black [&_button[data-state=active]]:font-semibold
-        [&_.absolute]:bg-blue-100 [&_.absolute]:opacity-80 [&_.absolute]:!rounded-xl"
+        [&_.absolute]:bg-white [&_.absolute]:opacity-80 [&_.absolute]:!rounded-xl"
       />
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>

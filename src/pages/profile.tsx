@@ -256,7 +256,7 @@ const Profile: React.FC = () => {
 
             {/* Right column */}
             <div className="lg:col-span-8">
-              <div className="mb-8">
+              <div className="my-8">
                 <h2 className="text-2xl font-bold mb-4">My Gigs</h2>
                 <Carousel className="w-full">
                   <CarouselContent className="-ml-4">

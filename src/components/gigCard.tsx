@@ -200,8 +200,8 @@ export default function GigCard({
             </div>
             <div className="mt-3">
               <p className="text-md font-semibold">{name}</p>
-              <div className="w-24 h-6 mt-0 px-2 text-green-300 bg-gray-100 rounded-lg flex items-center shadow-sm">
-                <p className="m-1 text-sm text-slate-900 whitespace-nowrap">{priceRange}</p>
+              <div className="w-24 h-6 mt-0 px-2 bg-accent rounded-lg flex items-center shadow-sm">
+                <p className="m-1 text-sm text-black whitespace-nowrap">{priceRange}</p>
               </div>
             </div>
           </div>
@@ -249,7 +249,7 @@ export default function GigCard({
       <CardContent className="p-0">
         <div className="mt-8 mb-4 flex justify-center items-center">
           <Button
-            className="flex flex-grow mx-4 rounded-full text-sm font-semibold text-white hover:text-black hover:bg-white border border-2 border-zinc-900"
+            className="flex flex-grow mx-4 rounded-full text-sm font-semibold text-black hover:text-black hover:bg-primary border border-2 border-zinc-900"
             onClick={() => router.push(`/gigPage/${id}`)}
           >
             Get in touch
