@@ -321,6 +321,7 @@ export default function GigPage() {
                   </Button>
                 </div>
                 <PriceTabs
+                  gigId={gig._id}
                   packages={gig.packages}
                   phoneNumber={gig.owner.phoneNumber}
                 />
