@@ -14,6 +14,7 @@ import { Button } from "./ui/button";
 import { setLoggingInFromRoute } from "@/redux/authFlowSlice";
 import customAxios from "@/lib/customAxios";
 import { clearAuthState } from "@/redux/authSlice";
+import { User, UserCog, File, Bookmark, LogOut } from 'lucide-react';
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -79,12 +80,14 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
           className="cursor-pointer"
           onClick={handleProfileClick}
         >
+          <User className="mr-2 h-4 w-4" />
           My Profile
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={handleEditProfileClick}
         >
+          <UserCog className="mr-2 h-4 w-4" />
           Edit Profile
         </DropdownMenuItem>
         {user?.isSeller && (
@@ -92,6 +95,7 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
             className="cursor-pointer"
             onClick={handleMyGigsClick}
           >
+            <File className="mr-2 h-4 w-4" />
             My Gigs
           </DropdownMenuItem>
         )}
@@ -100,6 +104,7 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
             className="cursor-pointer"
             onClick={handleBecomeSellerClick}
           >
+            <UserCog className="mr-2 h-4 w-4" />
             Become a Seller
           </DropdownMenuItem>
         )}
@@ -108,10 +113,12 @@ const ProfileButton = ({ isAuthenticated }: ProfileButtonProps) => {
           className="cursor-pointer"
           onClick={handleSavedGigsClick}
         >
+          <Bookmark className="mr-2 h-4 w-4" />
           Saved Gigs
         </DropdownMenuItem>
         {isAuthenticated && (
           <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
             Log Out
           </DropdownMenuItem>
         )}

@@ -13,7 +13,7 @@ import {
   SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Bookmark, Menu, Moon, ShoppingCart, Sun } from "lucide-react";
+import { Bookmark, LogOut, Menu, Moon, ShoppingBag, ShoppingCart, Sun, User, UserCog, File } from "lucide-react";
 import ProfileButton from "./ProfileButton";
 import {
   NavigationMenu,
@@ -96,8 +96,11 @@ const Header = () => {
               </Button>
             </SheetTrigger>
           </Sheet>
-          <Link href="/" className="md:pl-20 pl-0 flex flex-row justify-center items-ccenter">
-          <Image
+          <Link
+            href="/"
+            className="md:pl-20 pl-0 flex flex-row justify-center items-ccenter"
+          >
+            <Image
               src="/letter-f.png"
               alt="FindPro Logo"
               width={28}
@@ -162,32 +165,31 @@ const Header = () => {
                   </Button>
                 ) : (
                   <div className="flex flex-col space-y-4">
-                    {user?.isSeller &&
-                    
-                    <ProfilePic />
-                    
-                    }
+                    {user?.isSeller && <div className="flex flex-row">  <ProfilePic /> <div className="text-lg items-center justify center text-black px-2 py-2 font-semibold">{user.name}</div> </div>}
                     {user?.isSeller ? (
                       <>
                         <Link
                           href={`/profile?id=${user?._id}`}
                           onClick={() => setIsSheetOpen(false)}
-                          className="text-md font-semibold text-black"
+                          className="text-md font-semibold text-black flex items-center"
                         >
+                          <User className="mr-2 h-4 w-4" />
                           My Profile
                         </Link>
                         <Link
                           href={`/editProfile?id=${user?._id}`}
                           onClick={() => setIsSheetOpen(false)}
-                          className="text-md font-semibold text-black"
+                          className="text-md font-semibold text-black flex items-center"
                         >
+                          <UserCog className="mr-2 h-4 w-4" />
                           Edit Profile
                         </Link>
                         <Link
                           href="/myGigs"
                           onClick={() => setIsSheetOpen(false)}
-                          className="text-md font-semibold text-black"
+                          className="text-md font-semibold text-black flex items-center"
                         >
+                          <File className="mr-2 h-4 w-4" />
                           My Gigs
                         </Link>
                       </>
@@ -198,16 +200,18 @@ const Header = () => {
                           handleBecomeSellerClick();
                           setIsSheetOpen(false);
                         }}
-                        className="text-md font-semibold text-black"
+                        className="text-md font-semibold text-black flex items-center"
                       >
+                        <ShoppingBag className="mr-2 h-4 w-4" />
                         Become a Seller
                       </Button>
                     )}
                     <Link
                       href="/savedGigs"
                       onClick={() => setIsSheetOpen(false)}
-                      className="text-md font-semibold text-black"
+                      className="text-md font-semibold text-black flex items-center"
                     >
+                      <Bookmark className="mr-2 h-4 w-4" />
                       Saved Gigs
                     </Link>
                     <button
@@ -215,8 +219,9 @@ const Header = () => {
                         handleLogout();
                         setIsSheetOpen(false);
                       }}
-                      className="text-md font-semibold text-black"
+                      className="text-md font-semibold text-black flex items-center"
                     >
+                      <LogOut className="mr-2 h-4 w-4" />
                       Log Out
                     </button>
                   </div>
