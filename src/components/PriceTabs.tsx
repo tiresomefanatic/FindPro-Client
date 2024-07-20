@@ -52,8 +52,7 @@ export function PriceTabs({ packages, phoneNumber, gigId }: PriceTabsProps) {
     }
 
     try {
-      await customAxios.post(`${baseURL}/gigs/recordInteraction`, {
-        gigId,
+      await customAxios.post(`${baseURL}/gigs/${gigId}/recordInteraction`, {
         userId: user._id,
         action,
       });
