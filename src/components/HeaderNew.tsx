@@ -32,6 +32,7 @@ import { RootState } from "@/redux/store";
 import ProfilePic from "./ProfilePic";
 import { clearAuthState } from "@/redux/authSlice";
 import customAxios from "@/lib/customAxios";
+import Image from "next/image";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -95,7 +96,14 @@ const Header = () => {
               </Button>
             </SheetTrigger>
           </Sheet>
-          <Link href="/" className="md:pl-20 pl-0">
+          <Link href="/" className="md:pl-20 pl-0 flex flex-row justify-center items-ccenter">
+          <Image
+              src="/letter-f.png"
+              alt="FindPro Logo"
+              width={28}
+              height={24}
+              className="mr-2"
+            />
             <h1 className="text-xl font-bold">FindPro</h1>
           </Link>
         </div>

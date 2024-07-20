@@ -34,6 +34,7 @@ import { RootState } from "@/redux/store";
 import GigsGrid from "@/components/gigsGrid";
 import SparklesText from "@/components/ui/sparkleText";
 import WordRotate from "@/components/ui/wordrotate";
+import { AnimatedBeamMultipleOutput } from "@/components/animatedBeamMulti";
 
 export default function Home() {
   const router = useRouter();
@@ -90,20 +91,18 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-
       <HeroHighlight>
-      <div className="px-4 sm:px-20">
-        <section className="min-h-[70vh] grid grid-cols-1 sm:grid-cols-2">
-          <div className="flex items-center justify-center sm:justify-start">
-            <div className="container mx-auto px-4">
-              <div className="flex flex-col items-center sm:items-start justify-start text-center sm:text-start gap-y-8">
+        <section className="min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8">
+          <div className="flex items-center justify-center lg:justify-start">
+            <div className="w-full max-w-xl px-4 lg:px-8">
+              <div className="flex flex-col items-center lg:items-start justify-start text-center lg:text-left gap-y-8">
                 <div className="grid grid-cols-1 gap-y-2">
-                  <h1 className="text-5xl sm:text-5xl font-bold text-center sm:text-left">
+                  <h1 className="text-5xl sm:text-5xl font-bold">
                     Hire the best
                   </h1>
                   <div className="h-[60px]">
                     <WordRotate
-                      className="text-5xl sm:text-5xl font-bold text-black sm:text-left"
+                      className="text-5xl sm:text-5xl font-bold text-black"
                       words={["Video Editors", "Writers", "Photographers", "VFX Artists"]}
                     />
                   </div>
@@ -123,12 +122,10 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="hidden md:flex items-center justify-center">
-            <Image src="/heroImage.png" width={2000} height={2000} alt="Hero image" />
-          </div>
+          <div className="hidden lg:flex items-center justify-center">
+          <AnimatedBeamMultipleOutput className="w-full h-[600px]" />          </div>
         </section>
-      </div>
-    </HeroHighlight>
+      </HeroHighlight>
 
       {/* {Create Gig Button}
       <section className="py-8">
