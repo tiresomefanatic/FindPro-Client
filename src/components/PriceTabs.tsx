@@ -100,8 +100,8 @@ export function PriceTabs({ packages, phoneNumber, gigId }: PriceTabsProps) {
           <div className="space-y-4">
             {!showContact ? (
               <Button
-                className="w-full bg-blue-500 text-white hover:bg-blue-600"
-                onClick={handleContactClick}
+              className="w-full bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center p-3 rounded-full"
+              onClick={handleContactClick}
               >
                 Contact Me
               </Button>

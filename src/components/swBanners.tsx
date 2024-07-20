@@ -15,7 +15,7 @@ export function SwBanners() {
       name: "Premier Pro",
       image: "/Premierpro.png",
       cl1: "absolute inset-0 bg-gradient-to-r from-indigo-900 to-purple-900 rounded-full",
-      cl2: " px-8 py-2  bg-black rounded-full relative group transition duration-200 text-white hover:bg-transparent",
+      cl2: " px-8 py-2  bg-black rounded-full relative group transition duration-200 text-white",
     },
 
     {
@@ -23,21 +23,21 @@ export function SwBanners() {
       name: "Photoshop",
       image: "/Photoshop.png",
       cl1: "absolute inset-0 bg-black to-blue-500 rounded-md",
-      cl2: "px-8 py-2  bg-white rounded-md  relative group transition duration-200 text-white hover:bg-transparent",
+      cl2: "px-8 py-2  bg-white rounded-md  relative group transition duration-200 text-white",
     },
     {
       color: "bg-purple-500",
       name: "After Effects",
       image: "/Aftereffects.png",
       cl1: "absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full",
-      cl2: "px-8 py-2  bg-black rounded-full  relative group transition duration-200 text-white hover:bg-transparent",
+      cl2: "px-8 py-2  bg-black rounded-full  relative group transition duration-200 text-white",
     },
     {
       color: "bg-orange-500",
       name: "Illustrator",
       image: "/Illustrator.png",
       cl1: "absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full",
-      cl2: "px-8 py-2  bg-black rounded-full  relative group transition duration-200 text-white hover:bg-transparent",
+      cl2: "px-8 py-2  bg-black rounded-full  relative group transition duration-200 text-white",
     },
   ];
 
@@ -64,7 +64,7 @@ export function SwBanners() {
         {banners.map((banner, index) => (
           <button
             key={index}
-            className="mx-4 rounded-xl text-sm font-semibold text-black hover:text-white hover:bg-zinc-800 shadow-md py-2"
+            className="mx-4 rounded-xl text-sm font-semibold text-black hover:text-white hover:bg-accent shadow-md py-2"
             onClick={() => handleSubcategoryClick(banner.name)}
           >
             
