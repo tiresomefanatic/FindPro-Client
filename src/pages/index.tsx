@@ -49,61 +49,27 @@ export default function Home() {
     "only screen and (min-width : 1201px)"
   );
 
-  const getMarqueeWidth = () => {
-    if (isSmallDevice) {
-      return "w-80";
-    } else if (isMediumDevice) {
-      return "w-full";
-    } else if (isLargeDevice) {
-      return "w-full";
-    } else if (isExtraLargeDevice) {
-      return "w-full";
-    } else {
-      return "w-full";
-    }
-  };
-
-  const dispatch = useDispatch();
-
-  const filterBarRef = useRef<HTMLDivElement>(null);
-  const filterDrawerRef = useRef<HTMLDivElement>(null);
-
-  const selectedCategory = useSelector(
-    (state: RootState) => state.filters.selectedCategory
-  );
-  const selectedSubcategory = useSelector(
-    (state: RootState) => state.filters.selectedSubcategory
-  );
-
-  // useEffect(() => {
-  //   if (selectedCategory || selectedSubcategory) {
-  //     //if (isLargeDevice || isExtraLargeDevice) {
-  //     //  filterBarRef.current?.scrollIntoView({ behavior: "smooth" });
-  //    // } else {
-  //       filterDrawerRef.current?.scrollIntoView({ behavior: "smooth" });
-  //    // }
-  //   }
-  // }, [selectedCategory, selectedSubcategory]);
-
-  console.log("state", selectedCategory, selectedSubcategory);
-  const words = ["Photographers", "Video Editors", "Writers", "VFX Artists"];
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <HeroHighlight>
-        <section className="min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8">
+        <section className="min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8 px-4 sm:px-8 md:px-16 lg:px-24">
           <div className="flex items-center justify-center lg:justify-start">
-            <div className="w-full max-w-xl px-4 lg:px-8">
-              <div className="flex flex-col items-center lg:items-start justify-start text-center lg:text-left gap-y-8">
+            <div className="w-full max-w-xl px-4">
+              <div className="flex flex-col items-center lg:items-start justify-start text-center lg:text-left gap-y-4 sm:gap-y-8">
                 <div className="grid grid-cols-1 gap-y-2">
-                  <h1 className="text-5xl sm:text-5xl font-bold">
+                  <h1 className="text-4xl sm:text-5xl font-bold">
                     Hire the best
                   </h1>
                   <div className="h-[60px]">
                     <WordRotate
-                      className="text-5xl sm:text-5xl font-bold text-black"
-                      words={["Video Editors", "Writers", "Photographers", "VFX Artists"]}
+                      className="text-4xl sm:text-5xl font-bold text-black"
+                      words={[
+                        "Video Editors",
+                        "Writers",
+                        "Photographers",
+                        "VFX Artists",
+                      ]}
                     />
                   </div>
                 </div>
@@ -123,7 +89,8 @@ export default function Home() {
             </div>
           </div>
           <div className="hidden lg:flex items-center justify-center">
-          <AnimatedBeamMultipleOutput className="w-full h-[600px]" />          </div>
+            <AnimatedBeamMultipleOutput className="w-full h-[600px]" />
+          </div>
         </section>
       </HeroHighlight>
 
@@ -167,23 +134,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      {/* Filter Bars Section
-      {(isLargeDevice || isExtraLargeDevice) && (
-        <section className="mx-40 bg-red-900 " ref={filterBarRef}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <FiltersBars />
-          </div>
-        </section>
-      )} */}
-
-      {/* Filter Drawer Section
-    
-        <section className="sticky top-0 z-50 my-16 " ref={filterDrawerRef}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
-            <FilterDrawer />
-          </div>
-        </section> */}
 
       {/* PersonGrid Section */}
       <section className="my-16 ">
