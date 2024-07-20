@@ -58,6 +58,11 @@ import {
 } from "@/redux/portfolioMediaSlice";
 import customAxios from "@/lib/customAxios";
 import LabelWithTooltip from "./LabelWithTooltip";
+import { Frown, RefreshCw } from "lucide-react";
+
+const handleReload = () => {
+  window.location.reload();
+}
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -558,7 +563,20 @@ export default function GigForm({
   }
 
   if (gigError) {
-    return <div>Error: {gigError.message}</div>;
+    return(
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Frown size={48} className="text-red-500 mb-4" />
+        <p className="text-2xl mb-6">Sorry, an error occurred</p>
+        <Button
+          variant="outline"
+          onClick={handleReload}
+          className="flex items-center"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Try Reloading
+        </Button>
+      </div>
+      );
   }
   //error check the form
   //const onInvalid = (errors) => console.error(errors)

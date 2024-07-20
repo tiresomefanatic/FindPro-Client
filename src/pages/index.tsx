@@ -54,7 +54,7 @@ export default function Home() {
       {/* Hero Section */}
       <HeroHighlight>
         <section className="min-h-[90vh] grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8 px-4 sm:px-8 md:px-16 lg:px-24">
-          <div className="flex items-center justify-center lg:justify-start">
+          <div className="flex mt-40 justify-center lg:justify-start">
             <div className="w-full max-w-xl px-4">
               <div className="flex flex-col items-center lg:items-start justify-start text-center lg:text-left gap-y-4 sm:gap-y-8">
                 <div className="grid grid-cols-1 gap-y-2">
@@ -88,7 +88,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="hidden lg:flex items-center justify-center">
+          <div className="hidden lg:flex mt-8 justify-center">
             <AnimatedBeamMultipleOutput className="w-full h-[600px]" />
           </div>
         </section>

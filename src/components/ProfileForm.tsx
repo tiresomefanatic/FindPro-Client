@@ -58,7 +58,14 @@ import {
 import LabelWithTooltip from "./LabelWithTooltip";
 import customAxios from "@/lib/customAxios";
 import { Textarea } from "./ui/textarea";
-import { CircleAlert, Plus, TriangleAlert, User, X } from "lucide-react";
+import {
+  CircleAlert,
+  Loader2,
+  Plus,
+  TriangleAlert,
+  User,
+  X,
+} from "lucide-react";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -140,54 +147,53 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
     name: "faqs",
   });
 
+  const {
+    data: userData,
+    isLoading: isUserDataLoading,
+    isError: isUserDataError,
+    error: userDataError,
+  } = useQuery({
+    queryKey: ["userData", userId],
+    queryFn: async () => {
+      const response = await axios.get(`${baseUrl}/user/${userId}`);
+      return response.data;
+    },
+    enabled: !!userId,
+  });
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/user/${userId}`);
-        const userData = response.data;
+    if (userData) {
+      form.setValue("name", userData.name);
+      form.setValue("bio", userData.bio);
+      form.setValue("portfolioLink", userData.portfolioLink || "");
+      form.setValue("instagramLink", userData.instagramLink || "");
+      form.setValue("location", userData.location);
+      form.setValue("languages", userData.languages);
+      form.setValue("skills", userData.skills);
+      form.setValue("phoneNumber", userData.phoneNumber);
+      form.setValue("faqs", userData.faqs);
 
-        form.setValue("name", userData.name);
-        form.setValue("bio", userData.bio);
-        form.setValue("portfolioLink", userData.portfolioLink || "");
-        form.setValue("instagramLink", userData.instagramLink || "");
-        form.setValue("location", userData.location);
-        form.setValue("languages", userData.languages);
-        form.setValue("skills", userData.skills);
-        form.setValue("phoneNumber", userData.phoneNumber);
-        form.setValue("faqs", userData.faqs);
-
-        setUserKiId(userData._id);
-        setProfilePicUrl(userData.profilePic);
-        setIsSeller(userData.isSeller);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    if (userId) {
-      fetchUserData();
+      setUserKiId(userData._id);
+      setProfilePicUrl(userData.profilePic);
+      setIsSeller(userData.isSeller);
     }
-  }, [userId, form]);
+  }, [userData, form]);
 
   const {
     mutate: updateUserMutation,
-    isPending,
-    isError,
-    error,
+    isPending: isUpdateUserPending,
+    isError: isUpdateUserError,
+    error: updateUserError,
   } = useMutation({
     mutationFn: async (updateData: any) => {
       const response = await customAxios.put(
         `${baseUrl}/user/updateUser/${userKiId}`,
-        updateData,
-        {
-          // baseURL: baseUrl,
-          // withCredentials: true,
-        }
+        updateData
       );
-      const userData = response.data;
-      dispatch(setUser(userData));
+      return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      dispatch(setUser(data));
       toast.success("Profile updated successfully");
       router.back();
     },
@@ -198,10 +204,10 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
   });
 
   const {
-    mutate: becomeSeller,
-    isPending: isBecomingSeller,
-    isError: isErrorBecomingSeller,
-    error: errorBecomingSeller,
+    mutate: becomeSellerMutation,
+    isPending: isBecomingSellerPending,
+    isError: isBecomingSellerError,
+    error: becomingSellerError,
   } = useMutation({
     mutationFn: async () => {
       const response = await customAxios.put(
@@ -372,7 +378,7 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
           onSuccess: () => {
             setIsFormDirty(false);
 
-            becomeSeller();
+            becomeSellerMutation();
           },
           onError: (error) => {
             console.error("Error updating gig:", error);
@@ -426,6 +432,22 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
   const handleRemoveQuestionAnswer = (index: number) => {
     removeFaq(index);
   };
+
+  if (isUserDataLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (isUserDataError) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Error loading user data. Please try again later.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -577,7 +599,11 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                       className="rounded-full"
                       onClick={form.handleSubmit(onSubmit)}
                     >
-                      Update Profile
+                      {isUpdateUserPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : (
+                        "Update Profile"
+                      )}
                     </Button>
                     {!isSeller && (
                       <button
@@ -586,6 +612,9 @@ export default function ProfileForm({ userId }: ProfileFormProps) {
                       >
                         <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
                         <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-black backdrop-blur-3xl hover:bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-xl hover:text-white">
+                          {isBecomingSellerPending || isUpdateUserPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : null}
                           Become a Seller
                         </span>
                       </button>

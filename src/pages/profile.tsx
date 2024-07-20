@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import customAxios from "@/lib/customAxios";
-import { Bookmark, Instagram, Link2, MapPin, Phone, User } from "lucide-react";
+import { Bookmark, Frown, Instagram, Link2, MapPin, Phone, RefreshCw, User } from "lucide-react";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { Button } from "@/components/ui/button";
 import useAuth from "@/lib/useAuth";
@@ -44,6 +44,9 @@ import {
 } from "@/components/ui/accordion";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+const handleReload = () => {
+  window.location.reload();
+}
 
 const fetchGigsByOwner = async (ownerId: string) => {
   const response = await axios.get(`${baseURL}/gigs/userGigs/${ownerId}`);
@@ -134,7 +137,20 @@ const Profile: React.FC = () => {
   }
 
   if (isGigsError || isUserError) {
-    return <div>Error fetching data.</div>;
+    return(
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Frown size={48} className="text-red-500 mb-4" />
+        <p className="text-2xl mb-6">Sorry, an error occurred</p>
+        <Button
+          variant="outline"
+          onClick={handleReload}
+          className="flex items-center"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Try Reloading
+        </Button>
+      </div>
+      );
   }
 
   return (
