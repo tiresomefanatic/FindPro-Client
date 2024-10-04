@@ -46,9 +46,12 @@ const WelcomePopup = () => {
                   <li>Next.js for server-side rendering and routing</li>
                   <li>React with functional components and hooks</li>
                   <li>Responsive design using Tailwind CSS with global theming</li>
-                  <li>shadcn/ui components for a polished UI</li>
-                  <li>Custom animations and interactive elements</li>
+                  <li>Shadcn/ui components for a polished UI</li>
+                  <li>Custom animations and interactive elements using framer motion</li>
                   <li>Redux for global state management</li>
+                  <li>UI/UX design also done by me</li>
+
+                  
                 </ul>
               </div>
               <div>
@@ -60,6 +63,7 @@ const WelcomePopup = () => {
                   <li>Frontend caching with TanStack Query (React Query)</li>
                   <li>Complete media gallery manager with smart uploading</li>
                   <li>Automatic stale asset cleanup (24-hour expiration)</li>
+                  <li>Fuzzy Search and filters</li>
                 </ul>
               </div>
             </div>
