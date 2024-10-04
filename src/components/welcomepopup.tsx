@@ -24,7 +24,7 @@ const WelcomePopup = () => {
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent className="max-w-4xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Welcome to My Project!</AlertDialogTitle>
+          <AlertDialogTitle>Welcome to FindPro!</AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
             <p>
               Hello recruiters! 
