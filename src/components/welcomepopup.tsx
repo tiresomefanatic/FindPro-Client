@@ -64,8 +64,8 @@ const WelcomePopup = () => {
               </div>
             </div>
             <p>
-              Feel free to explore the application and its codebase. I'm excited to discuss how 
-              these skills and technologies can contribute to your team's projects!
+              Feel free to explore the application and its codebase. I&apos;m excited to discuss how 
+              these skills and technologies can contribute to your team&apos;s projects!
             </p>          
           </AlertDialogDescription>
         </AlertDialogHeader>
