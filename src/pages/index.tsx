@@ -35,6 +35,8 @@ import GigsGrid from "@/components/gigsGrid";
 import SparklesText from "@/components/ui/sparkleText";
 import WordRotate from "@/components/ui/wordrotate";
 import { AnimatedBeamMultipleOutput } from "@/components/animatedBeamMulti";
+import WelcomePopup from "@/components/welcomepopup";
+
 
 export default function Home() {
   const router = useRouter();
@@ -51,6 +53,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <WelcomePopup/>
       {/* Hero Section */}
       <HeroHighlight>
         <section className="min-h-[90vh] grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8 px-4 sm:px-8 md:px-16 lg:px-24">
