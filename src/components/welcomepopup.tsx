@@ -30,7 +30,7 @@ const WelcomePopup = () => {
               Hello recruiters! 
               This project showcases my skills in Next.js, React, and modern UI development.
               The backend is made of Express.js and MongoDb. Using s3 as CDN.
-              I made this during as a freelance project.
+              I made this as a freelance project.
               This version of the website is to showcase to recruiters. The actual project is still ongoing, and the clients are still handling the business side more before further development can take place.
             </p>
 
